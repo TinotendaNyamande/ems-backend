@@ -6,6 +6,8 @@ namespace EMS.Domain.Models
         public string Name { get; private set; }
         public string OwnerId { get; private set; } 
         public DateTime CreatedAt { get; private set; }
+        public ICollection<MailBoxConfig> MailBoxes { get; private set; }
+        public ICollection<EmailCategory> EmailCategories { get; private set; }
 
         public Organisation(string ownerId,string name)
         {
@@ -17,10 +19,12 @@ namespace EMS.Domain.Models
             {
                 throw new ArgumentException("Organisation name cannot be empty", nameof(name));
             }
-            this.OwnerId = ownerId;
-            this.Name = name;
-            this.Id = Guid.NewGuid();
-            this.CreatedAt = DateTime.UtcNow;
+            OwnerId = ownerId;
+            Name = name;
+            Id = Guid.NewGuid();
+            CreatedAt = DateTime.UtcNow;
+            MailBoxes = [];
+            EmailCategories = [];
         }
         public void Rename(string newName)
         {
@@ -28,7 +32,7 @@ namespace EMS.Domain.Models
             {
                 throw new ArgumentException("Organisation name cannot be empty" , nameof(newName));
             }
-            this.Name = newName;
+            Name = newName;
         }
         public void ChangeOwner(string newOwnerId)
         {
@@ -36,7 +40,7 @@ namespace EMS.Domain.Models
             {
                 throw new ArgumentException("OwnerId cannot be empty", nameof(newOwnerId));
             }
-            this.OwnerId = newOwnerId;
+            OwnerId = newOwnerId;
         }
     }
 }

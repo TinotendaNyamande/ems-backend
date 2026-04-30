@@ -1,4 +1,7 @@
+using EMS.Infrastructure.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddInfrastructure(builder.Configuration,builder.Environment);
 
 // Add services to the container.
 
