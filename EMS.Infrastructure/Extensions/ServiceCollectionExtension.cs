@@ -1,4 +1,7 @@
-﻿using EMS.Infrastructure.persistence;
+﻿using EMS.Application.Interfaces;
+using EMS.Infrastructure.persistence;
+using EMS.Infrastructure.Repository;
+using EMS.Infrastructure.Seeder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,8 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace EMS.Infrastructure.Extensions
@@ -61,7 +62,11 @@ namespace EMS.Infrastructure.Extensions
                 };
             });
 
-   
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRoleSeeder,RolesSeeder>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IOrganisationRepository, OrganisationRepository>();
+            services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
         }
 
     }

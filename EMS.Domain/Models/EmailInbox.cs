@@ -2,40 +2,23 @@
 
 namespace EMS.Domain.Models
 {
-    public class EmailInbox
+    public class EmailInbox(string fromEmail, string toEmail, string subject, string body, Guid mailBoxConfigId)
     {
-        public  Guid Id { get; private set; }
-        public string FromEmail { get; private set; }
-        public string ToEmail { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
-        public string Subject { get; private set; }
-        public string Body { get; private set; }
-        public EmailStatus Status { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string FromEmail { get; private set; } = fromEmail;
+        public string ToEmail { get; private set; } = toEmail;
+        public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
+        public string Subject { get; private set; } = subject;
+        public string Body { get; private set; } = body;
+        public EmailStatus Status { get; private set; } = EmailStatus.New;
         public MailBoxConfig? MailBoxConfig { get; private set; }
-        public Guid MailBoxConfigId { get; private set; }
+        public Guid MailBoxConfigId { get; private set; } = mailBoxConfigId;
         public EmailCategory? EmailCategory { get; private set; }
         public Guid? EmailCategoryId { get; private set; }
-        public ICollection<EmailAttachment> EmailAttachments { get; private set; }
+        public ICollection<EmailAttachment> EmailAttachments { get; private set; } = new List<EmailAttachment>();
         public int Order { get; private set; } = 1;
 
-        public EmailInbox(string fromEmail,string toEmail,string subject, string body,Guid mailBoxConfigId)
-        {
-            if(mailBoxConfigId == Guid.Empty) throw new ArgumentException("Value cannot be empty",nameof(mailBoxConfigId));
-            if (string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(toEmail) || string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(body))
-                throw new ArgumentException("Invalid email");
-
-            Id = Guid.NewGuid();
-            FromEmail = fromEmail;
-            ToEmail = toEmail;
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
-            Subject = subject;
-            Body = body;
-            Status = EmailStatus.New;
-            MailBoxConfigId = mailBoxConfigId;
-            EmailAttachments = new List<EmailAttachment>();
-        }
         public void ChangeStatus(EmailStatus status) 
         { 
 

@@ -2,9 +2,9 @@
 {
     public enum EmailType
     {
-        Gmail,
-        Outlook,
-        Office365,
-        Custom
+        Gmail=1,
+        Outlook=2,
+        Office365=3,
+        Custom=4
     }
 }

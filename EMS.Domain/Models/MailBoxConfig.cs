@@ -19,12 +19,6 @@ namespace EMS.Domain.Models
 
         public MailBoxConfig(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId,Guid organisationId)
         {
-            if(organisationId==Guid.Empty) throw new ArgumentException("Vaue cannot be empty",nameof(organisationId));
-            if (string.IsNullOrWhiteSpace(emailAddress))
-                throw new ArgumentException("Value cannot be empty", nameof(emailAddress));
-
-            if (!emailAddress.Contains("@"))
-                throw new ArgumentException("Invalid email format", nameof(emailAddress));
 
             EmailType = emailType;
             EmailAddress = emailAddress;

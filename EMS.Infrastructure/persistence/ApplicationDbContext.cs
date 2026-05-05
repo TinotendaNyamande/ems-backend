@@ -30,6 +30,9 @@ namespace EMS.Infrastructure.persistence
                 .HasOne(o => o.Organisation)
                 .WithMany(m => m.MailBoxes)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<MailBoxConfig>()
+                .Property(e => e.EmailType)
+                .HasConversion<string>();
 
             builder.Entity<EmailInbox>()
                 .HasOne(e=>e.EmailCategory)

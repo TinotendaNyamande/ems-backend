@@ -144,8 +144,9 @@ namespace EMS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmailType")
-                        .HasColumnType("int");
+                    b.Property<string>("EmailType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("datetime2");
@@ -229,6 +230,9 @@ namespace EMS.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<Guid?>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -258,7 +262,38 @@ namespace EMS.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("OrganisationId");
+
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("EMS.Infrastructure.persistence.RefreshToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -445,6 +480,26 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("Organisation");
                 });
 
+            modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
+                        .WithMany()
+                        .HasForeignKey("OrganisationId");
+
+                    b.Navigation("Organisation");
+                });
+
+            modelBuilder.Entity("EMS.Infrastructure.persistence.RefreshToken", b =>
+                {
+                    b.HasOne("EMS.Infrastructure.persistence.ApplicationUser", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -516,6 +571,11 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("EmailCategories");
 
                     b.Navigation("MailBoxes");
+                });
+
+            modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>
+                {
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

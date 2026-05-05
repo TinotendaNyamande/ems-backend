@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EMS.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace EMS.Infrastructure.persistence
 {
@@ -6,5 +7,16 @@ namespace EMS.Infrastructure.persistence
     {
         public string FirstName {get;set;}
         public string LastName { get;set; }
+        public ICollection<RefreshToken>? RefreshTokens { get; set; }
+        public Organisation?Organisation { get; set; }
+        public Guid? OrganisationId { get;private set; }
+
+        public void AddOrganisationIdToUser(Guid organisationId)
+        {
+            OrganisationId = organisationId;
+        }
+
+
+
     }
 }
