@@ -7,6 +7,9 @@ namespace EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig
     {
         public CreateEmailConfigValidator()
         {
+            RuleFor(x => x.EmailType)
+                .IsInEnum()
+                .WithMessage("Email type is not supported");
             RuleFor(x => x.EmailAddress)
                 .NotEmpty()
                 .WithMessage("Email is required")
@@ -17,8 +20,8 @@ namespace EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig
                 .WithMessage("You must create an organisation before creating email account");
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .WithMessage("Password cannot be empty for gmail account")
-                .When(x => x.EmailType == EmailType.Gmail || x.EmailType == EmailType.Outlook);
+                .WithMessage("Password cannot be empty for this email type")
+                .When(x => x.EmailType == EmailType.Gmail || x.EmailType == EmailType.Outlook || x.EmailType == EmailType.Custom);
             RuleFor(x => x.ClientId)
                 .NotEmpty()
                 .WithMessage("Client id cannot be empty for office365 or outlook accounts")

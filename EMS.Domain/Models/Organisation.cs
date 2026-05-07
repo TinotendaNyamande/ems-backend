@@ -1,6 +1,6 @@
 namespace EMS.Domain.Models
 {
-    public class Organisation(string ownerId, string name)
+    public class Organisation(string name,string ownerId)
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public string Name { get; private set; } = name;

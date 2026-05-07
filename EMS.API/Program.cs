@@ -1,10 +1,12 @@
 using EMS.API.Middleware;
+using EMS.Application.Common.Behaviors;
 using EMS.Application.Common.Mapping;
 using EMS.Application.Features.Organisations.Commands.ChangeOwner;
 using EMS.Application.Features.Organisations.Commands.CreateOrganisation;
 using EMS.Infrastructure.Extensions;
 using EMS.Infrastructure.Seeder;
 using FluentValidation;
+using MediatR;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfig
 builder.Services.AddValidatorsFromAssembly(typeof(ChangeOwnerValidator).Assembly);
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateOrganisationHandler).Assembly));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddAutoMapper(cfg =>
     cfg.AddMaps(typeof(OrganisationMappingProfile).Assembly));
 builder.Services.AddCors(options =>

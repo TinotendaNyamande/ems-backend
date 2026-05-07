@@ -1,8 +1,9 @@
-﻿using EMS.Application.Dtos.Auth;
-using EMS.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
+using EMS.Application.Features.Auth.Commands.Login;
+using EMS.Application.Features.Auth.Commands.Logout;
+using EMS.Application.Features.Auth.Commands.RefreshToken;
+using EMS.Application.Features.Auth.Commands.Register;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,40 +11,38 @@ namespace EMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IAuthService authService,ILogger<AuthController> logger) : ControllerBase
+    public class AuthController(IMediator mediator, ILogger<AuthController> logger) : ControllerBase
     {
         private const string RefreshTokenCookieName = "refreshToken";
         private const string CsrfTokenCookieName = "csrfToken";
         private const string CsrfTokenHeaderName = "X-CSRF-Token";
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand request)
         {
             logger.LogInformation("Register endpoint called for {Email}", request.Email);
 
-            var response = await authService.RegisterAsync(request);
+            var response = await mediator.Send(request);
             SetRefreshTokenCookie(response.RefreshToken);
             SetCsrfTokenCookie();
             logger.LogInformation("Register endpoint completed for {Email} ({UserId})", response.Email, response.UserId);
             return Ok(response);
-
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserDto request)
+        public async Task<IActionResult> Login([FromBody] LoginCommand request)
         {
             logger.LogInformation("Login endpoint called for {Email}", request.Email);
 
-            var response = await authService.LoginAsync(request);
+            var response = await mediator.Send(request);
             SetRefreshTokenCookie(response.RefreshToken);
             SetCsrfTokenCookie();
             logger.LogInformation("Login endpoint completed for {Email} ({UserId})", response.Email, response.UserId);
             return Ok(response);
-
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto? request)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand? request)
         {
             logger.LogInformation("Refresh endpoint called");
 
@@ -66,16 +65,15 @@ namespace EMS.API.Controllers
                 return BadRequest(new { message = "Refresh token is missing." });
             }
 
-            var result = await authService.RefreshTokenAsync(refreshToken);
+            var result = await mediator.Send(new RefreshTokenCommand(refreshToken));
             SetRefreshTokenCookie(result.RefreshToken);
             SetCsrfTokenCookie();
             logger.LogInformation("Refresh endpoint completed for {Email} ({UserId})", result.Email, result.UserId);
             return Ok(result);
         }
 
-
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] RefreshTokenRequestDto? request)
+        public async Task<IActionResult> Logout([FromBody] LogoutCommand? request)
         {
             logger.LogInformation("Logout endpoint called");
 
@@ -94,7 +92,7 @@ namespace EMS.API.Controllers
 
             if (isCsrfValid && !string.IsNullOrWhiteSpace(refreshToken))
             {
-                await authService.LogoutAsync(refreshToken);
+                await mediator.Send(new LogoutCommand(refreshToken));
             }
             else if (string.IsNullOrWhiteSpace(refreshToken))
             {
@@ -104,7 +102,6 @@ namespace EMS.API.Controllers
             DeleteRefreshTokenCookie();
             logger.LogInformation("Logout endpoint completed");
             return NoContent();
-
         }
 
         private void SetRefreshTokenCookie(string refreshToken)
@@ -242,7 +239,5 @@ namespace EMS.API.Controllers
             var parentDomain = host[apiSubdomainPrefix.Length..];
             return parentDomain.Contains('.') ? $".{parentDomain}" : null;
         }
-
-
     }
 }
