@@ -82,7 +82,7 @@ namespace EMS.Infrastructure.Repository
             if (user == null)
             {
                 logger.LogWarning("Login failed because email was not found: {Email}", request.Email);
-                throw new UnauthorizedAccessException("User not found");
+                throw new UnauthorizedAccessException("Invalid email or password");
             }
                 
             var result = await signInManager.CheckPasswordSignInAsync(
@@ -94,7 +94,7 @@ namespace EMS.Infrastructure.Repository
             if (!result.Succeeded)
             {
                 logger.LogWarning("Login failed because credentials were invalid: {Email} ({UserId})", user.Email, user.Id);
-                throw new UnauthorizedAccessException("Invalid credentials");
+                throw new UnauthorizedAccessException("Invalid email or password");
             }
 
 

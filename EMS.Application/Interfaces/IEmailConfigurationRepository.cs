@@ -11,5 +11,7 @@ namespace EMS.Application.Interfaces
         Task ChangeApplicationSecretAsync(Guid id, ChangeClientSecretDto changeClientSecretDto);
         Task<MailBoxConfig> GetEmailAccountAsync(Guid id);
         Task<IEnumerable<MailBoxConfig>> GetEmailAccountsForOrganisationAsync(Guid organisationId);
+        Task MarkAsValidated (Guid id);
+        Task MarkAsInvalidated (Guid id);
     }
 }

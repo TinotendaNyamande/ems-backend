@@ -39,7 +39,6 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Theory]
         [InlineData(EmailType.Gmail)]
         [InlineData(EmailType.Outlook)]
-        [InlineData(EmailType.Office365)]
         public async Task Task_Uses_Password_For_Basic_Email_Types(EmailType emailType)
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();

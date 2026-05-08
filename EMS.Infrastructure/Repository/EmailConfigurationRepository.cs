@@ -65,5 +65,19 @@ namespace EMS.Infrastructure.Repository
                 .Include(m => m.Organisation)
                 .ToListAsync();
         }
+
+        public async Task MarkAsInvalidated(Guid id)
+        {
+            var mailConfig = context.MailBoxConfigs.Find(id) ?? throw new ResourceNotFoundException("Email configuration", id);
+            mailConfig.Invalidate();
+            await context.SaveChangesAsync();
+        }
+
+        public async Task MarkAsValidated(Guid id)
+        {
+            var mailConfig = context.MailBoxConfigs.Find(id) ?? throw new ResourceNotFoundException("Email configuration", id);
+            mailConfig.Validate();
+            await context.SaveChangesAsync();
+        }
     }
 }

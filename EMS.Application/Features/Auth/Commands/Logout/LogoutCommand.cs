@@ -2,8 +2,7 @@ using MediatR;
 
 namespace EMS.Application.Features.Auth.Commands.Logout
 {
-    public record LogoutCommand(string refreshToken) : IRequest
+    public record LogoutCommand(string? RefreshToken) : IRequest
     {
-        public string RefreshToken { get; init; } = refreshToken;
     }
 }

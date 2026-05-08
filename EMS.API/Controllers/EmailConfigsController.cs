@@ -3,10 +3,11 @@ using EMS.Application.Features.EmailConfigs.Commands.ChangeClientSecret;
 using EMS.Application.Features.EmailConfigs.Commands.ChangePassword;
 using EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig;
 using EMS.Application.Features.EmailConfigs.Commands.DeleteEmail;
+using EMS.Application.Features.EmailConfigs.Commands.TestEmail;
+using EMS.Application.Features.EmailConfigs.Commands.ValidateConfig;
 using EMS.Application.Features.EmailConfigs.Queries.GetEmail;
 using EMS.Application.Features.EmailConfigs.Queries.GetEmailForOrganisation;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EMS.API.Controllers
@@ -50,6 +51,19 @@ namespace EMS.API.Controllers
         public async Task<IActionResult> ChangeClientSecret(Guid id, [FromBody] ChangeClientSecretCommand command)
         {
             var updatedCommand = command with { EmailId = id};
+            await mediator.Send(updatedCommand);
+            return NoContent();
+        }
+        [HttpGet("{id}/validate-email")]
+        public async Task<IActionResult> ValidateEmail(Guid id)
+        {
+            var isValid = await mediator.Send(new ValidateConfigCommand(id));
+            return Ok(isValid);
+        }
+        [HttpPost("{id}/test-email")]
+        public async Task<IActionResult> TestEmail(Guid id, [FromBody] TestEmailCommand command)
+        {
+            var updatedCommand = command with { Id = id };
             await mediator.Send(updatedCommand);
             return NoContent();
         }

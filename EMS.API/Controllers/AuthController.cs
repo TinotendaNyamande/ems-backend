@@ -4,6 +4,7 @@ using EMS.Application.Features.Auth.Commands.RefreshToken;
 using EMS.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -214,30 +215,56 @@ namespace EMS.API.Controllers
             };
         }
 
+        //private string? ResolveCookieDomain(IConfiguration configuration)
+        //{
+        //    var configuredDomain = configuration.GetValue<string>("Auth:RefreshCookie:Domain");
+        //    if (!string.IsNullOrWhiteSpace(configuredDomain))
+        //    {
+        //        return configuredDomain.Trim();
+        //    }
+
+        //    var host = Request.Host.Host;
+        //    if (string.IsNullOrWhiteSpace(host) ||
+        //        host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
+        //        System.Net.IPAddress.TryParse(host, out _))
+        //    {
+        //        return null;
+        //    }
+
+        //    const string apiSubdomainPrefix = "localhost";
+        //    if (!host.StartsWith(apiSubdomainPrefix, StringComparison.OrdinalIgnoreCase))
+        //    {
+        //        return null;
+        //    }
+
+        //    var parentDomain = host[apiSubdomainPrefix.Length..];
+        //    return parentDomain.Contains('.') ? $".{parentDomain}" : null;
+        //}
         private string? ResolveCookieDomain(IConfiguration configuration)
         {
             var configuredDomain = configuration.GetValue<string>("Auth:RefreshCookie:Domain");
+
             if (!string.IsNullOrWhiteSpace(configuredDomain))
-            {
                 return configuredDomain.Trim();
-            }
 
             var host = Request.Host.Host;
+
+            // LOCAL DEV SAFETY
             if (string.IsNullOrWhiteSpace(host) ||
                 host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
-                System.Net.IPAddress.TryParse(host, out _))
+                IPAddress.TryParse(host, out _))
             {
                 return null;
             }
 
-            const string apiSubdomainPrefix = "pms-api.";
-            if (!host.StartsWith(apiSubdomainPrefix, StringComparison.OrdinalIgnoreCase))
+            // PRODUCTION ONLY LOGIC
+            if (host.StartsWith("api.", StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                var parentDomain = host["api.".Length..];
+                return $".{parentDomain}";
             }
 
-            var parentDomain = host[apiSubdomainPrefix.Length..];
-            return parentDomain.Contains('.') ? $".{parentDomain}" : null;
+            return null;
         }
     }
 }

@@ -13,11 +13,12 @@ namespace EMS.Domain.Models
         public string? TenantId { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime LastUpdatedAt { get; private set; }
-        public ICollection<EmailInbox> EmailInboxes{ get; private set; }
+        public ICollection<EmailInbox> EmailInboxes { get; private set; }
         public Organisation Organisation { get; private set; }
         public Guid OrganisationId { get; private set; }
+        public bool IsValidated { get; private set; } = false;
 
-        public MailBoxConfig(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId,Guid organisationId)
+        public MailBoxConfig(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId, Guid organisationId)
         {
 
             EmailType = emailType;
@@ -29,8 +30,8 @@ namespace EMS.Domain.Models
             ClientId = null;
             ClientSecret = null;
             TenantId = null;
-            EmailInboxes= [];
-            OrganisationId=organisationId;
+            EmailInboxes = [];
+            OrganisationId = organisationId;
 
             switch (emailType)
             {
@@ -68,7 +69,7 @@ namespace EMS.Domain.Models
                 throw new InvalidOperationException("Password is not used for Office365");
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Value cannot be empty", nameof(password));
-            
+
             Password = password;
             LastUpdatedAt = DateTime.UtcNow;
         }
@@ -79,8 +80,18 @@ namespace EMS.Domain.Models
 
             if (string.IsNullOrWhiteSpace(clientSecret))
                 throw new ArgumentException("Value cannot be empty", nameof(clientSecret));
-            
+
             ClientSecret = clientSecret;
+            LastUpdatedAt = DateTime.UtcNow;
+        }
+        public void Validate()
+        {
+            IsValidated = true;
+            LastUpdatedAt = DateTime.UtcNow;
+        }
+        public void Invalidate()
+        {
+            IsValidated = false;
             LastUpdatedAt = DateTime.UtcNow;
         }
     }

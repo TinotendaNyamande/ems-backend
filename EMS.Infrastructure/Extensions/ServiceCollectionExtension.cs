@@ -1,6 +1,7 @@
 ﻿using EMS.Application.Interfaces;
 using EMS.Infrastructure.persistence;
 using EMS.Infrastructure.Repository;
+using EMS.Infrastructure.Repository.EmailValidation;
 using EMS.Infrastructure.Seeder;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -67,6 +68,12 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IOrganisationRepository, OrganisationRepository>();
             services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
+
+            services.AddScoped<IEmailProviderValidator, GmailValidator>();
+            services.AddScoped<IEmailProviderValidator, OutlookValidator>();
+            services.AddScoped<IEmailProviderValidator, Office365Validator>();
+
+            services.AddScoped<IEmailSender, EmailSender>();
         }
 
     }

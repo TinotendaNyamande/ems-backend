@@ -3,8 +3,7 @@ using MediatR;
 
 namespace EMS.Application.Features.Auth.Commands.RefreshToken
 {
-    public record RefreshTokenCommand(string refreshToken) : IRequest<AuthResponseDto>
+    public record RefreshTokenCommand(string? RefreshToken) : IRequest<AuthResponseDto>
     {
-        public string RefreshToken { get; init; } = refreshToken;
     }
 }
