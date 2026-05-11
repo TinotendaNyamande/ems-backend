@@ -8,6 +8,7 @@ namespace EMS.Domain.Models
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public ICollection<MailBoxConfig> MailBoxes { get; private set; } = [];
         public ICollection<EmailCategory> EmailCategories { get; private set; } = [];
+        public ICollection<JoinRequest> JoinRequests { get; private set; } = [];
 
         public void Rename(string newName)
         {

@@ -125,6 +125,59 @@ namespace EMS.Infrastructure.Migrations
                     b.ToTable("EmailInboxes");
                 });
 
+            modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRejected")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("RejectedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RejectedByUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByUserId");
+
+                    b.HasIndex("OrganisationId");
+
+                    b.HasIndex("RejectedByUserId");
+
+                    b.HasIndex("RequestById");
+
+                    b.ToTable("JoinRequests");
+                });
+
             modelBuilder.Entity("EMS.Domain.Models.MailBoxConfig", b =>
                 {
                     b.Property<Guid>("Id")
@@ -192,6 +245,71 @@ namespace EMS.Infrastructure.Migrations
                     b.ToTable("Organisations");
                 });
 
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganisationId");
+
+                    b.ToTable("OrganisationRoles");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationRolePermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("OrganisationRoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PermissionKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganisationRoleId");
+
+                    b.ToTable("OrganisationRolePermissions");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationUserRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrganisationUserRoles");
+                });
+
             modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -204,6 +322,9 @@ namespace EMS.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -214,6 +335,9 @@ namespace EMS.Infrastructure.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastLoginDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -296,7 +420,7 @@ namespace EMS.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -472,6 +596,33 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("MailBoxConfig");
                 });
 
+            modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>
+                {
+                    b.HasOne("EMS.Infrastructure.persistence.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ApprovedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
+                        .WithMany("JoinRequests")
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EMS.Infrastructure.persistence.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("RejectedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EMS.Infrastructure.persistence.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("RequestById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organisation");
+                });
+
             modelBuilder.Entity("EMS.Domain.Models.MailBoxConfig", b =>
                 {
                     b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
@@ -483,13 +634,51 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("Organisation");
                 });
 
-            modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationRole", b =>
                 {
                     b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
                         .WithMany()
-                        .HasForeignKey("OrganisationId");
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Organisation");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationRolePermission", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.OrganisationRole", "OrganisationRole")
+                        .WithMany("Permissions")
+                        .HasForeignKey("OrganisationRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrganisationRole");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationUserRole", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.OrganisationRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EMS.Infrastructure.persistence.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.Organisation", null)
+                        .WithMany()
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EMS.Infrastructure.persistence.RefreshToken", b =>
@@ -573,7 +762,14 @@ namespace EMS.Infrastructure.Migrations
                 {
                     b.Navigation("EmailCategories");
 
+                    b.Navigation("JoinRequests");
+
                     b.Navigation("MailBoxes");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.OrganisationRole", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("EMS.Infrastructure.persistence.ApplicationUser", b =>

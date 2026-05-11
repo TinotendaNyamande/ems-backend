@@ -1,6 +1,6 @@
 ﻿using EMS.Application.Dtos.EmailConfigs;
 using EMS.Application.Features.EmailConfigs.Commands.ChangeClientSecret;
-using EMS.Application.Features.EmailConfigs.Commands.ChangePassword;
+using EMS.Application.Features.EmailConfigs.Commands.ChangeEmailPassword;
 using EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig;
 using EMS.Application.Features.EmailConfigs.Commands.DeleteEmail;
 using EMS.Application.Features.EmailConfigs.Commands.TestEmail;
@@ -41,7 +41,7 @@ namespace EMS.API.Controllers
             return NoContent();
         }
         [HttpPatch("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordCommand command)
+        public async Task<IActionResult> ChangePassword(Guid id, [FromBody] ChangeEmailPasswordCommand command)
         {
             var updatedCommand = command with { EmailId = id};
             await mediator.Send(updatedCommand);

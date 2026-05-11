@@ -70,6 +70,7 @@ namespace EMS.Infrastructure.Repository
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
+
             return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken);
 
         }
@@ -97,7 +98,7 @@ namespace EMS.Infrastructure.Repository
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
 
-
+            user.UpdateLastLoginDate();
             await userManager.UpdateAsync(user);
 
             var accessToken = await GenerateTokenAsync(user);
@@ -291,6 +292,55 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
-        
+        public async Task ChangePasswordAsync(string userId, ChangeUserPasswordDto changePasswordDto)
+        {
+            var user = await userManager.FindByIdAsync(userId) ?? throw new ResourceNotFoundException("User not found", null);
+            await userManager.ChangePasswordAsync(user, changePasswordDto.Password, changePasswordDto.NewPassword);
+        }
+
+        public async Task<string> CreateUserForOrganisationAsync(string role, RegisterUserDto request)
+        {
+            logger.LogInformation("Register attempt for user with email: {Email}", request.Email);
+
+            var existingUser = await userManager.FindByEmailAsync(request.Email);
+
+            if (existingUser != null)   
+            {
+                logger.LogWarning("Register failed because user already exists: {Email}", existingUser.Email);
+                throw new InvalidOperationException("User already exists");
+            }
+            ApplicationUser user;
+
+            user = new ApplicationUser
+            {
+                Email = request.Email,
+                UserName = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+
+            };
+
+            var result = await userManager.CreateAsync(user, request.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                logger.LogError("Register failed for {Email}: {Errors}", request.Email, errors);
+                throw new Exception(errors);
+            }
+
+            await userManager.AddToRoleAsync(user, role);
+            logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
+
+            var accessToken = await GenerateTokenAsync(user);
+            var refreshToken = GenerateRefreshToken();
+
+            await SaveRefreshTokenAsync(user, refreshToken);
+            logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
+            return user.Id;
+
+        }
+
+
     }
 }

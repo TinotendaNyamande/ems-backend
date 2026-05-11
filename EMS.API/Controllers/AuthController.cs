@@ -1,3 +1,4 @@
+using EMS.Application.Features.Auth.Commands.ChangeUserPassword;
 using EMS.Application.Features.Auth.Commands.Login;
 using EMS.Application.Features.Auth.Commands.Logout;
 using EMS.Application.Features.Auth.Commands.RefreshToken;
@@ -104,6 +105,20 @@ namespace EMS.API.Controllers
             logger.LogInformation("Logout endpoint completed");
             return NoContent();
         }
+        [HttpPost("change-password/{userId}")]
+        public async Task<IActionResult> ChangePassword(string userId, [FromBody] ChangeUserPasswordCommand request)
+        {
+            logger.LogInformation("Change password endpoint called for userId: {UserId}", userId);
+            if (userId != request.UserId)
+            {
+                logger.LogWarning("Change password endpoint rejected request because userId in route does not match userId in body");
+                return BadRequest(new { message = "User ID in route does not match User ID in body." });
+            }
+            await mediator.Send(request);
+            logger.LogInformation("Change password endpoint completed for userId: {UserId}", userId);
+            return NoContent();
+        }
+
 
         private void SetRefreshTokenCookie(string refreshToken)
         {

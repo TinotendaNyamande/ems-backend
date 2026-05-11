@@ -21,7 +21,7 @@ namespace EMS.Infrastructure.Repository
 
         }
 
-        public async Task ChangePasswordAsync(Guid id, ChangePasswordDto changePasswordDto)
+        public async Task ChangePasswordAsync(Guid id, ChangeEmailPasswordDto changePasswordDto)
         {
             var email = await context.MailBoxConfigs.FindAsync(id) ?? throw new ResourceNotFoundException("Email", id);
             if (email.Password != changePasswordDto.OldPassword)

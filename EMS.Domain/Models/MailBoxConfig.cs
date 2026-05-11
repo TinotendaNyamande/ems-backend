@@ -16,7 +16,7 @@ namespace EMS.Domain.Models
         public ICollection<EmailInbox> EmailInboxes { get; private set; }
         public Organisation Organisation { get; private set; }
         public Guid OrganisationId { get; private set; }
-        public bool IsValidated { get; private set; } = false;
+        public bool IsValidated { get; private set; } 
 
         public MailBoxConfig(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId, Guid organisationId)
         {
@@ -32,6 +32,7 @@ namespace EMS.Domain.Models
             TenantId = null;
             EmailInboxes = [];
             OrganisationId = organisationId;
+            IsValidated = false;
 
             switch (emailType)
             {

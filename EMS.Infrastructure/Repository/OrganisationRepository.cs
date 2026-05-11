@@ -17,14 +17,7 @@ namespace EMS.Infrastructure.Repository
             var organisation = await context.Organisations
                 .Where(o => o.Id == id)
                 .FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Organisation", id);
-            //move to application layer
-            var user = await userManager.FindByIdAsync(newOwnerId) ?? throw new ResourceNotFoundException("User", newOwnerId);
-            if(user.OrganisationId != id)
-            {
-                logger.LogError("Failed to change owner for organisation : {id}", id);
-                logger.LogError("New owner belongs to different organisation: {OrganisationId}",user.OrganisationId);
-                throw new InvalidOperationException("New owner must belong to the same organisation");
-            }
+
             organisation.ChangeOwner(newOwnerId);
             await context.SaveChangesAsync();
             logger.LogInformation("Chnage of organisation owner successfull");

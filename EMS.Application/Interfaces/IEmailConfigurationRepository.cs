@@ -7,7 +7,7 @@ namespace EMS.Application.Interfaces
     {
         Task CreateEmailAccountAsync(MailBoxConfig mailBoxConfig);
         Task DeleteAsync(Guid id);
-        Task ChangePasswordAsync(Guid id, ChangePasswordDto changePasswordDto);
+        Task ChangePasswordAsync(Guid id, ChangeEmailPasswordDto changePasswordDto);
         Task ChangeApplicationSecretAsync(Guid id, ChangeClientSecretDto changeClientSecretDto);
         Task<MailBoxConfig> GetEmailAccountAsync(Guid id);
         Task<IEnumerable<MailBoxConfig>> GetEmailAccountsForOrganisationAsync(Guid organisationId);

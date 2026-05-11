@@ -4,6 +4,7 @@ using EMS.Infrastructure.persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Projects.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -32,7 +33,7 @@ namespace EMS.Infrastructure.Repository
 
         }
 
-        public async Task AddUserToCompanyAsync(Guid organisationId, string userId)
+        public async Task AddUserToOrganisationAsync(Guid organisationId, string userId)
         {
             logger.LogInformation("Attempting to add user : {userId} to organisation {companyId}", userId, organisationId);
             var user = await userManager.FindByIdAsync(userId) ?? throw new ResourceNotFoundException($"User", userId);
@@ -45,14 +46,31 @@ namespace EMS.Infrastructure.Repository
 
         public async Task<UserDto> GetUserByIdAsync(string userId)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId)
+                ?? throw new ResourceNotFoundException($"User", userId);
             return new UserDto
             {
                 Id = user.Id,
                 FirstName=user.FirstName,
                 LastName=user.LastName,
-                Email=user.Email
+                Email=user.Email,
+                OrganisationId=user.OrganisationId
             };
+        }
+
+
+
+        public async Task<IEnumerable<UserDto>> GetUsersInOrganisationAsync(Guid organisationId)
+        {
+            return await context.Users.Where(u => u.OrganisationId == organisationId)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    OrganisationId = u.OrganisationId
+                }).ToListAsync();
         }
     }
 }

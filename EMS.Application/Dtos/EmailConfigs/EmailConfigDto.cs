@@ -15,5 +15,6 @@ namespace EMS.Application.Dtos.EmailConfigs
         public DateTime CreatedAt { get; private set; }
         public OrganisationDto ParentOrganisation { get; private set; }
         public DateTime LastUpdatedAt { get; private set; }
+        public bool IsValidated { get; private set; }
     }
 }

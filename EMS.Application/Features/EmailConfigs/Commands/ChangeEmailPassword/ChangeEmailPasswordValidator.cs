@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace EMS.Application.Features.EmailConfigs.Commands.ChangePassword
+namespace EMS.Application.Features.EmailConfigs.Commands.ChangeEmailPassword
 {
-    public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
+    public class ChangeEmailPasswordValidator : AbstractValidator<ChangeEmailPasswordCommand>
     {
-        public ChangePasswordValidator()
+        public ChangeEmailPasswordValidator()
         {
             RuleFor(x => x.EmailId)
                 .NotEmpty()

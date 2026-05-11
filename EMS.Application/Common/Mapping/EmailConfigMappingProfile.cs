@@ -2,7 +2,7 @@
 using EMS.Application.Dtos.EmailConfigs;
 using EMS.Application.Dtos.Organisation;
 using EMS.Application.Features.EmailConfigs.Commands.ChangeClientSecret;
-using EMS.Application.Features.EmailConfigs.Commands.ChangePassword;
+using EMS.Application.Features.EmailConfigs.Commands.ChangeEmailPassword;
 using EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig;
 using EMS.Domain.Models;
 
@@ -21,7 +21,7 @@ namespace EMS.Application.Common.Mapping
                     Name = src.Organisation.Name,
                     OwnerId = src.Organisation.OwnerId,
                 }));
-            CreateMap<ChangePasswordCommand, ChangePasswordDto>();
+            CreateMap<ChangeEmailPasswordCommand, ChangeEmailPasswordDto>();
             CreateMap<ChangeClientSecretCommand, ChangeClientSecretDto>();
         }
     }

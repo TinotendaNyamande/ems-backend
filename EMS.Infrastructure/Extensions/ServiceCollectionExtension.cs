@@ -74,6 +74,9 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IEmailProviderValidator, Office365Validator>();
 
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IRolesRepository, RolesRepository>();
+            services.AddScoped<IRolePermissionsRepository, RolePermissionsRepository>();
+            services.AddScoped<IOrganisationUserRoleRepository, OrganisationUserRoleRepository>();
         }
 
     }
