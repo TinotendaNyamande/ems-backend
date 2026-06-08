@@ -32,7 +32,7 @@ namespace EMS.API.Controllers
             logger.LogInformation("Create user endpoint completed for email: {Email})", request.Email);
             return Ok();
         }
-        [HttpGet("organisation/{organisationId}/users")]
+        [HttpGet("organisation/{organisationId}")]
         public async Task<IActionResult> GetUsersByOrganisation(string organisationId)
         {
             logger.LogInformation("Get users by organisation endpoint called for organisationId: {OrganisationId}", organisationId);

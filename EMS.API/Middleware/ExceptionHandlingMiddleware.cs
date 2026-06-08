@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using EMS.Domain.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Projects.Domain.Exceptions;
 using System.Diagnostics;
@@ -66,6 +67,16 @@ namespace EMS.API.Middleware
                     "Invalid operation.",
                     _environment.IsDevelopment() ? invalidOperation.Message : null
                 );
+            }
+            catch (BusinessRuleException ex)
+            {
+                _logger.LogWarning(ex, "Business rule violation");
+
+                await WriteProblemDetailsAsync(
+                    context,
+                    StatusCodes.Status409Conflict,
+                    "Business rule violation",
+                    ex.Message);
             }
             catch (Exception ex)
             {

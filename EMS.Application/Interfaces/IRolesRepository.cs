@@ -10,6 +10,5 @@ namespace EMS.Application.Interfaces
         Task CreateDefaultRolesAndPermissionsAsync(Guid organisationId);
         Task<bool> CanAccess(string permission, string userId);
         Task<OrganisationRole> GetRoleByNameAsync(string roleName, Guid organisationId);
-
     }
 }

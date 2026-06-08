@@ -2,11 +2,18 @@
 {
     public class OrganisationRolePermission
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
-        public OrganisationRole OrganisationRole { get; set; }
-        public Guid OrganisationRoleId  { get;set; }
-        public string PermissionKey { get; set; }
-        public bool IsAllowed { get;set; }
+        public Guid Id { get; private set; } 
+        public OrganisationRole? OrganisationRole { get; private set; }
+        public Guid OrganisationRoleId  { get;private  set; }
+        public string PermissionKey { get; private set; }
+        public bool IsAllowed { get;private set; }
+        public OrganisationRolePermission(Guid organisationRoleId,string permissionKey,bool isAllowed)
+        {
+            Id = Guid.NewGuid();
+            OrganisationRoleId = organisationRoleId;
+            PermissionKey = permissionKey;
+            IsAllowed = isAllowed;
+        }
 
         public void ChangePermission(bool isAllowed)
         {

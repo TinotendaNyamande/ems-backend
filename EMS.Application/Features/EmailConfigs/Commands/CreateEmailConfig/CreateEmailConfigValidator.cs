@@ -19,19 +19,19 @@ namespace EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig
                 .NotEmpty()
                 .WithMessage("You must create an organisation before creating email account");
             RuleFor(x => x.Password)
-                .NotEmpty()
+                .Must(x=>!string.IsNullOrWhiteSpace(x))
                 .WithMessage("Password cannot be empty for this email type")
                 .When(x => x.EmailType == EmailType.Gmail || x.EmailType == EmailType.Outlook || x.EmailType == EmailType.Custom);
             RuleFor(x => x.ClientId)
-                .NotEmpty()
+                .Must(x=> !string.IsNullOrWhiteSpace(x))
                 .WithMessage("Client id cannot be empty for office365 or outlook accounts")
                 .When(x=>x.EmailType==EmailType.Office365);
             RuleFor(x => x.ClientSecret)
-                .NotEmpty()
+                .Must(x => !string.IsNullOrWhiteSpace(x))
                 .WithMessage("Client secret cannot be empty for office365 or outlook accounts")
                 .When(x => x.EmailType == EmailType.Office365 );
             RuleFor(x => x.TenantId)
-                .NotEmpty()
+                .Must(x => !string.IsNullOrWhiteSpace(x))
                 .WithMessage("Tenant Id cannot be empty for office365 or outlook accounts")
                 .When(x => x.EmailType == EmailType.Office365 );
 

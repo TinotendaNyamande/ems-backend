@@ -34,5 +34,13 @@ namespace EMS.Infrastructure.Repository
                 .FirstOrDefaultAsync()
                 ?? throw new ResourceNotFoundException("Permission",permissionId);
         }
+
+        public async Task<IEnumerable<OrganisationRolePermission>> GetPermissionsForRole(Guid roleId)
+        {
+            return await context.OrganisationRolePermissions
+                .AsNoTracking()
+                .Where(o => o.OrganisationRoleId == roleId)
+                .ToListAsync();
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using EMS.Domain.Enums;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EMS.Application.Features.EmailConfigs.Commands.TestEmail
 {

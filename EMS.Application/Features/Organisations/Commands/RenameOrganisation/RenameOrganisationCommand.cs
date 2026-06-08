@@ -2,9 +2,7 @@
 
 namespace EMS.Application.Features.Organisations.Commands.RenameOrganisation
 {
-    public record RenameOrganisationCommand(Guid organisationId,string newOrganisationName):IRequest
+    public record RenameOrganisationCommand(Guid OrganisationId,string NewOrganisationName):IRequest
     {
-       public Guid OrganisationId { get; init; }=organisationId;
-        public string OrganisationNewName { get; init; }=newOrganisationName;
     }
 }

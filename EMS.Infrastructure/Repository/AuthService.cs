@@ -6,14 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Projects.Domain.Exceptions;
+using EMS.Domain.Models;
+using EMS.Application.Dtos.RolesAndPermissions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -22,8 +21,8 @@ namespace EMS.Infrastructure.Repository
             SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration,
             ILogger<AuthService> logger,
-            RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context
+            IOrganisationUserRoleRepository organisationUserRoleRepository,
+            IRolePermissionsRepository rolePermissionsRepository
             ) : IAuthService
     {
 
@@ -60,18 +59,25 @@ namespace EMS.Infrastructure.Repository
                 throw new Exception(errors);
             }
 
-            var role = "Member";
 
-            await userManager.AddToRoleAsync(user, role);
-            logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
+            var permissions = await this.GetUserPermissionsAsync(user.Id);
 
-            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken);
+            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken,"")
+            {
+                Permissions = permissions.Select(p => new GetPermissionDto
+                {
+                    Id = p.Id,
+                    OrganisationRoleId = p.OrganisationRoleId,
+                    PermissionKey = p.PermissionKey,
+                    IsAllowed = p.IsAllowed,
+                })
+            };
 
         }
 
@@ -106,7 +112,18 @@ namespace EMS.Infrastructure.Repository
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User logged in successfully: {Email} ({UserId})", user.Email, user.Id);
-            return new AuthResponseDto(accessToken, user.Email!, user.Id,refreshToken);
+            var permissions = await this.GetUserPermissionsAsync(user.Id);
+            var role = await organisationUserRoleRepository.GetRoleByUserIdAsync(user.Id);
+            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken, role?.Role.RoleName)
+            {
+                Permissions = permissions.Select(p => new GetPermissionDto
+                {
+                    Id = p.Id,
+                    OrganisationRoleId = p.OrganisationRoleId,
+                    PermissionKey = p.PermissionKey,
+                    IsAllowed = p.IsAllowed,
+                })
+            };
 
         }
 
@@ -158,8 +175,18 @@ namespace EMS.Infrastructure.Repository
 
             await SaveRefreshTokenAsync(user, newRefreshToken);
             logger.LogInformation("Refresh token rotated successfully for user {UserId}", user.Id);
-
-            return new AuthResponseDto(newAccessToken, user.Email!, user.Id,newRefreshToken);
+            var permissions = await this.GetUserPermissionsAsync(user.Id);
+            var role = await organisationUserRoleRepository.GetRoleByUserIdAsync(user.Id);
+            return new AuthResponseDto(newAccessToken, user.Email!, user.Id, newRefreshToken, role?.Role.RoleName)
+            {
+                Permissions = permissions.Select(p => new GetPermissionDto
+                {
+                    Id = p.Id,
+                    OrganisationRoleId = p.OrganisationRoleId,
+                    PermissionKey = p.PermissionKey,
+                    IsAllowed = p.IsAllowed,
+                })
+            };
  
         }
         public async Task LogoutAsync(string refreshToken)
@@ -339,6 +366,18 @@ namespace EMS.Infrastructure.Repository
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
             return user.Id;
 
+        }
+        public async Task<IEnumerable<OrganisationRolePermission>> GetUserPermissionsAsync(string userId)
+        {
+            var userRole = await organisationUserRoleRepository.GetRoleByUserIdAsync(userId);
+            if(userRole != null)
+            {
+                return await rolePermissionsRepository.GetPermissionsForRole(userRole.RoleId);
+            }
+            else
+            {
+                return [];
+            }
         }
 
 

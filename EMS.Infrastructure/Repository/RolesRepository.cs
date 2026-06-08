@@ -29,15 +29,10 @@ namespace EMS.Infrastructure.Repository
             return await context.OrganisationRoles
                 .AsNoTracking()
                 .Where(r => r.OrganisationId == organisationId)
+                .Include(r => r.Permissions)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<OrganisationUserRole>> GetRoleByUserIdAsync(string userId)
-        {
-            return await context.OrganisationUserRoles
-               .AsNoTracking()
-               .Where(r => r.UserId == userId)
-               .ToListAsync();
-        }
+
         public async Task CreateDefaultRolesAndPermissionsAsync(Guid organisationId)
         {
             _ = await context.Organisations.FindAsync(organisationId)
@@ -45,7 +40,7 @@ namespace EMS.Infrastructure.Repository
 
             var defaultRoles = new List<OrganisationRole>
             {
-                BuildRole(organisationId, "Owner", new[]
+                new OrganisationRole(organisationId, "Owner", new[]
                 {
                     PermissionKeys.JoinRequestsView,
                     PermissionKeys.JoinRequestsApprove,
@@ -68,7 +63,7 @@ namespace EMS.Infrastructure.Repository
                     PermissionKeys.PermissionsEdit,
            
                 }),
-                BuildRole(organisationId, "Manager", new[]
+                new OrganisationRole(organisationId, "Manager", new[]
                 {
                    PermissionKeys.JoinRequestsView,
                     PermissionKeys.JoinRequestsApprove,
@@ -86,7 +81,7 @@ namespace EMS.Infrastructure.Repository
                     PermissionKeys.PermissionsView,
                     PermissionKeys.PermissionsEdit,
                 }),
-                BuildRole(organisationId, "Supervisor", new[]
+                new OrganisationRole(organisationId, "Supervisor", new[]
                 {
                    PermissionKeys.JoinRequestsView,
                     PermissionKeys.JoinRequestsApprove,
@@ -103,7 +98,7 @@ namespace EMS.Infrastructure.Repository
                     PermissionKeys.UsersEdit,
                     PermissionKeys.PermissionsView,
                 }),
-                BuildRole(organisationId, "User", new[]
+                new OrganisationRole(organisationId, "User", new[]
                 {
                     PermissionKeys.TasksEdit,
                     PermissionKeys.TasksView,
@@ -117,23 +112,6 @@ namespace EMS.Infrastructure.Repository
             await context.SaveChangesAsync();
         }
 
-        private static OrganisationRole BuildRole(Guid organisationId, string roleName,IEnumerable<string> allowedPermissions)
-        {
-            var allowedSet = allowedPermissions.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            return new OrganisationRole
-            {
-                OrganisationId = organisationId,
-                RoleName = roleName,
-                Permissions = PermissionCatalog.All
-                    .Select(permission => new OrganisationRolePermission
-                    {
-                        PermissionKey = permission.Key,
-                        IsAllowed = allowedSet.Contains(permission.Key)
-                    })
-                    .ToList()
-            };
-        }
 
         public async Task<bool> CanAccess(string permission, string userId)
         {
@@ -156,5 +134,6 @@ namespace EMS.Infrastructure.Repository
                 .FirstOrDefaultAsync()
                 ?? throw new ResourceNotFoundException("Role", roleName);
         }
+
     }
 }

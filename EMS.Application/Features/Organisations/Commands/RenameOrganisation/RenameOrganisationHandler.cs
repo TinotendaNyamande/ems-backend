@@ -7,7 +7,7 @@ namespace EMS.Application.Features.Organisations.Commands.RenameOrganisation
     {
         public async Task Handle(RenameOrganisationCommand request, CancellationToken cancellationToken)
         {
-            await organisationRepository.RenameOrganisationAsync(request.OrganisationId, request.OrganisationNewName);
+            await organisationRepository.RenameOrganisationAsync(request.OrganisationId, request.NewOrganisationName);
         }
     }
 }

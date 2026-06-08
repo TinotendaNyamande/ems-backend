@@ -1,6 +1,5 @@
 ﻿using EMS.Application.Dtos.EmailConfigs;
 using EMS.Domain.Enums;
-using EMS.Domain.Models;
 using MediatR;
 
 namespace EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig

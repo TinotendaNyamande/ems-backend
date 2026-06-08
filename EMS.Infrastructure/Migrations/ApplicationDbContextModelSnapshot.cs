@@ -140,23 +140,17 @@ namespace EMS.Infrastructure.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsRejected")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("RejectedAt")
+                    b.Property<DateTime?>("RejectedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RejectedByUserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RejectionReason")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RequestById")
                         .IsRequired()
