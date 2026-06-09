@@ -10,7 +10,6 @@ namespace EMS.Application.Features.JoinRequest.Commands.ApproveJoinRequest
         IUserService userService,
         IOrganisationUserRoleRepository organisationUserRoleRepository,
         IRolesRepository rolesRepository
-        //ILogger<ApproveJoinRequestHandler> logger
         ) : IRequestHandler<ApproveJoinRequestCommand>
     {
         public async Task Handle(ApproveJoinRequestCommand request, CancellationToken cancellationToken)
@@ -23,14 +22,10 @@ namespace EMS.Application.Features.JoinRequest.Commands.ApproveJoinRequest
             var requestToApprove = await joinRequests.GetJoinRequestByIdAsync(request.RequestId);
             await organisationUserRoleRepository.RemoveRolesFromUserAsync(requestToApprove.RequestById);
             var role = await rolesRepository.GetRoleByIdAsync(request.RoleId);
-            //logger.LogInformation("Approving join request {RequestId} for user {UserId} with role {RoleId}", request.RequestId, user.Id, role.Id);
             var organisationUserRole = new OrganisationUserRole(requestToApprove.RequestById, role.Id);
-            //logger.LogInformation("Adding role {RoleId} to user {UserId} in organisation {OrganisationId}", role.Id, user.Id, request.OrganisationId);
             await organisationUserRoleRepository.AddRoleToUserAsync(organisationUserRole);
             await userService.AddUserToOrganisationAsync(request.OrganisationId, requestToApprove.RequestById);
-           // logger.LogInformation("User {UserId} added to organisation {OrganisationId}", user.Id, request.OrganisationId);
             await joinRequests.ApproveJoinRequestAsync(request.RequestId, request.ApprovingUserId);
-           // logger.LogInformation("Join request {RequestId} approved by user {UserId}", request.RequestId, request.ApprovingUserId);
         }
     }
 }

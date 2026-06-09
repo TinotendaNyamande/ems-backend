@@ -356,8 +356,8 @@ namespace EMS.Infrastructure.Repository
                 throw new Exception(errors);
             }
 
-            await userManager.AddToRoleAsync(user, role);
-            logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
+            //await userManager.AddToRoleAsync(user, role);
+           // logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();

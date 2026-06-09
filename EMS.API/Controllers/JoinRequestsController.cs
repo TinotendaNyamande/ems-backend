@@ -1,10 +1,12 @@
-﻿using EMS.Application.Features.JoinRequest.Commands.ApproveJoinRequest;
+﻿using EMS.API.Filters;
+using EMS.Application.Features.JoinRequest.Commands.ApproveJoinRequest;
 using EMS.Application.Features.JoinRequest.Commands.CreateJoinRequest;
 using EMS.Application.Features.JoinRequest.Commands.DeleteJoinRequest;
 using EMS.Application.Features.JoinRequest.Commands.RejectJoinRequest;
 using EMS.Application.Features.JoinRequest.Queries.GetAllJoinRequests;
 using EMS.Application.Features.JoinRequest.Queries.GetPendingJoinRequests;
 using EMS.Application.Features.JoinRequest.Queries.GetUserJoinRequest;
+using EMS.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +24,7 @@ namespace EMS.API.Controllers
             return Ok();
         }
         [HttpGet("pending/{organisationId}")]
+        [RequirePermission(PermissionKeys.JoinRequestsView)]
         public async Task<IActionResult> GetPendingJoinRequests(Guid organisationId)
         {
             var query = new GetPendingJoinRequestsQuery(organisationId );
@@ -29,6 +32,7 @@ namespace EMS.API.Controllers
             return Ok(result);
         }
         [HttpGet("all/{organisationId}")]
+        [RequirePermission(PermissionKeys.JoinRequestsView)]
         public async Task<IActionResult> GetAllJoinRequests(Guid organisationId)
         {
             var query = new GetAllJoinRequestsQuery(organisationId);
@@ -43,6 +47,7 @@ namespace EMS.API.Controllers
             return Ok();
         }
         [HttpPost("approve/{joinRequestId}")]
+        [RequirePermission(PermissionKeys.JoinRequestsApprove)]
         public async Task<IActionResult> ApproveJoinRequest(Guid joinRequestId, [FromBody] ApproveJoinRequestCommand command)
         {
             var updatedCommand = command with { RequestId = joinRequestId };
@@ -50,6 +55,7 @@ namespace EMS.API.Controllers
             return Ok();
         }
         [HttpPost("reject/{joinRequestId}")]
+        [RequirePermission(PermissionKeys.JoinRequestsApprove)]
         public async Task<IActionResult> RejectJoinRequest(Guid joinRequestId, [FromBody] RejectJoinRequestCommand command)
         {
             var updatedCommand = command with { RequestId = joinRequestId };
@@ -57,6 +63,7 @@ namespace EMS.API.Controllers
             return Ok();
         }
         [HttpGet("user/{userId}")]
+        [RequirePermission(PermissionKeys.JoinRequestsView)]
         public async Task<IActionResult> GetUserJoinRequests(string userId)
         {
             var query = new GetUserJoinRequestQuery(userId);

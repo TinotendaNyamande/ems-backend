@@ -4,6 +4,8 @@ using EMS.Application.Features.UsersManagement.Commands.CreateUserForOrganisatio
 using EMS.Application.Features.UsersManagement.Queries.GetUserByIdQuery;
 using EMS.Application.Features.UsersManagement.Queries.GetUsersForOrganisationQuery;
 using EMS.Application.Features.UsersManagement.Commands.AssignUserRole;
+using EMS.API.Filters;
+using EMS.Domain.Enums;
 
 namespace EMS.API.Controllers
 {
@@ -12,6 +14,7 @@ namespace EMS.API.Controllers
     public class UsersController(IMediator mediator,ILogger<UsersController> logger) : ControllerBase
     {
         [HttpGet("profile/{userId}")]
+
         public async Task<IActionResult> GetUserInfo(string userId)
         {
             logger.LogInformation("Get user info endpoint called for userId: {UserId}", userId);
@@ -25,6 +28,7 @@ namespace EMS.API.Controllers
             return Ok(userInfo);
         }
         [HttpPost("create-user")]
+        [RequirePermission(PermissionKeys.UsersCreate)]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserForOrganisationCommand request)
         {
             logger.LogInformation("Create user endpoint called for email: {Email}", request.Email);
@@ -33,6 +37,7 @@ namespace EMS.API.Controllers
             return Ok();
         }
         [HttpGet("organisation/{organisationId}")]
+        [RequirePermission(PermissionKeys.UsersView)]
         public async Task<IActionResult> GetUsersByOrganisation(string organisationId)
         {
             logger.LogInformation("Get users by organisation endpoint called for organisationId: {OrganisationId}", organisationId);
@@ -41,6 +46,7 @@ namespace EMS.API.Controllers
             return Ok(users);
         }
         [HttpPost("assign-role")]
+        [RequirePermission(PermissionKeys.UsersCreate)]
         public async Task<IActionResult> AssignRole([FromBody] AssignUserRoleCommand request)
         {
             logger.LogInformation("Assign role endpoint called for userId: {UserId} and role: {Role}", request.UserId, request.RoleId);
