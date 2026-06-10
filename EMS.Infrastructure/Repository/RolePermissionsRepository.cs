@@ -3,11 +3,12 @@ using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Projects.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
-    internal class RolePermissionsRepository(ApplicationDbContext context) : IRolePermissionsRepository
+    internal class RolePermissionsRepository(ApplicationDbContext context, ILogger<RolePermissionsRepository> logger) : IRolePermissionsRepository
     {
         public async Task CreatePermissionAsync(OrganisationRolePermission permission)
         {
@@ -17,11 +18,13 @@ namespace EMS.Infrastructure.Repository
 
         public async Task EditPermissionsAsync(Guid permissionId, EditPermissionDto editPermissionDto)
         {
+            logger.LogInformation("Editing permission with id {PermissionId} to {IsAllowed}", permissionId, editPermissionDto.IsAllowed);
             var permission = await context.OrganisationRolePermissions
-              .AsNoTracking()
               .Where(p => p.Id == permissionId)
               .FirstOrDefaultAsync()
               ?? throw new ResourceNotFoundException("Permission", permissionId);
+              logger.LogInformation("Current permission state is {IsAllowed}", permission.IsAllowed);
+              logger.LogInformation("Editing permission with id {PermissionId}", permission.Id);
             permission.ChangePermission(editPermissionDto.IsAllowed);
             await context.SaveChangesAsync();
         }

@@ -47,6 +47,7 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
+
         public async Task<MailBoxConfig> GetEmailAccountAsync(Guid id)
         {
             return await context.MailBoxConfigs

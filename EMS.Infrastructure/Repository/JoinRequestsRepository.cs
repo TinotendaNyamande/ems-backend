@@ -38,7 +38,7 @@ namespace EMS.Infrastructure.Repository
         {
             var query =
                  from request in context.JoinRequests.AsNoTracking()
-                 where request.OrganisationId == organisationId && request.IsApproved == false && request.IsRejected == false
+                 where request.OrganisationId == organisationId 
 
                  join requester in context.Users.AsNoTracking()
                      on request.RequestById equals requester.Id

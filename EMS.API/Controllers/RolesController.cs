@@ -36,7 +36,7 @@ namespace EMS.API.Controllers
             var result = await mediator.Send(new GetRolesForOrganisationQuery(organisationId));
             return Ok(result);
         }
-        [HttpPatch("permissions/update/{permissionId}")]
+        [HttpPut("permissions/update/{permissionId}")]
         [RequirePermission(PermissionKeys.PermissionsEdit)]
         public async Task<IActionResult> UpdatePermission(Guid permissionId, [FromBody] EditPermissionCommand command)
         {
