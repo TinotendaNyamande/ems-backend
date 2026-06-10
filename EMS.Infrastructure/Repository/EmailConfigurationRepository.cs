@@ -11,8 +11,8 @@ namespace EMS.Infrastructure.Repository
     {
         public async Task ChangeApplicationSecretAsync(Guid id, ChangeClientSecretDto changeClientSecretDto)
         {
-            var email = await context.MailBoxConfigs.FindAsync(id)??throw  new ResourceNotFoundException("Email",id);
-            if(email.ClientSecret != changeClientSecretDto.OldSecret)
+            var email = await context.MailBoxConfigs.FindAsync(id) ?? throw new ResourceNotFoundException("Email", id);
+            if (email.ClientSecret != changeClientSecretDto.OldSecret)
             {
                 throw new InvalidOperationException("Client secret provided not matching");
             }
@@ -28,19 +28,20 @@ namespace EMS.Infrastructure.Repository
             {
                 throw new InvalidOperationException("Password provided not matching");
             }
-            email.ChangePassword(changePasswordDto.NewPassword) ;
+            email.ChangePassword(changePasswordDto.NewPassword);
             await context.SaveChangesAsync();
         }
 
         public async Task CreateEmailAccountAsync(MailBoxConfig mailBoxConfig)
         {
+
             context.Add(mailBoxConfig);
             await context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var affectedRows = await context.MailBoxConfigs.Where(m=>m.Id == id).ExecuteDeleteAsync();
+            var affectedRows = await context.MailBoxConfigs.Where(m => m.Id == id).ExecuteDeleteAsync();
             if (affectedRows == 0)
             {
                 throw new ResourceNotFoundException("Email", id);
@@ -52,8 +53,8 @@ namespace EMS.Infrastructure.Repository
         {
             return await context.MailBoxConfigs
                 .AsNoTracking()
-                .Where(e=>e.Id==id)
-                .Include(e=>e.Organisation)
+                .Where(e => e.Id == id)
+                .Include(e => e.Organisation)
                 .FirstOrDefaultAsync()
                 ?? throw new ResourceNotFoundException("Email configuration", id);
         }

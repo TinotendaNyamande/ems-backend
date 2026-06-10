@@ -78,6 +78,8 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IRolePermissionsRepository, RolePermissionsRepository>();
             services.AddScoped<IOrganisationUserRoleRepository, OrganisationUserRoleRepository>();
             services.AddScoped<IJoinRequestsRepository, JoinRequestsRepository>();
+            services.AddDataProtection();
+            services.AddScoped<IEncryptionService,EncryptionService>();
         }
 
     }
