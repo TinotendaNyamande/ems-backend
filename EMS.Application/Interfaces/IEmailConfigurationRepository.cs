@@ -13,5 +13,7 @@ namespace EMS.Application.Interfaces
         Task<IEnumerable<MailBoxConfig>> GetEmailAccountsForOrganisationAsync(Guid organisationId);
         Task MarkAsValidated (Guid id);
         Task MarkAsInvalidated (Guid id);
+        Task<IEnumerable<MailBoxConfig>> GetAllValidatedAsync();
+        
     }
 }

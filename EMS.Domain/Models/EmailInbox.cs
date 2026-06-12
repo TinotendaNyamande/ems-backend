@@ -2,7 +2,7 @@
 
 namespace EMS.Domain.Models
 {
-    public class EmailInbox(string fromEmail, string toEmail, string subject, string body, Guid mailBoxConfigId)
+    public class EmailInbox(string fromEmail, string toEmail, string subject, string body, Guid mailBoxConfigId,string messageId)
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public string FromEmail { get; private set; } = fromEmail;
@@ -18,29 +18,35 @@ namespace EMS.Domain.Models
         public Guid? EmailCategoryId { get; private set; }
         public ICollection<EmailAttachment> EmailAttachments { get; private set; } = new List<EmailAttachment>();
         public int Order { get; private set; } = 1;
+        public string? AssignedTo { get; private set; }
+        public string? ExternalMessageId{get;private set;}=messageId;
 
-        public void ChangeStatus(EmailStatus status) 
-        { 
+        public void ChangeStatus(EmailStatus status)
+        {
 
-            Status = status; 
-            UpdatedAt= DateTime.UtcNow;
+            Status = status;
+            UpdatedAt = DateTime.UtcNow;
         }
         public void ChangeCategory(Guid emailCategoryId)
         {
-            if (emailCategoryId ==Guid.Empty) throw new ArgumentException("Value cannot be empty", nameof(emailCategoryId));
-            EmailCategoryId= emailCategoryId;
-            UpdatedAt= DateTime.UtcNow;
+            if (emailCategoryId == Guid.Empty) throw new ArgumentException("Value cannot be empty", nameof(emailCategoryId));
+            EmailCategoryId = emailCategoryId;
+            UpdatedAt = DateTime.UtcNow;
         }
         public void ChangeOrder(int order)
         {
-            if(order < 1) throw new ArgumentException("Invalid argument" ,nameof(order));
+            if (order < 1) throw new ArgumentException("Invalid argument", nameof(order));
             Order = order;
-            UpdatedAt= DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
         public void AddAttachment(EmailAttachment attachment)
         {
             ArgumentNullException.ThrowIfNull(attachment);
             EmailAttachments.Add(attachment);
+        }
+        public void AssignToUser(string userId)
+        {
+            AssignedTo = userId;
         }
 
     }

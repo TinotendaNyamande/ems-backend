@@ -16,7 +16,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Should_Change_Email_Config_Client_Secret()
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var handler = new ChangeClientSecretHandler(repo, CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var handler = new ChangeClientSecretHandler(repo, CreateMapper(), encryptionService);
             var emailId = Guid.NewGuid();
             var command = new ChangeClientSecretCommand(emailId, "old-secret", "new-secret");
 
@@ -33,7 +35,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Should_Propagate_Exception_When_Repository_Fails()
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var handler = new ChangeClientSecretHandler(repo, CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var handler = new ChangeClientSecretHandler(repo, CreateMapper(), encryptionService);
             var command = new ChangeClientSecretCommand(Guid.NewGuid(), "old-secret", "new-secret");
             var exception = new Exception("DB error");
 

@@ -1,4 +1,5 @@
-﻿using EMS.Application.Interfaces;
+﻿using EMS.Application.Dtos.EmailConfigs;
+using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Exceptions;
 using EMS.Domain.Models;
@@ -9,7 +10,7 @@ namespace EMS.Infrastructure.Repository.EmailValidation
     internal class Office365Validator : IEmailProviderValidator
     {
         public EmailType EmailType => EmailType.Office365;
-        public async Task<bool> IsEmailConfigValidAsync(MailBoxConfig config)
+        public async Task<bool> IsEmailConfigValidAsync(ValidationAndTestEmailDto config)
         {
             try
             {

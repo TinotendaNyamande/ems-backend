@@ -1,7 +1,7 @@
 using AutoMapper;
 using EMS.Application.Common.Mapping;
 using EMS.Application.Dtos.EmailConfigs;
-using EMS.Application.Features.EmailConfigs.Commands.ChangePassword;
+using EMS.Application.Features.EmailConfigs.Commands.ChangeEmailPassword;
 using EMS.Application.Interfaces;
 using FluentAssertions;
 using FluentValidation.TestHelper;
@@ -16,15 +16,17 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Should_Change_Email_Config_Password()
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var handler = new ChangePasswordHandler(repo, CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var handler = new ChangeEmailPasswordHandler(repo, CreateMapper(), encryptionService);
             var emailId = Guid.NewGuid();
-            var command = new ChangePasswordCommand(emailId, "old-password", "new-password");
+            var command = new ChangeEmailPasswordCommand(emailId, "old-password", "new-password");
 
             await handler.Handle(command, CancellationToken.None);
 
             await repo.Received(1).ChangePasswordAsync(
                 emailId,
-                Arg.Is<ChangePasswordDto>(dto =>
+                Arg.Is<ChangeEmailPasswordDto>(dto =>
                     dto.OldPassword == "old-password" &&
                     dto.NewPassword == "new-password"));
         }
@@ -33,11 +35,13 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Should_Propagate_Exception_When_Repository_Fails()
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var handler = new ChangePasswordHandler(repo, CreateMapper());
-            var command = new ChangePasswordCommand(Guid.NewGuid(), "old-password", "new-password");
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var handler = new ChangeEmailPasswordHandler(repo, CreateMapper(), encryptionService);
+            var command = new ChangeEmailPasswordCommand(Guid.NewGuid(), "old-password", "new-password");
             var exception = new Exception("DB error");
 
-            repo.ChangePasswordAsync(Arg.Any<Guid>(), Arg.Any<ChangePasswordDto>())
+            repo.ChangePasswordAsync(Arg.Any<Guid>(), Arg.Any<ChangeEmailPasswordDto>())
                 .Returns(Task.FromException(exception));
 
             Func<Task> act = async () => await handler.Handle(command, CancellationToken.None);
@@ -48,9 +52,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Fact]
         public void Should_Fail_Validation_When_EmailId_Is_Empty()
         {
-            var validator = new ChangePasswordValidator();
+            var validator = new ChangeEmailPasswordValidator();
 
-            var result = validator.TestValidate(new ChangePasswordCommand(Guid.Empty, "old-password", "new-password"));
+            var result = validator.TestValidate(new ChangeEmailPasswordCommand(Guid.Empty, "old-password", "new-password"));
 
             result.ShouldHaveValidationErrorFor(x => x.EmailId);
         }
@@ -60,9 +64,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(" ")]
         public void Should_Fail_Validation_When_OldPassword_Is_Invalid(string oldPassword)
         {
-            var validator = new ChangePasswordValidator();
+            var validator = new ChangeEmailPasswordValidator();
 
-            var result = validator.TestValidate(new ChangePasswordCommand(Guid.NewGuid(), oldPassword, "new-password"));
+            var result = validator.TestValidate(new ChangeEmailPasswordCommand(Guid.NewGuid(), oldPassword, "new-password"));
 
             result.ShouldHaveValidationErrorFor(x => x.OldPassword);
         }
@@ -72,9 +76,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(" ")]
         public void Should_Fail_Validation_When_NewPassword_Is_Invalid(string newPassword)
         {
-            var validator = new ChangePasswordValidator();
+            var validator = new ChangeEmailPasswordValidator();
 
-            var result = validator.TestValidate(new ChangePasswordCommand(Guid.NewGuid(), "old-password", newPassword));
+            var result = validator.TestValidate(new ChangeEmailPasswordCommand(Guid.NewGuid(), "old-password", newPassword));
 
             result.ShouldHaveValidationErrorFor(x => x.NewPassword);
         }
@@ -82,9 +86,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Fact]
         public void Should_Pass_Validation_When_Command_Is_Valid()
         {
-            var validator = new ChangePasswordValidator();
+            var validator = new ChangeEmailPasswordValidator();
 
-            var result = validator.TestValidate(new ChangePasswordCommand(Guid.NewGuid(), "old-password", "new-password"));
+            var result = validator.TestValidate(new ChangeEmailPasswordCommand(Guid.NewGuid(), "old-password", "new-password"));
 
             result.ShouldNotHaveAnyValidationErrors();
         }

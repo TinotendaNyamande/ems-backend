@@ -4,7 +4,8 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig
 {
-    public record CreateEmailConfigCommand(string EmailAddress, EmailType EmailType,string Password,string ClientId,string ClientSecret,string TenantId,Guid OrganisationId):IRequest<EmailConfigDto>
+    public record CreateEmailConfigCommand(
+        string EmailAddress, EmailType EmailType,Guid OrganisationId,string? Password=null,string? ClientId=null,string? ClientSecret=null,string? TenantId=null):IRequest<EmailConfigDto>
     {
        
     }

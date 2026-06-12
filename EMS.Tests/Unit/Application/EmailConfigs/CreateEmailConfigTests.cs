@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EMS.Application.Common.Mapping;
 using EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig;
 using EMS.Application.Interfaces;
@@ -20,7 +20,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Can_Create_Email_Config (EmailType emailType)
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var hander = new CreateEmailConfigHandler(repo,CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
             var command = new CreateEmailConfigCommand("test@gmail.com",emailType,"password","clientId","clientsecret","tenantId",organisationId);
             var ct = new CancellationTokenSource().Token;
@@ -42,7 +44,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Task_Uses_Password_For_Basic_Email_Types(EmailType emailType)
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var hander = new CreateEmailConfigHandler(repo, CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
             var command = new CreateEmailConfigCommand("test@gmail.com", emailType, "password", "", "", "", organisationId);
             var ct = new CancellationTokenSource().Token;
@@ -67,7 +71,9 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         public async Task Task_Uses_OAuth_For_Office_365(EmailType emailType)
         {
             var repo = Substitute.For<IEmailConfigurationRepository>();
-            var hander = new CreateEmailConfigHandler(repo, CreateMapper());
+            var encryptionService = Substitute.For<IEncryptionService>();
+            encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
+            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
             var command = new CreateEmailConfigCommand("test@gmail.com", emailType, "", "clientId", "clientsecret", "tenantId", organisationId);
             var ct = new CancellationTokenSource().Token;

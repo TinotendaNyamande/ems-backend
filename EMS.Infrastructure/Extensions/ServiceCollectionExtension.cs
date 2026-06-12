@@ -80,6 +80,8 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IJoinRequestsRepository, JoinRequestsRepository>();
             services.AddDataProtection();
             services.AddScoped<IEncryptionService,EncryptionService>();
+            services.AddScoped<IEmailCategoryRepository,EmailCategoryRepository>();
+            services.AddScoped<IEmailInboxRepository,EmailInboxRepository>();
         }
 
     }

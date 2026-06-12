@@ -4,7 +4,6 @@ using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
 using Projects.Domain.Exceptions;
-
 namespace EMS.Infrastructure.Repository
 {
     internal class EmailConfigurationRepository(ApplicationDbContext context) : IEmailConfigurationRepository
@@ -48,6 +47,10 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
+        public async Task<IEnumerable<MailBoxConfig>> GetAllValidatedAsync()
+        {
+            return await context.MailBoxConfigs.Where(m=>m.IsValidated).ToListAsync();
+        }
 
         public async Task<MailBoxConfig> GetEmailAccountAsync(Guid id)
         {

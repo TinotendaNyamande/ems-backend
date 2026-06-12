@@ -46,7 +46,7 @@ namespace EMS.Infrastructure.persistence
             builder.Entity<EmailInbox>()
                 .HasOne(e=>e.EmailCategory)
                 .WithMany(e=>e.EmailInboxes)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<EmailInbox>()
                 .HasMany(e=>e.EmailAttachments)
                 .WithOne(e=>e.EmailInbox)

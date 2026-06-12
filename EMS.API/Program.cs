@@ -39,6 +39,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

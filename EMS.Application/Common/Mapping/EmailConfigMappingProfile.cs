@@ -23,6 +23,7 @@ namespace EMS.Application.Common.Mapping
                 }));
             CreateMap<ChangeEmailPasswordCommand, ChangeEmailPasswordDto>();
             CreateMap<ChangeClientSecretCommand, ChangeClientSecretDto>();
+            CreateMap<MailBoxConfig,ValidationAndTestEmailDto>();
         }
     }
 }
