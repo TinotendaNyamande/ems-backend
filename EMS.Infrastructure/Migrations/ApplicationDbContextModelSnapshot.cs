@@ -17,10 +17,108 @@ namespace EMS.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EMS.Domain.Models.Email", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmailAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("EmailCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ExternalMessageId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailAccountId");
+
+                    b.HasIndex("EmailCategoryId");
+
+                    b.ToTable("Emails");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.EmailAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmailType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsValidated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganisationId");
+
+                    b.ToTable("EmailAccounts");
+                });
 
             modelBuilder.Entity("EMS.Domain.Models.EmailAttachment", b =>
                 {
@@ -28,7 +126,7 @@ namespace EMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("EmailInboxId")
+                    b.Property<Guid>("EmailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FileName")
@@ -45,7 +143,7 @@ namespace EMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmailInboxId");
+                    b.HasIndex("EmailId");
 
                     b.ToTable("EmailAttachments");
                 });
@@ -74,55 +172,6 @@ namespace EMS.Infrastructure.Migrations
                     b.HasIndex("OrganisationId");
 
                     b.ToTable("EmailCategories");
-                });
-
-            modelBuilder.Entity("EMS.Domain.Models.EmailInbox", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EmailCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FromEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("MailBoxConfigId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ToEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailCategoryId");
-
-                    b.HasIndex("MailBoxConfigId");
-
-                    b.ToTable("EmailInboxes");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>
@@ -170,51 +219,6 @@ namespace EMS.Infrastructure.Migrations
                     b.HasIndex("RequestById");
 
                     b.ToTable("JoinRequests");
-                });
-
-            modelBuilder.Entity("EMS.Domain.Models.MailBoxConfig", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClientSecret")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsValidated")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("OrganisationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenantId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganisationId");
-
-                    b.ToTable("MailBoxConfigs");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.Organisation", b =>
@@ -550,21 +554,28 @@ namespace EMS.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EMS.Domain.Models.EmailAttachment", b =>
+            modelBuilder.Entity("EMS.Domain.Models.Email", b =>
                 {
-                    b.HasOne("EMS.Domain.Models.EmailInbox", "EmailInbox")
-                        .WithMany("EmailAttachments")
-                        .HasForeignKey("EmailInboxId")
+                    b.HasOne("EMS.Domain.Models.EmailAccount", "EmailAccount")
+                        .WithMany("Emails")
+                        .HasForeignKey("EmailAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("EmailInbox");
+                    b.HasOne("EMS.Domain.Models.EmailCategory", "EmailCategory")
+                        .WithMany("Emails")
+                        .HasForeignKey("EmailCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("EmailAccount");
+
+                    b.Navigation("EmailCategory");
                 });
 
-            modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
+            modelBuilder.Entity("EMS.Domain.Models.EmailAccount", b =>
                 {
                     b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
-                        .WithMany("EmailCategories")
+                        .WithMany("EmailAccounts")
                         .HasForeignKey("OrganisationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -572,22 +583,26 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("Organisation");
                 });
 
-            modelBuilder.Entity("EMS.Domain.Models.EmailInbox", b =>
+            modelBuilder.Entity("EMS.Domain.Models.EmailAttachment", b =>
                 {
-                    b.HasOne("EMS.Domain.Models.EmailCategory", "EmailCategory")
-                        .WithMany("EmailInboxes")
-                        .HasForeignKey("EmailCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EMS.Domain.Models.MailBoxConfig", "MailBoxConfig")
-                        .WithMany("EmailInboxes")
-                        .HasForeignKey("MailBoxConfigId")
+                    b.HasOne("EMS.Domain.Models.Email", "Email")
+                        .WithMany("EmailAttachments")
+                        .HasForeignKey("EmailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("EmailCategory");
+                    b.Navigation("Email");
+                });
 
-                    b.Navigation("MailBoxConfig");
+            modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
+                        .WithMany("EmailCategories")
+                        .HasForeignKey("OrganisationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organisation");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>
@@ -612,17 +627,6 @@ namespace EMS.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("RequestById")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Organisation");
-                });
-
-            modelBuilder.Entity("EMS.Domain.Models.MailBoxConfig", b =>
-                {
-                    b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
-                        .WithMany("MailBoxes")
-                        .HasForeignKey("OrganisationId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Organisation");
@@ -737,28 +741,28 @@ namespace EMS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
-                {
-                    b.Navigation("EmailInboxes");
-                });
-
-            modelBuilder.Entity("EMS.Domain.Models.EmailInbox", b =>
+            modelBuilder.Entity("EMS.Domain.Models.Email", b =>
                 {
                     b.Navigation("EmailAttachments");
                 });
 
-            modelBuilder.Entity("EMS.Domain.Models.MailBoxConfig", b =>
+            modelBuilder.Entity("EMS.Domain.Models.EmailAccount", b =>
                 {
-                    b.Navigation("EmailInboxes");
+                    b.Navigation("Emails");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
+                {
+                    b.Navigation("Emails");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.Organisation", b =>
                 {
+                    b.Navigation("EmailAccounts");
+
                     b.Navigation("EmailCategories");
 
                     b.Navigation("JoinRequests");
-
-                    b.Navigation("MailBoxes");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.OrganisationRole", b =>

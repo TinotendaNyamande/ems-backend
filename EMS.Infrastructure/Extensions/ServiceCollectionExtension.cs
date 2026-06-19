@@ -16,8 +16,12 @@ namespace EMS.Infrastructure.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration config, IHostEnvironment environment)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config, IHostEnvironment environment)
         {
+            services.Configure<EMS.Application.Settings.EncryptionSettings>(
+                config.GetSection("EncryptionSettings")
+            );
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(config.GetConnectionString("ConnStr"));
@@ -67,7 +71,7 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IRoleSeeder,RolesSeeder>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IOrganisationRepository, OrganisationRepository>();
-            services.AddScoped<IEmailConfigurationRepository, EmailConfigurationRepository>();
+            services.AddScoped<IEmailAccountRepository, EmailAccountRepository>();
 
             services.AddScoped<IEmailProviderValidator, GmailValidator>();
             services.AddScoped<IEmailProviderValidator, OutlookValidator>();
@@ -79,9 +83,10 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IOrganisationUserRoleRepository, OrganisationUserRoleRepository>();
             services.AddScoped<IJoinRequestsRepository, JoinRequestsRepository>();
             services.AddDataProtection();
-            services.AddScoped<IEncryptionService,EncryptionService>();
+            services.AddScoped<IEncryptionService,AESEncryptionService>();
             services.AddScoped<IEmailCategoryRepository,EmailCategoryRepository>();
-            services.AddScoped<IEmailInboxRepository,EmailInboxRepository>();
+            services.AddScoped<IEmailRepository,EmailRepository>();
+            return services;
         }
 
     }

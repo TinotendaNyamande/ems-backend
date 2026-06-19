@@ -10,8 +10,8 @@ namespace EMS.Infrastructure.persistence
         internal DbSet<Organisation> Organisations { get; set; }
         internal DbSet<EmailAttachment> EmailAttachments { get; set; }
         internal DbSet<EmailCategory> EmailCategories { get; set; }
-        internal DbSet<EmailInbox> EmailInboxes { get; set; }
-        internal DbSet<MailBoxConfig> MailBoxConfigs { get; set; }
+        internal DbSet<Email> Emails { get; set; }
+        internal DbSet<EmailAccount> EmailAccounts { get; set; }
         internal DbSet<JoinRequest> JoinRequests { get; set; }
         internal DbSet<OrganisationRole> OrganisationRoles { get; set; }
         internal DbSet<OrganisationRolePermission> OrganisationRolePermissions { get; set; }
@@ -24,32 +24,32 @@ namespace EMS.Infrastructure.persistence
             builder.Entity<Organisation>()
                 .HasMany(c => c.EmailCategories)
                 .WithOne(o => o.Organisation)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
             //builder.Entity<Organisation>()
             //    .HasOne<ApplicationUser>()
             //    .WithMany()
             //    .HasForeignKey(o=>o.OwnerId)
             //    .OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<MailBoxConfig>()
-                .HasMany(e => e.EmailInboxes)
-                .WithOne(m => m.MailBoxConfig)
+            builder.Entity<EmailAccount>()
+                .HasMany(e => e.Emails)
+                .WithOne(m => m.EmailAccount)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<MailBoxConfig>()
+            builder.Entity<EmailAccount>()
                 .HasOne(o => o.Organisation)
-                .WithMany(m => m.MailBoxes)
+                .WithMany(m => m.EmailAccounts)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<MailBoxConfig>()
+            builder.Entity<EmailAccount>()
                 .Property(e => e.EmailType)
                 .HasConversion<string>();
 
-            builder.Entity<EmailInbox>()
+            builder.Entity<Email>()
                 .HasOne(e=>e.EmailCategory)
-                .WithMany(e=>e.EmailInboxes)
+                .WithMany(e=>e.Emails)
                 .OnDelete(DeleteBehavior.SetNull);
-            builder.Entity<EmailInbox>()
+            builder.Entity<Email>()
                 .HasMany(e=>e.EmailAttachments)
-                .WithOne(e=>e.EmailInbox)
+                .WithOne(e=>e.Email)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<JoinRequest>()
                 .HasOne(j => j.Organisation)

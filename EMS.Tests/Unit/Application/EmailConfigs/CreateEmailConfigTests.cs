@@ -1,6 +1,6 @@
 using AutoMapper;
 using EMS.Application.Common.Mapping;
-using EMS.Application.Features.EmailConfigs.Commands.CreateEmailConfig;
+using EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount;
 using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Models;
@@ -19,20 +19,20 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(EmailType.Office365)]
         public async Task Can_Create_Email_Config (EmailType emailType)
         {
-            var repo = Substitute.For<IEmailConfigurationRepository>();
+            var repo = Substitute.For<IEmailAccountRepository>();
             var encryptionService = Substitute.For<IEncryptionService>();
             encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
-            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
+            var hander = new CreateEmailAccountHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
-            var command = new CreateEmailConfigCommand("test@gmail.com",emailType,"password","clientId","clientsecret","tenantId",organisationId);
+            var command = new CreateEmailAccountCommand("test@gmail.com",emailType,organisationId,"password","clientId","clientsecret","tenantId");
             var ct = new CancellationTokenSource().Token;
             var result =await hander.Handle(command,ct);
             await repo.Received(1).CreateEmailAccountAsync(
-                Arg.Is<MailBoxConfig>(
-                    mailConfig =>
-                    mailConfig.OrganisationId == organisationId &&
-                    mailConfig.EmailType == emailType &&
-                    mailConfig.EmailAddress == "test@gmail.com"
+                Arg.Is<EmailAccount>(
+                    emailAccount =>
+                    emailAccount.OrganisationId == organisationId &&
+                    emailAccount.EmailType == emailType &&
+                    emailAccount.EmailAddress == "test@gmail.com"
 
                     )
                 );
@@ -43,21 +43,21 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(EmailType.Outlook)]
         public async Task Task_Uses_Password_For_Basic_Email_Types(EmailType emailType)
         {
-            var repo = Substitute.For<IEmailConfigurationRepository>();
+            var repo = Substitute.For<IEmailAccountRepository>();
             var encryptionService = Substitute.For<IEncryptionService>();
             encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
-            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
+            var hander = new CreateEmailAccountHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
-            var command = new CreateEmailConfigCommand("test@gmail.com", emailType, "password", "", "", "", organisationId);
+            var command = new CreateEmailAccountCommand("test@gmail.com", emailType,organisationId, "password", "", "", "" );
             var ct = new CancellationTokenSource().Token;
             var result = await hander.Handle(command, ct);
             await repo.Received(1).CreateEmailAccountAsync(
-                Arg.Is<MailBoxConfig>(
-                    mailConfig =>
-                    mailConfig.OrganisationId == organisationId &&
-                    mailConfig.EmailType == emailType &&
-                    mailConfig.EmailAddress == "test@gmail.com" &&
-                    mailConfig.Password == "password"
+                Arg.Is<EmailAccount>(
+                    emailAccount =>
+                    emailAccount.OrganisationId == organisationId &&
+                    emailAccount.EmailType == emailType &&
+                    emailAccount.EmailAddress == "test@gmail.com" &&
+                    emailAccount.Password == "password"
 
                     )
                 );
@@ -70,23 +70,23 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(EmailType.Office365)]
         public async Task Task_Uses_OAuth_For_Office_365(EmailType emailType)
         {
-            var repo = Substitute.For<IEmailConfigurationRepository>();
+            var repo = Substitute.For<IEmailAccountRepository>();
             var encryptionService = Substitute.For<IEncryptionService>();
             encryptionService.EncryptData(Arg.Any<string>()).Returns(x => (string)x[0]);
-            var hander = new CreateEmailConfigHandler(repo, CreateMapper(), encryptionService);
+            var hander = new CreateEmailAccountHandler(repo, CreateMapper(), encryptionService);
             var organisationId = Guid.NewGuid();
-            var command = new CreateEmailConfigCommand("test@gmail.com", emailType, "", "clientId", "clientsecret", "tenantId", organisationId);
+            var command = new CreateEmailAccountCommand("test@gmail.com", emailType,  organisationId,"", "clientId", "clientsecret", "tenantId");
             var ct = new CancellationTokenSource().Token;
             var result = await hander.Handle(command, ct);
             await repo.Received(1).CreateEmailAccountAsync(
-                Arg.Is<MailBoxConfig>(
-                    mailConfig =>
-                    mailConfig.OrganisationId == organisationId &&
-                    mailConfig.EmailType == emailType &&
-                    mailConfig.EmailAddress == "test@gmail.com" &&
-                    mailConfig.ClientId == "clientId" &&
-                    mailConfig.ClientSecret == "clientsecret" &&
-                    mailConfig.TenantId == "tenantId"
+                Arg.Is<EmailAccount>(
+                    emailAccount =>
+                    emailAccount.OrganisationId == organisationId &&
+                    emailAccount.EmailType == emailType &&
+                    emailAccount.EmailAddress == "test@gmail.com" &&
+                    emailAccount.ClientId == "clientId" &&
+                    emailAccount.ClientSecret == "clientsecret" &&
+                    emailAccount.TenantId == "tenantId"
 
                     )
                 );
@@ -105,7 +105,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData("test@")]
         public void Should_Fail_Validation_When_EmailAddress_Is_Invalid(string emailAddress)
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(CreateValidCommand(emailAddress: emailAddress));
 
@@ -115,7 +115,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Fact]
         public void Should_Fail_Validation_When_OrganisationId_Is_Empty()
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(CreateValidCommand(organisationId: Guid.Empty));
 
@@ -125,7 +125,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Fact]
         public void Should_Fail_Validation_When_EmailType_Is_Not_Supported()
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(CreateValidCommand(emailType: (EmailType)999));
 
@@ -138,7 +138,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(EmailType.Custom)]
         public void Should_Fail_Validation_When_Password_Email_Type_Has_No_Password(EmailType emailType)
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(CreateValidCommand(emailType: emailType, password: ""));
 
@@ -151,7 +151,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [InlineData(EmailType.Custom)]
         public void Should_Pass_Validation_When_Password_Email_Type_Has_Password(EmailType emailType)
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(CreateValidCommand(emailType: emailType, password: "password"));
 
@@ -167,7 +167,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
             string clientSecret,
             string tenantId)
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(
                 CreateValidCommand(
@@ -196,7 +196,7 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         [Fact]
         public void Should_Pass_Validation_When_Office365_OAuth_Input_Is_Complete()
         {
-            var validator = new CreateEmailConfigValidator();
+            var validator = new CreateEmailAccountValidator();
 
             var result = validator.TestValidate(
                 CreateValidCommand(
@@ -217,27 +217,31 @@ namespace EMS.Tests.Unit.Application.EmailConfigs
         private static MapperConfiguration CreateMapperConfiguration()
         {
             return new MapperConfiguration(
-                cfg => cfg.AddProfile<EmailConfigMappingProfile>(),
+                cfg => cfg.AddProfile<EmailAccountMappingProfile>(),
                 new LoggerFactory());
         }
 
-        private static CreateEmailConfigCommand CreateValidCommand(
+        private static CreateEmailAccountCommand CreateValidCommand(
             string emailAddress = "test@gmail.com",
             EmailType emailType = EmailType.Gmail,
+            Guid? organisationId = null,
             string password = "password",
             string clientId = "",
             string clientSecret = "",
-            string tenantId = "",
-            Guid? organisationId = null)
+            string tenantId = ""
+            
+            )
         {
-            return new CreateEmailConfigCommand(
+            return new CreateEmailAccountCommand(
                 emailAddress,
                 emailType,
+                organisationId ?? Guid.NewGuid(),
                 password,
                 clientId,
                 clientSecret,
-                tenantId,
-                organisationId ?? Guid.NewGuid());
+                tenantId
+                
+                );
         }
     }
 }

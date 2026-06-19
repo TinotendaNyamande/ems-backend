@@ -1,44 +1,18 @@
-using EMS.API.Filters;
+using EMS.API.Extensions;
 using EMS.API.Middleware;
-using EMS.Application.Common.Behaviors;
-using EMS.Application.Common.Mapping;
-using EMS.Application.Features.Organisations.Commands.ChangeOwner;
-using EMS.Application.Features.Organisations.Commands.CreateOrganisation;
+using EMS.Application.Extensions;
 using EMS.Infrastructure.Extensions;
 using EMS.Infrastructure.Seeder;
-using FluentValidation;
-using MediatR;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
-builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext()
-    .Enrich.WithMachineName()
-    .Enrich.WithThreadId());
-builder.Services.AddValidatorsFromAssembly(typeof(ChangeOwnerValidator).Assembly);
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CreateOrganisationHandler).Assembly));
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-builder.Services.AddAutoMapper(cfg =>
-    cfg.AddMaps(typeof(OrganisationMappingProfile).Assembly));
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("https://localhost:3000", "http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
-    });
-});
 
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ExceptionHandlingMiddleware>();
+builder.Host.AddLogging();
 
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration,builder.Environment)
+    .AddPresentation(builder.Configuration);
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

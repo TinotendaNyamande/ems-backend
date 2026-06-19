@@ -1,4 +1,4 @@
-﻿using EMS.Application.Dtos.EmailConfigs;
+﻿using EMS.Application.Dtos.EmailAccounts;
 using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Models;
@@ -8,7 +8,7 @@ namespace EMS.Infrastructure.Repository.EmailValidation
     internal class OutlookValidator : IEmailProviderValidator
     {
         public EmailType EmailType => EmailType.Outlook;
-        public async Task<bool> IsEmailConfigValidAsync(ValidationAndTestEmailDto config)
+        public async Task<bool> IsEmailConfigValidAsync(ValidationAndTestEmailAccountDto config)
         {
             try
             {

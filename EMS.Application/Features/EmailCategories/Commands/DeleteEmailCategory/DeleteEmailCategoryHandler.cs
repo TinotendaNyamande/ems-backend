@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Commands.DeleteEmailCategory
 {
-    public class DeleteEmailCategoryHandler(IEmailCategoryRepository emailCategoryRepository,IEmailInboxRepository emailInboxRepository) : IRequestHandler<DeleteEmailCategoryCommand>
+    public class DeleteEmailCategoryHandler(IEmailCategoryRepository emailCategoryRepository,IEmailRepository emailRepository) : IRequestHandler<DeleteEmailCategoryCommand>
     {
         public async Task Handle(DeleteEmailCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -13,7 +13,7 @@ namespace EMS.Application.Features.EmailCategories.Commands.DeleteEmailCategory
             }else
             {
                 await emailCategoryRepository.GetCategoryByIdAsync(request.NewCategoryId!.Value);
-                await emailInboxRepository.ChangeCategoryForBulkEmails(request.Id,request.NewCategoryId!.Value);
+                await emailRepository.ChangeCategoryForBulkEmails(request.Id,request.NewCategoryId!.Value);
                 await emailCategoryRepository.DeleteEmailCategoryAsync(request.Id);
             }
             

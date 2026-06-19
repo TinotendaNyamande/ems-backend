@@ -6,7 +6,7 @@ namespace EMS.Domain.Models
         public string Name { get; private set; } = name;
         public string OwnerId { get; private set; } = ownerId;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-        public ICollection<MailBoxConfig> MailBoxes { get; private set; } = [];
+        public ICollection<EmailAccount> EmailAccounts { get; private set; } = [];
         public ICollection<EmailCategory> EmailCategories { get; private set; } = [];
         public ICollection<JoinRequest> JoinRequests { get; private set; } = [];
 

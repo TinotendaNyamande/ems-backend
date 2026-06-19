@@ -7,7 +7,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Azure.Identity;
 using EMS.Domain.Models;
-using EMS.Application.Dtos.EmailConfigs;
+using EMS.Application.Dtos.EmailAccounts;
 
 namespace EMS.Infrastructure.Repository;
 
@@ -20,7 +20,7 @@ internal class EmailSender : IEmailSender
         _configuration = configuration;
     }
 
-    public async Task SendTestEmailAsync(ValidationAndTestEmailDto config, string toEmail)
+    public async Task SendTestEmailAsync(ValidationAndTestEmailAccountDto config, string toEmail)
     {
         switch (config.EmailType)
         {
@@ -37,7 +37,7 @@ internal class EmailSender : IEmailSender
         }
     }
 
-    private async Task SendGmailEmail(ValidationAndTestEmailDto config, string toEmail)
+    private async Task SendGmailEmail(ValidationAndTestEmailAccountDto config, string toEmail)
     {
         var email = config.EmailAddress;
         var password = config.Password;
@@ -71,7 +71,7 @@ internal class EmailSender : IEmailSender
         await client.DisconnectAsync(true);
     }
 
-    private async Task SendOffice365Email(ValidationAndTestEmailDto config, string toEmail)
+    private async Task SendOffice365Email(ValidationAndTestEmailAccountDto config, string toEmail)
     {
         var tenantId = config.TenantId;
         var clientId = config.ClientId;

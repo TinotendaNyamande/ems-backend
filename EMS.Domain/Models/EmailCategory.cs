@@ -8,7 +8,7 @@
         public string CategoryName { get; private set; } = categoryName;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public DateTime LastUpdatedAt { get; private set; } = DateTime.UtcNow;
-        public ICollection<EmailInbox> EmailInboxes { get; private set; } = [];
+        public ICollection<Email> Emails { get; private set; } = [];
 
         public void  ChangeCategoryName (string categoryName)
         {
