@@ -15,8 +15,9 @@ public class Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory) :
             }
             using var scope = scopeFactory.CreateScope();
             var emailProcessingService = scope.ServiceProvider.GetRequiredService<IEmailProcessingService>();
-            // await emailProcessingService.ReadEmailsFromInbox();
-            await emailProcessingService.DetermineEmailCategory();
+           // await emailProcessingService.EmailReaderService();
+           // await emailProcessingService.EmailCategoryService();
+            await emailProcessingService.TaskAssignmentService();
             //var emailCategorizer = scope.ServiceProvider.GetRequiredService<IEmailCategorizer>();
             // var categories = new[]
             //         {

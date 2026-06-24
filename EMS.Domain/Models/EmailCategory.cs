@@ -3,7 +3,7 @@
     public class EmailCategory(Guid organisationId, string categoryName)
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public Organisation Organisation { get; private set; }
+        public Organisation? Organisation { get; private set; }
         public Guid OrganisationId { get; private set; } = organisationId;
         public string CategoryName { get; private set; } = categoryName;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;

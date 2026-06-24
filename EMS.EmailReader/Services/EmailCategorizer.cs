@@ -1,14 +1,22 @@
+using EMS.Application.Interfaces;
 using EMS.EmailReader.Models;
 using Microsoft.Extensions.AI;
 
 namespace EMS.EmailReader.Services
 {
-    internal class EmailCategorizer(IChatClient chat, ILogger<EmailCategorizer> logger) : IEmailCategorizer
+    internal class EmailCategorizer(
+        IChatClient chat,
+         ILogger<EmailCategorizer> logger,
+         IEmailAccountRepository emailAccountRepository,
+         IEmailRepository emailRepository,
+         IOrganisationRepository organisationRepository,
+         IEmailCategoryRepository emailCategoryRepository
+         ) : IEmailCategorizer
     {
         private readonly IChatClient _chat = chat;
         private readonly ILogger<EmailCategorizer> _logger = logger;
 
-        public async Task<EmailCategoryResult> CategorizeAsync(
+        private async Task<EmailCategoryResult> CategorizeAsync(
             string subject,
             string body,
             IEnumerable<string> categories,
@@ -53,7 +61,7 @@ namespace EMS.EmailReader.Services
 
             var matchedCategory = categoryList.FirstOrDefault(category =>
                 string.Equals(category, result.Category, StringComparison.OrdinalIgnoreCase));
-            
+
 
             if (matchedCategory is null)
             {
@@ -62,8 +70,82 @@ namespace EMS.EmailReader.Services
             }
 
             result.Category = matchedCategory;
-            _logger.LogInformation("Result returned {result}",result.Category);
+            _logger.LogInformation("Result returned {result}", result.Category);
             return result;
+        }
+        public async Task DetermineEmailCategory()
+        {
+            logger.LogInformation("Start: Categorize email service");
+
+            var emailAccounts = await emailAccountRepository
+                .GetAllValidatedAsync();
+
+            logger.LogInformation(
+                "Found {count} validated mailboxes",
+                emailAccounts.Count());
+
+            foreach (var emailAccount in emailAccounts)
+            {
+                var organisation =
+                    await organisationRepository
+                        .GetByIdAsync(emailAccount.OrganisationId);
+
+                var categories =
+                    await emailCategoryRepository
+                        .GetEmailCategoriesAsync(organisation.Id);
+
+                var categoryNames = categories
+                    .Select(c => c.CategoryName)
+                    .ToArray();
+
+                var emails =
+                    await emailRepository
+                        .GetNewEmailsByEmailAccount(emailAccount.Id);
+
+                var tasks = emails.Select(async email =>
+                {
+                    try
+                    {
+                        var result = await CategorizeAsync(
+                            email.Subject,
+                            email.Body,
+                            categoryNames);
+
+                        var matchedCategory = categories
+                            .FirstOrDefault(c =>
+                                c.CategoryName.Equals(
+                                    result.Category,
+                                    StringComparison.OrdinalIgnoreCase));
+
+                        if (matchedCategory == null)
+                        {
+                            logger.LogWarning(
+                                "No category match found for AI category: {Category}",
+                                result.Category);
+
+                            return;
+                        }
+
+                        await emailRepository.AssignNewEmailCategory(
+                            email.Id,
+                            matchedCategory.Id);
+
+                        logger.LogInformation(
+                            "Email {EmailId} categorized as {Category}",
+                            email.Id,
+                            matchedCategory.CategoryName);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(
+                            ex,
+                            "Error categorizing email {EmailId}",
+                            email.Id);
+                    }
+                });
+
+                await Task.WhenAll(tasks);
+            }
         }
     }
 }

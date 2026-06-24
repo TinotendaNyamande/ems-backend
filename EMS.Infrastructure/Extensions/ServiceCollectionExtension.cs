@@ -1,4 +1,4 @@
-﻿using EMS.Application.Interfaces;
+using EMS.Application.Interfaces;
 using EMS.Infrastructure.persistence;
 using EMS.Infrastructure.Repository;
 using EMS.Infrastructure.Repository.EmailValidation;
@@ -86,6 +86,8 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IEncryptionService,AESEncryptionService>();
             services.AddScoped<IEmailCategoryRepository,EmailCategoryRepository>();
             services.AddScoped<IEmailRepository,EmailRepository>();
+            services.AddScoped<IEmailTasksRepository, EmailTaskRepository>();
+            services.AddScoped<IEmailCategoriesUserMatrixRepository,EmailCategoriesUserMatrixRepository>();
             return services;
         }
 

@@ -6,10 +6,12 @@ using System.ClientModel;
 using OpenAI;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddInfrastructure(builder.Configuration,builder.Environment);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddHostedService<Worker>();
-builder.Services.AddScoped<IEmailProcessingService,EmailProcessingService>();
-builder.Services.AddScoped<IEmailCategorizer,EmailCategorizer>();
+builder.Services.AddScoped<IEmailProcessingService, EmailProcessingService>();
+builder.Services.AddScoped<IEmailCategorizer, EmailCategorizer>();
+builder.Services.AddScoped<IEmailReaderService, EmailReaderService>();
+builder.Services.AddScoped<IEmailAssignmentService, EmailAssignmentService>();
 var fireworksApiKey = builder.Configuration["Fireworks:APIKey"];
 var fireworksModelId = builder.Configuration["Fireworks:ModelId"]
     ?? "accounts/fireworks/models/deepseek-v4-flash";

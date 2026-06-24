@@ -9,6 +9,7 @@ namespace EMS.Domain.Models
         public ICollection<EmailAccount> EmailAccounts { get; private set; } = [];
         public ICollection<EmailCategory> EmailCategories { get; private set; } = [];
         public ICollection<JoinRequest> JoinRequests { get; private set; } = [];
+    
 
         public void Rename(string newName)
         {

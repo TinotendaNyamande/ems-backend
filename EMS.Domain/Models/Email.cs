@@ -12,14 +12,15 @@ namespace EMS.Domain.Models
         public string? Subject { get; private set; } = subject;
         public string? Body { get; private set; } = body;
         public EmailStatus Status { get; private set; } = EmailStatus.New;
-        public EmailAccount EmailAccount { get; private set; }
+        public EmailAccount? EmailAccount { get; private set; }
         public Guid EmailAccountId { get; private set; } = emailAccountId;
         public EmailCategory? EmailCategory { get; private set; }
         public Guid? EmailCategoryId { get; private set; }
         public ICollection<EmailAttachment> EmailAttachments { get; private set; } = new List<EmailAttachment>();
         public int Order { get; private set; } = 1;
-        public string? AssignedTo { get; private set; }
         public string? ExternalMessageId{get;private set;}=externalMessageId;
+
+        public bool IsAssigned {get;private set;}=false;
 
         public void ChangeStatus(EmailStatus status)
         {
@@ -44,9 +45,15 @@ namespace EMS.Domain.Models
             ArgumentNullException.ThrowIfNull(attachment);
             EmailAttachments.Add(attachment);
         }
-        public void AssignToUser(string userId)
+        public void UpdateAssignment (bool newStatus)
         {
-            AssignedTo = userId;
+            IsAssigned=newStatus;
+        }
+        public void NewEmailAssigned ()
+        {
+            IsAssigned=true;
+            Status=EmailStatus.Assigned;
+            UpdatedAt= DateTime.UtcNow;
         }
 
     }

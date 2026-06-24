@@ -28,9 +28,6 @@ namespace EMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AssignedTo")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
 
@@ -49,6 +46,9 @@ namespace EMS.Infrastructure.Migrations
                     b.Property<string>("FromEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAssigned")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -148,6 +148,31 @@ namespace EMS.Infrastructure.Migrations
                     b.ToTable("EmailAttachments");
                 });
 
+            modelBuilder.Entity("EMS.Domain.Models.EmailCategoriesUserMatrix", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmailCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastAssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailCategoryId");
+
+                    b.ToTable("EmailCategoriesUserMatrices");
+                });
+
             modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -172,6 +197,43 @@ namespace EMS.Infrastructure.Migrations
                     b.HasIndex("OrganisationId");
 
                     b.ToTable("EmailCategories");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.EmailTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdditionalInformation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AssignedToUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("AssignedToUserDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.ToTable("EmailTasks");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>
@@ -326,6 +388,9 @@ namespace EMS.Infrastructure.Migrations
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("EmailCategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -594,6 +659,17 @@ namespace EMS.Infrastructure.Migrations
                     b.Navigation("Email");
                 });
 
+            modelBuilder.Entity("EMS.Domain.Models.EmailCategoriesUserMatrix", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.EmailCategory", "EmailCategory")
+                        .WithMany()
+                        .HasForeignKey("EmailCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EmailCategory");
+                });
+
             modelBuilder.Entity("EMS.Domain.Models.EmailCategory", b =>
                 {
                     b.HasOne("EMS.Domain.Models.Organisation", "Organisation")
@@ -603,6 +679,17 @@ namespace EMS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Organisation");
+                });
+
+            modelBuilder.Entity("EMS.Domain.Models.EmailTask", b =>
+                {
+                    b.HasOne("EMS.Domain.Models.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Email");
                 });
 
             modelBuilder.Entity("EMS.Domain.Models.JoinRequest", b =>

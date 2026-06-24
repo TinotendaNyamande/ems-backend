@@ -9,7 +9,7 @@ namespace EMS.Application.Interfaces
         Task<Email> GetEmailByMessageId(string messageId);
         Task<IEnumerable<Email>> GetEmailsByEmailAccount(Guid emailAccountId);
         Task<IEnumerable<Email>> GetEmailsByCategory(Guid categoryId);
-        Task<IEnumerable<Email>> GetEmailsByAssignedUser(string userId);
+        Task<IEnumerable<Email>> GetEmailsPendingAssignment(Guid emailAccountId);
         Task DeleteEmail(Guid id);
         Task ChangeEmailCategory(Guid id, Guid newCategoryId);
         Task ChangeCategoryForBulkEmails(Guid oldCategoryId, Guid newCategoryId);
@@ -17,5 +17,6 @@ namespace EMS.Application.Interfaces
         Task<IEnumerable<Email>> GetNewEmailsByEmailAccount(Guid emailAccountId);
         Task ChangeEmailStatus(Guid id,EmailStatus newStatus);
         Task AssignNewEmailCategory(Guid id,Guid newCategoryId);
+        Task EmailAssignedAction (Guid emailId);
     }
 }
