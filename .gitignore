@@ -23,6 +23,7 @@ out/
 logs/
 TestResults/
 BenchmarkDotNet.Artifacts/
+EMS.Infrastructure/Migrations/
 
 # Coverage
 coverage/
