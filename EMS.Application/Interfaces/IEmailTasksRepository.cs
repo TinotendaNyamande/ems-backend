@@ -10,11 +10,13 @@ namespace EMS.Application.Interfaces
         Task DeleteTaskAsync (Guid id);
         Task ReassignTaskAsync(Guid id,string newUserId);
         Task CloseTaskAsync(Guid id,string additionalInformation);
-        Task ChangeTaskStatusAsync (Guid id,TaskStatusList newStatus);
+        Task ChangeTaskStatusAsync (Guid id,TaskStatusList newStatus,string? additionalInformation=null);
         Task<GetTasksDto> GetTaskByIdAsync(Guid id);
-        Task<IEnumerable<GetTasksDto>> GetTasksByUserId(string userId,TaskStatusList? status=null);
-        Task<IEnumerable<GetTasksDto>> GetTasksForOrganisation(Guid organisationId,TaskStatusList? status=null);
-        Task EditAdditionalInformation (Guid id,string additionalInfo);
+        Task<IEnumerable<GetTasksDto>> GetTasksByUserIdAsync(string userId,TaskStatusList? status=null);
+        Task<IEnumerable<GetTasksDto>> GetTasksForOrganisationAsync(Guid organisationId,TaskStatusList? status=null);
+        Task EditAdditionalInformationAsync (Guid id,string additionalInfo);
+        Task ReOpenTaskAsync(Guid id);
+        
 
     }
 }

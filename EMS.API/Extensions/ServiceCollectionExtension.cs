@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using EMS.API.Middleware;
 using EMS.Application.Settings;
 
@@ -5,9 +6,9 @@ namespace EMS.API.Extensions
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddPresentation(this IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
-            
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
@@ -21,8 +22,13 @@ namespace EMS.API.Extensions
             services.Configure<EncryptionSettings>(
                 configuration.GetSection("EncryptionSettings")
             );
-
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(
+                        new JsonStringEnumConverter()
+                    );
+                });
             services.AddSwaggerGen();
             services.AddScoped<ExceptionHandlingMiddleware>();
             return services;

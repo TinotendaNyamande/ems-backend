@@ -1,4 +1,5 @@
-﻿using EMS.Domain.Models;
+﻿using EMS.Application.Dtos.Auth;
+using EMS.Domain.Models;
 
 namespace EMS.Application.Interfaces
 {
@@ -10,5 +11,6 @@ namespace EMS.Application.Interfaces
         Task CreateDefaultRolesAndPermissionsAsync(Guid organisationId);
         Task<bool> CanAccess(string permission, string userId);
         Task<OrganisationRole> GetRoleByNameAsync(string roleName, Guid organisationId);
+        Task<IEnumerable<UserDto>> GetOrganisationUsersByRoleAsync(string roleName, Guid organisationId);
     }
 }

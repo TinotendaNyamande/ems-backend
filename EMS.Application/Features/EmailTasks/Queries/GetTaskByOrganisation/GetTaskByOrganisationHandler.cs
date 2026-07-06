@@ -8,7 +8,7 @@ namespace EMS.Application.Features.EmailTasks.Queries.GetTaskByOrganisation
     {
         public async Task<IEnumerable<GetTasksDto>> Handle(GetTaskByOrganisationQuery request, CancellationToken cancellationToken)
         {
-            return await tasksRepository.GetTasksForOrganisation(request.OrganisationId, request.Status);
+            return await tasksRepository.GetTasksForOrganisationAsync(request.OrganisationId, request.Status);
         }
     }
 }

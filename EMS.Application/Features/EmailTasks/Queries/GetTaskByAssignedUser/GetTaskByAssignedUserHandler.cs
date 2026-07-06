@@ -8,7 +8,7 @@ namespace EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser
     {
         public async Task<IEnumerable<GetTasksDto>> Handle(GetTaskByAssignedUserQuery request, CancellationToken cancellationToken)
         {
-            return await tasksRepository.GetTasksByUserId(request.UserId, request.Status);
+            return await tasksRepository.GetTasksByUserIdAsync(request.UserId, request.Status);
         }
     }
 }

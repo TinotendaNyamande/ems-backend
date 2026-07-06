@@ -7,7 +7,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.AddNotes
     {
         public async Task Handle(AddNotesCommand command,CancellationToken cancellation)
         {
-            await tasksRepository.EditAdditionalInformation(command.Id,command.AdditionalInfo);
+            await tasksRepository.EditAdditionalInformationAsync(command.Id,command.AdditionalInfo);
         }
     }
 }

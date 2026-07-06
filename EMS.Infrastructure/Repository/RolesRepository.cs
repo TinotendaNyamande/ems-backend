@@ -1,4 +1,5 @@
-﻿using EMS.Application.Interfaces;
+﻿using EMS.Application.Dtos.Auth;
+using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
@@ -135,5 +136,23 @@ namespace EMS.Infrastructure.Repository
                 ?? throw new ResourceNotFoundException("Role", roleName);
         }
 
+        public async Task<IEnumerable<UserDto>> GetOrganisationUsersByRoleAsync(string roleName, Guid organisationId)
+        {
+            var query = from user in context.Users
+            join userRole in context.OrganisationUserRoles
+            on user.Id equals userRole.UserId
+            join role in context.OrganisationRoles
+            on userRole.RoleId equals role.Id
+            where role.RoleName == roleName && user.OrganisationId == organisationId
+            select new UserDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                OrganisationId = user.OrganisationId
+            };
+            return await query.AsNoTracking().ToListAsync();
+        }
     }
 }

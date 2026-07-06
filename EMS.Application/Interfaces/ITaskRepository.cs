@@ -3,7 +3,7 @@ using EMS.Domain.Models;
 
 namespace EMS.Application.Interfaces
 {
-    public interface TaskRepository
+    public interface ITaskRepository
     {
         Task CreateTask(EmailTask task);
         Task<GetTasksDto> GetTaskById(Guid id);

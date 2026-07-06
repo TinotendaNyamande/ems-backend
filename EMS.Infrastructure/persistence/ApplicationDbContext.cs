@@ -79,6 +79,9 @@ namespace EMS.Infrastructure.persistence
                 .WithMany()
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<EmailTask>()
+                .Property(e => e.Status)
+                .HasConversion<string>();
 
         }
     }

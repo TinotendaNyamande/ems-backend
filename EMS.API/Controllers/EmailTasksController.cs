@@ -3,6 +3,7 @@ using EMS.Application.Features.EmailTasks.Commands.AddNotes;
 using EMS.Application.Features.EmailTasks.Commands.CloseTask;
 using EMS.Application.Features.EmailTasks.Commands.DeleteTask;
 using EMS.Application.Features.EmailTasks.Commands.ReassignTask;
+using EMS.Application.Features.EmailTasks.Commands.ReOpenTask;
 using EMS.Application.Features.EmailTasks.Commands.UpdateStatus;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
@@ -74,11 +75,21 @@ namespace EMS.API.Controllers
             await mediator.Send(updatedCommand);
             return NoContent();
         }
-        [HttpPatch("delete-status/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
 
             await mediator.Send(new DeleteTaskCommand(id));
+            return NoContent();
+        }
+        [HttpPost("reopen-task/{id}")]
+        public async Task<IActionResult> ReopenTask(Guid id, ReOpenTaskCommand command)
+        {
+            var updatedCommand = command with
+            {
+                TaskId = id
+            };
+            await mediator.Send(updatedCommand);
             return NoContent();
         }
 

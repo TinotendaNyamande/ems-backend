@@ -4,18 +4,23 @@ using EMS.Domain.Enums;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Projects.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
-    internal class EmailTaskRepository(ApplicationDbContext context) : IEmailTasksRepository
+    internal class EmailTaskRepository(ApplicationDbContext context, ILogger<EmailTaskRepository> logger) : IEmailTasksRepository
     {
 
-        public async Task ChangeTaskStatusAsync(Guid id, TaskStatusList newStatus)
+        public async Task ChangeTaskStatusAsync(Guid id, TaskStatusList newStatus, string? additionalInformation = null)
         {
             var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
             throw new ResourceNotFoundException("Task", id);
             task.ChangeStatus(newStatus);
+            if (!string.IsNullOrEmpty(additionalInformation))
+            {
+                task.EditAdditionalInfo(additionalInformation);
+            }
             await context.SaveChangesAsync();
         }
 
@@ -42,7 +47,7 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
-        public async Task EditAdditionalInformation(Guid id, string additionalInfo)
+        public async Task EditAdditionalInformationAsync(Guid id, string additionalInfo)
         {
             var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
              throw new ResourceNotFoundException("Task", id);
@@ -85,7 +90,7 @@ namespace EMS.Infrastructure.Repository
             return await query.FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Task", id);
         }
 
-        public async Task<IEnumerable<GetTasksDto>> GetTasksByUserId(string userId, TaskStatusList? status)
+        public async Task<IEnumerable<GetTasksDto>> GetTasksByUserIdAsync(string userId, TaskStatusList? status)
         {
 
             var query =
@@ -127,7 +132,7 @@ namespace EMS.Infrastructure.Repository
 
         }
 
-        public async Task<IEnumerable<GetTasksDto>> GetTasksForOrganisation(Guid organisationId, TaskStatusList? status)
+        public async Task<IEnumerable<GetTasksDto>> GetTasksForOrganisationAsync(Guid organisationId, TaskStatusList? status)
         {
 
             var query =
@@ -175,9 +180,20 @@ namespace EMS.Infrastructure.Repository
 
         public async Task ReassignTaskAsync(Guid id, string newUserId)
         {
-            var task = await context.EmailTasks.Where(t => t.Id == id).AsNoTracking().FirstOrDefaultAsync() ??
+            logger.LogInformation("Reassigning task {TaskId} to user {NewUserId}", id, newUserId);
+            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
             throw new ResourceNotFoundException("Task", id);
+            logger.LogInformation("Task {TaskId} found. Current assigned user: {CurrentUserId}", id, task.AssignedToUser);
             task.AssignToUser(newUserId);
+            logger.LogInformation("Task {TaskId} reassigned to user {NewUserId}. Updating database.", id, newUserId);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Task {TaskId} successfully reassigned to user {NewUserId}.", id, newUserId);
+        }
+        public async Task ReOpenTaskAsync(Guid id)
+        {
+            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            throw new ResourceNotFoundException("Task", id);
+            task.ReOpenTask();
             await context.SaveChangesAsync();
         }
     }
