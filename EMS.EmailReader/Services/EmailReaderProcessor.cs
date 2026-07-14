@@ -6,17 +6,52 @@ using MailKit.Net.Imap;
 using MailKit.Security;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using EMS.Domain.Enums;
 
 namespace EMS.EmailReader.Services
 {
-    internal class EmailReaderService(
+    internal class EmailReaderProcessor(
          IEmailRepository emailRepository,
          IEncryptionService encryptionService,
-         ILogger<EmailProcessingService> logger
-    ) : IEmailReaderService
+         IEmailAccountRepository emailAccountRepository,
+         ILogger<EmailReaderProcessor> logger
+    ) : IPipelineStep
     {
-        public async Task ReadGmailInboxService(EmailAccount emailAccount)
+        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
         {
+            var tasksCount = 0;
+            logger.LogInformation("Start: Read from email service");
+            var emailAccounts = await emailAccountRepository.GetAllValidatedAsync();
+            logger.LogInformation("Found {count} number of validated mailboxes", emailAccounts.Count());
+            if (emailAccounts.Any())
+            {
+                foreach (var emailAccount in emailAccounts)
+                {
+                    logger.LogInformation("Processing mailbox {id} of type {type}", emailAccount.Id, emailAccount.EmailType);
+
+                    logger.LogInformation("Processing mailbox {id} of type {type}", emailAccount.Id, emailAccount.EmailType);
+                    if (emailAccount.EmailType == EmailType.Office365)
+                    {
+                        var office365Count = await ReadOffice365InboxService(emailAccount);
+                        tasksCount += office365Count;
+                    }
+                    else
+                    {
+                        var gmailCount = await ReadGmailInboxService(emailAccount);
+                        tasksCount += gmailCount;
+                    }
+                    
+                    logger.LogInformation("Finished processing mailbox {id} of type {type}", emailAccount.Id, emailAccount.EmailType);
+
+
+                }
+            }
+            return tasksCount;
+
+        }
+        private async Task<int> ReadGmailInboxService(EmailAccount emailAccount)
+        {
+            var gmailCount = 0;
             try
             {
                 var hashedPassword = emailAccount.Password;
@@ -38,6 +73,7 @@ namespace EMS.EmailReader.Services
                 logger.LogInformation("Successfully connected to Gmail account inbox for account id {id}", emailAccount.Id);
                 foreach (var uid in unreadUids)
                 {
+                    gmailCount++;
                     logger.LogInformation("Start: Reading individual messages for Gmail account {id}", emailAccount.Id);
                     logger.LogInformation("Start: processing message with uid {uid}", uid);
 
@@ -73,6 +109,7 @@ namespace EMS.EmailReader.Services
 
                 await client.DisconnectAsync(true);
                 logger.LogError("Disconnecting account with Id {id} after finishing reading messages", emailAccount.Id);
+                
 
 
             }
@@ -83,10 +120,12 @@ namespace EMS.EmailReader.Services
                 logger.LogError("Stack Trace: {stack}", ex.StackTrace);
                 logger.LogError("Full Error: {ex}", ex);
             }
+            return gmailCount;
         }
 
-        public async Task ReadOffice365InboxService(EmailAccount emailAccount)
+        private async Task<int> ReadOffice365InboxService(EmailAccount emailAccount)
         {
+            var office365Count = 0;
             try
             {
                 var clientSecret = encryptionService.DescryptData(emailAccount.ClientSecret);
@@ -106,6 +145,7 @@ namespace EMS.EmailReader.Services
 
                 foreach (var message in messages.Value)
                 {
+                    office365Count++;
                     logger.LogInformation("Start: Reading individual messages for Office 365 account {id}", emailAccount.Id);
                     logger.LogInformation("Start: processing message with message Id {id}", message.Id);
                     var isProcessed = await IsProcessed(message.Id);
@@ -133,6 +173,7 @@ namespace EMS.EmailReader.Services
                         IsRead = true
                     });
                 }
+
             }
             catch (Exception ex)
             {
@@ -141,6 +182,7 @@ namespace EMS.EmailReader.Services
                 logger.LogError("Stack Trace: {stack}", ex.StackTrace);
                 logger.LogError("Full Error: {ex}", ex);
             }
+            return office365Count;
 
         }
         private async Task<bool> IsProcessed(string messageId)

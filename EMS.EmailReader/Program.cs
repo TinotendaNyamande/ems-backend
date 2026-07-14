@@ -4,14 +4,14 @@ using EMS.Infrastructure.Extensions;
 using Microsoft.Extensions.AI;
 using System.ClientModel;
 using OpenAI;
+using EMS.EmailReader.Services.TaskAssignment;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddHostedService<Worker>();
-builder.Services.AddScoped<IEmailProcessingService, EmailProcessingService>();
-builder.Services.AddScoped<IEmailCategorizer, EmailCategorizer>();
-builder.Services.AddScoped<IEmailReaderService, EmailReaderService>();
-builder.Services.AddScoped<IEmailAssignmentService, EmailAssignmentService>();
+builder.Services.AddScoped<IPipelineStep, EmailReaderProcessor>();
+builder.Services.AddScoped<IPipelineStep, EmailCategoryProcessor>();
+builder.Services.AddScoped<IPipelineStep, TaskAssignmentProcessor>();
 var fireworksApiKey = builder.Configuration["Fireworks:APIKey"];
 var fireworksModelId = builder.Configuration["Fireworks:ModelId"]
     ?? "accounts/fireworks/models/deepseek-v4-flash";

@@ -4,17 +4,17 @@ using Microsoft.Extensions.AI;
 
 namespace EMS.EmailReader.Services
 {
-    internal class EmailCategorizer(
+    internal class EmailCategoryProcessor(
         IChatClient chat,
-         ILogger<EmailCategorizer> logger,
+         ILogger<EmailCategoryProcessor> logger,
          IEmailAccountRepository emailAccountRepository,
          IEmailRepository emailRepository,
          IOrganisationRepository organisationRepository,
          IEmailCategoryRepository emailCategoryRepository
-         ) : IEmailCategorizer
+         ) : IPipelineStep
     {
         private readonly IChatClient _chat = chat;
-        private readonly ILogger<EmailCategorizer> _logger = logger;
+        private readonly ILogger<EmailCategoryProcessor> _logger = logger;
 
         private async Task<EmailCategoryResult> CategorizeAsync(
             string subject,
@@ -73,8 +73,9 @@ namespace EMS.EmailReader.Services
             _logger.LogInformation("Result returned {result}", result.Category);
             return result;
         }
-        public async Task DetermineEmailCategory()
+        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
         {
+            var tasksCount = 0;
             logger.LogInformation("Start: Categorize email service");
 
             var emailAccounts = await emailAccountRepository
@@ -145,7 +146,11 @@ namespace EMS.EmailReader.Services
                 });
 
                 await Task.WhenAll(tasks);
+                tasksCount += emails.Count();
+
             }
+            return tasksCount;
         }
+
     }
 }
