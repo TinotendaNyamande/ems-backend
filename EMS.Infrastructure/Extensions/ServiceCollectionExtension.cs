@@ -1,5 +1,6 @@
 using EMS.Application.Interfaces;
 using EMS.Infrastructure.persistence;
+using EMS.Infrastructure.RabbitMQ;
 using EMS.Infrastructure.Repository;
 using EMS.Infrastructure.Repository.EmailValidation;
 using EMS.Infrastructure.Seeder;
@@ -68,7 +69,7 @@ namespace EMS.Infrastructure.Extensions
             });
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IRoleSeeder,RolesSeeder>();
+            services.AddScoped<IRoleSeeder, RolesSeeder>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IOrganisationRepository, OrganisationRepository>();
             services.AddScoped<IEmailAccountRepository, EmailAccountRepository>();
@@ -83,11 +84,20 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IOrganisationUserRoleRepository, OrganisationUserRoleRepository>();
             services.AddScoped<IJoinRequestsRepository, JoinRequestsRepository>();
             services.AddDataProtection();
-            services.AddScoped<IEncryptionService,AESEncryptionService>();
-            services.AddScoped<IEmailCategoryRepository,EmailCategoryRepository>();
-            services.AddScoped<IEmailRepository,EmailRepository>();
+            services.AddScoped<IEncryptionService, AESEncryptionService>();
+            services.AddScoped<IEmailCategoryRepository, EmailCategoryRepository>();
+            services.AddScoped<IEmailRepository, EmailRepository>();
             services.AddScoped<IEmailTasksRepository, EmailTaskRepository>();
-            services.AddScoped<IEmailCategoriesUserMatrixRepository,EmailCategoriesUserMatrixRepository>();
+            services.AddScoped<IEmailCategoriesUserMatrixRepository, EmailCategoriesUserMatrixRepository>();
+            return services;
+        }
+        public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration config)
+        {
+            services.Configure<RabbitMqOptions>(
+                config.GetSection(RabbitMqOptions.SectionName)
+            );
+            services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+            services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
             return services;
         }
 
