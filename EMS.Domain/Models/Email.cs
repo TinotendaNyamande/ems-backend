@@ -2,9 +2,9 @@
 
 namespace EMS.Domain.Models
 {
-    public class Email(string fromEmail, string toEmail, string subject, string body, Guid emailAccountId,string externalMessageId)
+    public class Email(Guid id,string fromEmail, string toEmail, string subject, string body, Guid emailAccountId,string externalMessageId)
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private set; } =id;
         public string FromEmail { get; private set; } = fromEmail;
         public string ToEmail { get; private set; } = toEmail;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;

@@ -1,5 +1,7 @@
 using System.Text;
 using System.Text.Json;
+using EMS.Contracts.Common;
+using EMS.Infrastructure.RabbitMQServices.Constants;
 using RabbitMQ.Client;
 
 namespace EMS.Infrastructure.RabbitMQServices
@@ -8,30 +10,30 @@ namespace EMS.Infrastructure.RabbitMQServices
     {
         private readonly IRabbitMqConnection _connection = connection;
 
-        public async Task PublishAsync<T>(T message, string exchange, string routingKey, CancellationToken cancellationToken = default)
+        public async Task PublishAsync<T>(T message, RabbitMqRoute route, CancellationToken cancellationToken = default) where T:EventBase
         {
             var connection = await _connection.GetConnectionAsync(cancellationToken);
             var channel = await connection.CreateChannelAsync(cancellationToken:cancellationToken);
             await channel.ExchangeDeclareAsync(
-                exchange:exchange,
-                type:ExchangeType.Direct,
+                exchange:route.Exchange,
+                type:route.ExchangeType,
                 durable:true,
                 autoDelete:false,
                 cancellationToken:cancellationToken
             );
-            var json = JsonSerializer.Serialize(message);
-            var body = Encoding.UTF8.GetBytes(json);
+            var body = JsonSerializer.SerializeToUtf8Bytes(message);
             var properties = new BasicProperties
             {
                 Persistent=true,
                 ContentType="application/json",
                 ContentEncoding="utf-8",
-                MessageId=Guid.NewGuid().ToString(),
-                Timestamp= new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+                MessageId=message.EventId.ToString(),
+                Timestamp= new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds()),
+                CorrelationId = message.CorrelationId
             };
             await channel.BasicPublishAsync(
-                exchange:exchange,
-                routingKey:routingKey,
+                exchange:route.Exchange,
+                routingKey:route.RoutingKey,
                 mandatory:true,
                 basicProperties:properties,
                 body:body,

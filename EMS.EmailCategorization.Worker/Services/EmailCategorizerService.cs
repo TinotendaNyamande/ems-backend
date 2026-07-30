@@ -1,4 +1,5 @@
 using EMS.Application.Interfaces;
+using EMS.Contracts.Events.Email;
 using EMS.EmailCategorization.Worker.Models;
 using EMS.EmailCategorization.Worker.Services;
 using Microsoft.Extensions.AI;
@@ -74,7 +75,7 @@ namespace EMS.EmailCategorization.Worker.Services
             _logger.LogInformation("Result returned {result}", result.Category);
             return result;
         }
-        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
+        public async Task<int> ProcessAsync(EmailReceivedEvent message,CancellationToken cancellationToken)
         {
             var tasksCount = 0;
             logger.LogInformation("Start: Categorize email service");

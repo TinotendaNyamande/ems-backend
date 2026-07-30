@@ -1,6 +1,6 @@
 using EMS.Application.Interfaces;
 using EMS.Infrastructure.persistence;
-using EMS.Infrastructure.RabbitMQ;
+using EMS.Infrastructure.RabbitMQServices;
 using EMS.Infrastructure.Repository;
 using EMS.Infrastructure.Repository.EmailValidation;
 using EMS.Infrastructure.Seeder;

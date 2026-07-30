@@ -9,6 +9,7 @@ public static class RabbitMqRoutes
         {
             Exchange = "emails.exchange",
             RoutingKey = "email.received",
+            Queue = "email.received",
             ExchangeType = ExchangeType.Direct
         };
 
@@ -17,6 +18,7 @@ public static class RabbitMqRoutes
         {
             Exchange = "emails.exchange",
             RoutingKey = "email.categorized",
+            Queue="email.categorized",
             ExchangeType = ExchangeType.Direct
         };
 
@@ -25,6 +27,7 @@ public static class RabbitMqRoutes
         {
             Exchange = "emails.exchange",
             RoutingKey = "email.assigned",
+            Queue = "email.assigned",
             ExchangeType = ExchangeType.Direct
         };
 }

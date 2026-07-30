@@ -7,6 +7,9 @@ using MailKit.Security;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using EMS.Domain.Enums;
+using EMS.Infrastructure.RabbitMQServices;
+using EMS.Contracts.Events.Email;
+using EMS.Infrastructure.RabbitMQServices.Constants;
 
 namespace EMS.EmailReader.Worker.Services
 {
@@ -14,12 +17,12 @@ namespace EMS.EmailReader.Worker.Services
          IEmailRepository emailRepository,
          IEncryptionService encryptionService,
          IEmailAccountRepository emailAccountRepository,
-         ILogger<EmailReaderProcessor> logger
-    ) : IEmailReaderService
+         ILogger<EmailReaderProcessor> logger,
+         IRabbitMqPublisher publisher
+    ) : IEmailReaderProcessor
     {
-        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
+        public async Task ProcessAsync(CancellationToken cancellationToken)
         {
-            var tasksCount = 0;
             logger.LogInformation("Start: Read from email service");
             var emailAccounts = await emailAccountRepository.GetAllValidatedAsync();
             logger.LogInformation("Found {count} number of validated mailboxes", emailAccounts.Count());
@@ -32,33 +35,25 @@ namespace EMS.EmailReader.Worker.Services
                     logger.LogInformation("Processing mailbox {id} of type {type}", emailAccount.Id, emailAccount.EmailType);
                     if (emailAccount.EmailType == EmailType.Office365)
                     {
-                        var office365Count = await ReadOffice365InboxService(emailAccount);
-                        tasksCount += office365Count;
+                        await ReadOffice365InboxService(emailAccount,cancellationToken);
                     }
                     else
                     {
-                        var gmailCount = await ReadGmailInboxService(emailAccount);
-                        tasksCount += gmailCount;
+                        await ReadGmailInboxService(emailAccount,cancellationToken);
                     }
-                    
+
                     logger.LogInformation("Finished processing mailbox {id} of type {type}", emailAccount.Id, emailAccount.EmailType);
 
 
                 }
             }
-            return tasksCount;
 
         }
-        private async Task<int> ReadGmailInboxService(EmailAccount emailAccount)
+        private async Task ReadGmailInboxService(EmailAccount emailAccount,CancellationToken cancellationToken)
         {
-            var gmailCount = 0;
             try
             {
-                var hashedPassword = emailAccount.Password;
-                if (hashedPassword == null)
-                {
-                    throw new Exception("Email account does not have password");
-                }
+                var hashedPassword = emailAccount.Password ?? throw new Exception("Email account does not have password");
                 var password = encryptionService.DescryptData(hashedPassword);
                 using var client = new ImapClient();
                 logger.LogInformation("Attempting to connect to client");
@@ -73,7 +68,6 @@ namespace EMS.EmailReader.Worker.Services
                 logger.LogInformation("Successfully connected to Gmail account inbox for account id {id}", emailAccount.Id);
                 foreach (var uid in unreadUids)
                 {
-                    gmailCount++;
                     logger.LogInformation("Start: Reading individual messages for Gmail account {id}", emailAccount.Id);
                     logger.LogInformation("Start: processing message with uid {uid}", uid);
 
@@ -83,8 +77,10 @@ namespace EMS.EmailReader.Worker.Services
                     if (!isProcessed)
                     {
                         logger.LogInformation("Message with ID {id} has not been processed before", message.MessageId);
+                        var emailId = Guid.NewGuid();
                         var newEmail = new Email
                                 (
+                                    emailId,
                                     message.From.ToString(),
                                     message.To.ToString(),
                                     message.Subject ?? string.Empty,
@@ -93,6 +89,17 @@ namespace EMS.EmailReader.Worker.Services
                                     message.MessageId
                                 );
                         await SaveEmail(newEmail);
+                        await publisher.PublishAsync(
+                            new EmailReceivedEvent
+                            {
+                                EmailId = emailId,
+                                Subject = message.Subject ?? string.Empty,
+                                Sender = message.From.ToString(),
+                                Body = message.TextBody ?? string.Empty
+                            },
+                            RabbitMqRoutes.EmailReceived,
+                            cancellationToken
+                        );
 
                     }
                     else
@@ -109,7 +116,7 @@ namespace EMS.EmailReader.Worker.Services
 
                 await client.DisconnectAsync(true);
                 logger.LogError("Disconnecting account with Id {id} after finishing reading messages", emailAccount.Id);
-                
+
 
 
             }
@@ -120,12 +127,10 @@ namespace EMS.EmailReader.Worker.Services
                 logger.LogError("Stack Trace: {stack}", ex.StackTrace);
                 logger.LogError("Full Error: {ex}", ex);
             }
-            return gmailCount;
         }
 
-        private async Task<int> ReadOffice365InboxService(EmailAccount emailAccount)
+        private async Task ReadOffice365InboxService(EmailAccount emailAccount,CancellationToken cancellationToken)
         {
-            var office365Count = 0;
             try
             {
                 var clientSecret = encryptionService.DescryptData(emailAccount.ClientSecret);
@@ -145,15 +150,16 @@ namespace EMS.EmailReader.Worker.Services
 
                 foreach (var message in messages.Value)
                 {
-                    office365Count++;
                     logger.LogInformation("Start: Reading individual messages for Office 365 account {id}", emailAccount.Id);
                     logger.LogInformation("Start: processing message with message Id {id}", message.Id);
                     var isProcessed = await IsProcessed(message.Id);
                     if (!isProcessed)
                     {
                         logger.LogInformation("Message with ID {id} has not been processed before", message.Id);
+                        var emailId = Guid.NewGuid();
                         var newEmail = new Email
                           (
+                              emailId,
                               message.From?.EmailAddress?.Address ?? string.Empty,
                               string.Join(", ", message.ToRecipients.Select(r => r.EmailAddress?.Address)),
                               message.Subject ?? string.Empty,
@@ -162,6 +168,17 @@ namespace EMS.EmailReader.Worker.Services
                               message.Id
                           );
                         await SaveEmail(newEmail);
+                        await publisher.PublishAsync(
+                            new EmailReceivedEvent
+                            {
+                                EmailId = emailId,
+                                Subject = message.Subject ?? string.Empty,
+                                Sender = message.From.ToString(),
+                                Body = message.Body?.Content ?? string.Empty
+                            },
+                            RabbitMqRoutes.EmailReceived,
+                            cancellationToken
+                        );
                     }
                     else
                     {
@@ -182,7 +199,6 @@ namespace EMS.EmailReader.Worker.Services
                 logger.LogError("Stack Trace: {stack}", ex.StackTrace);
                 logger.LogError("Full Error: {ex}", ex);
             }
-            return office365Count;
 
         }
         private async Task<bool> IsProcessed(string messageId)

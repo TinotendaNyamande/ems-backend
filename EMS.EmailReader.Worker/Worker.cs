@@ -1,6 +1,8 @@
+using EMS.EmailReader.Worker.Services;
+
 namespace EMS.EmailReader.Worker;
 
-public class Worker(ILogger<Worker> logger) : BackgroundService
+public class Worker(IServiceScopeFactory scopeFactory, ILogger<Worker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -9,8 +11,13 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                using var scope = scopeFactory.CreateScope();
+                var service = scope.ServiceProvider.GetService<IEmailReaderProcessor>();
+                await service.ProcessAsync(new CancellationToken());
+                logger.LogInformation("Worker finished processing at: {time}", DateTimeOffset.Now);
+
             }
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(3000, stoppingToken);
         }
     }
 }

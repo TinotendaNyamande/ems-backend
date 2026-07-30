@@ -1,16 +1,20 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
 namespace EMS.Infrastructure.RabbitMQServices
 {
-    public sealed class RabbitMqConnection(IOptions<RabbitMqOptions> options) : IRabbitMqConnection
+    public sealed class RabbitMqConnection(IOptions<RabbitMqOptions> options,ILogger<RabbitMqConnection> _logger) : IRabbitMqConnection
     {
         private IConnection? _connection;
         private readonly RabbitMqOptions _options = options.Value;
         private readonly SemaphoreSlim _lock = new(1, 1);
+        
 
         public async Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
         {
+            _logger.LogInformation("Connecting on port : {port}", options.Value.Port.ToString());
+            _logger.LogInformation("Connecting on host : {host}", options.Value.Host);
             if (_connection is { IsOpen: true })
             {
                 return _connection;

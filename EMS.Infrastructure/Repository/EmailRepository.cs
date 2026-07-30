@@ -72,9 +72,7 @@ namespace EMS.Infrastructure.Repository
 
         public async Task<Email> GetEmailByMessageId(string messageId)
         {
-            return await context.Emails.Where(e => e.ExternalMessageId == messageId).FirstOrDefaultAsync()
-            ??
-            throw new ResourceNotFoundException("Email", messageId);
+            return await context.Emails.Where(e => e.ExternalMessageId == messageId).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Email>> GetEmailsByCategory(Guid categoryId)
