@@ -8,7 +8,7 @@ namespace EMS.Application.Features.UsersManagement.Queries.GetUsersForOrganisati
     {
         public async Task<IEnumerable<UserDto>> Handle(GetUsersForOrganisationQuery request, CancellationToken cancellationToken)
         {
-            return await userService.GetUsersInOrganisationAsync(request.OrganisationId);
+            return await userService.GetUsersInOrganisationAsync();
         }
     }
 }

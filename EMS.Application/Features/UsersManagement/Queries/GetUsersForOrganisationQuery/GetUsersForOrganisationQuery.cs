@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetUsersForOrganisationQuery
 {
-    public record GetUsersForOrganisationQuery(Guid OrganisationId):IRequest<IEnumerable<UserDto>>
+    public record GetUsersForOrganisationQuery():IRequest<IEnumerable<UserDto>>
     {
     }
 }

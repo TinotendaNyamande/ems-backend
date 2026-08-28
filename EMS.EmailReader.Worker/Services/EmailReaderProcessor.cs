@@ -95,7 +95,8 @@ namespace EMS.EmailReader.Worker.Services
                                 EmailId = emailId,
                                 Subject = message.Subject ?? string.Empty,
                                 Sender = message.From.ToString(),
-                                Body = message.TextBody ?? string.Empty
+                                Body = message.TextBody ?? string.Empty,
+                                OrganisationId = emailAccount.OrganisationId
                             },
                             RabbitMqRoutes.EmailReceived,
                             cancellationToken
@@ -174,7 +175,8 @@ namespace EMS.EmailReader.Worker.Services
                                 EmailId = emailId,
                                 Subject = message.Subject ?? string.Empty,
                                 Sender = message.From.ToString(),
-                                Body = message.Body?.Content ?? string.Empty
+                                Body = message.Body?.Content ?? string.Empty,
+                                OrganisationId = emailAccount.OrganisationId
                             },
                             RabbitMqRoutes.EmailReceived,
                             cancellationToken

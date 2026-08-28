@@ -2,7 +2,8 @@ using EMS.Application.Dtos.EmailCategories;
 using EMS.Application.Features.EmailCategories.Commands.CreateEmailCategory;
 using EMS.Application.Features.EmailCategories.Commands.DeleteEmailCategory;
 using EMS.Application.Features.EmailCategories.Commands.RenameEmailCategory;
-using EMS.Application.Features.EmailCategories.Queries.GetEmailCategoriesForOrganisation;
+using EMS.Application.Features.EmailCategories.Queries.GetCategoryByName;
+using EMS.Application.Features.EmailCategories.Queries.GetEmailCategoriesForAccount;
 using EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +17,8 @@ namespace EMS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEmailCategory([FromBody] CreateEmailCategoryCommand command)
         {
-            await mediator.Send(command);
-            return Ok();
+            var emailCategory = await mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = emailCategory.Id }, emailCategory);
         }
         [HttpPatch("{id}")]
         public async Task<IActionResult> RenameCategory(Guid id, RenameEmailCategoryCommand command)
@@ -36,15 +37,21 @@ namespace EMS.API.Controllers
             return NoContent();
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetEmailCategoriesDto>> GetById(Guid id)
+        public async Task<ActionResult<GetEmailCategoryDto>> GetById(Guid id)
         {
             var emailCategory = await mediator.Send(new GetEmailCategoryByIdQuery(id));
             return Ok(emailCategory);
         }
-        [HttpGet("by-organisation/{organisationId}")]
-        public async Task<ActionResult<IEnumerable<GetEmailCategoriesDto>>> GetByOrganisation(Guid organisationId)
+                [HttpGet("by-name/{categoryName}")]
+        public async Task<ActionResult<GetEmailCategoryDto>> GetByName(string categoryName)
         {
-            var categories = await mediator.Send(new GetEmailCategoriesForOrganisationQuery(organisationId));
+            var emailCategory = await mediator.Send(new GetCategoryByNameQuery(categoryName));
+            return Ok(emailCategory); 
+        }
+        [HttpGet("all/{emailAccountId}")]
+        public async Task<ActionResult<IEnumerable<GetEmailCategoryDto>>> GetAll(Guid emailAccountId)
+        {
+            var categories = await mediator.Send(new GetEmailCategoriesForAccountQuery(emailAccountId));
             return Ok(categories);
         }
     }

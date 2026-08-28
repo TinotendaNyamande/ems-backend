@@ -1,16 +1,24 @@
 using AutoMapper;
+using EMS.Application.Dtos.EmailCategoryMatrix;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Commands.CreateMatrix
 {
-    internal class CreateMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository, IMapper mapper) : IRequestHandler<CreateMatrixCommand>
+    internal class CreateMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository,IEmailCategoryRepository emailCategoryRepository,IUserService userService, IMapper mapper) : IRequestHandler<CreateMatrixCommand, GetMatrixDto>
     {
-        public async Task Handle(CreateMatrixCommand command, CancellationToken cancellationToken)
+        public async Task<GetMatrixDto> Handle(CreateMatrixCommand command, CancellationToken cancellationToken)
         {
+             await emailCategoryRepository.GetCategoryByIdAsync(command.EmailCategoryId);
+            await userService.GetUserByIdAsync(command.UserId);
+            var matrixExists = await matrixRepository.MatrixAlreadyExistsAsync(command.EmailCategoryId, command.UserId);
+            if (matrixExists)
+            {
+                throw new InvalidOperationException("Matrix already exists for the given category and user.");
+            }
             var matrix = mapper.Map<EmailCategoriesUserMatrix>(command);
-            await matrixRepository.AddUser(matrix);
+            return await matrixRepository.GetMatrixByIdAsync(matrix.Id);
         }
     }
 }

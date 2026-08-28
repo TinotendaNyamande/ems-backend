@@ -2,7 +2,7 @@ using EMS.Application.Dtos.EmailCategoryMatrix;
 using EMS.Application.Features.EmailCategoryUserMatrix.Commands.CreateMatrix;
 using EMS.Application.Features.EmailCategoryUserMatrix.Commands.DeleteMatrix;
 using EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixById;
-using EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixForOrganisation;
+using EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixForAccount;
 using EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixForUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +16,8 @@ namespace EMS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateMatrixCommand command)
         {
-            await mediator.Send(command);
-            return Ok();
+            var result = await mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -37,10 +37,10 @@ namespace EMS.API.Controllers
             var matrix = await mediator.Send(new GetMatrixForUserQuery(userId));
             return Ok(matrix);
         }
-        [HttpGet("by-organisation/{organisationId}")]
-        public async Task<ActionResult<IEnumerable<GetMatrixDto>>> GetByOrganisation(Guid organisationId)
+        [HttpGet("by-account/{emailAccountId}")]
+        public async Task<ActionResult<IEnumerable<GetMatrixDto>>> GetAll(Guid emailAccountId)
         {
-            var matrix = await mediator.Send(new GetMatrixForOrganisationQuery(organisationId));
+            var matrix = await mediator.Send(new GetMatrixForAccountQuery(emailAccountId));
             return Ok(matrix);
         }
 

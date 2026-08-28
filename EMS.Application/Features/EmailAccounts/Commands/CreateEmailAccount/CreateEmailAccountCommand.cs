@@ -5,7 +5,7 @@ using MediatR;
 namespace EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount
 {
     public record CreateEmailAccountCommand(
-        string EmailAddress, EmailType EmailType,Guid OrganisationId,string? Password=null,string? ClientId=null,string? ClientSecret=null,string? TenantId=null):IRequest<EmailAccountDto>
+        string EmailAddress, EmailType EmailType,string? Password=null,string? ClientId=null,string? ClientSecret=null,string? TenantId=null):IRequest<EmailAccountDto>
     {
        
     }

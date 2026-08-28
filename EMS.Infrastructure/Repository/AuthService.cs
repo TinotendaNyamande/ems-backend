@@ -11,8 +11,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Projects.Domain.Exceptions;
-using EMS.Domain.Models;
-using EMS.Application.Dtos.RolesAndPermissions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -20,9 +18,7 @@ namespace EMS.Infrastructure.Repository
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration,
-            ILogger<AuthService> logger,
-            IOrganisationUserRoleRepository organisationUserRoleRepository,
-            IRolePermissionsRepository rolePermissionsRepository
+            ILogger<AuthService> logger
             ) : IAuthService
     {
 
@@ -58,26 +54,16 @@ namespace EMS.Infrastructure.Repository
                 logger.LogError("Register failed for {Email}: {Errors}", request.Email, errors);
                 throw new Exception(errors);
             }
-
-
+            await userManager.AddToRoleAsync(user, "Member");
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
-            var permissions = await this.GetUserPermissionsAsync(user.Id);
 
-            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken,"")
-            {
-                Permissions = permissions.Select(p => new GetPermissionDto
-                {
-                    Id = p.Id,
-                    OrganisationRoleId = p.OrganisationRoleId,
-                    PermissionKey = p.PermissionKey,
-                    IsAllowed = p.IsAllowed,
-                })
-            };
+            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken, "Member");
+
 
         }
 
@@ -91,7 +77,7 @@ namespace EMS.Infrastructure.Repository
                 logger.LogWarning("Login failed because email was not found: {Email}", request.Email);
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
-                
+
             var result = await signInManager.CheckPasswordSignInAsync(
                 user,
                 request.Password,
@@ -109,21 +95,11 @@ namespace EMS.Infrastructure.Repository
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();
+            var role = userManager.GetRolesAsync(user).Result.FirstOrDefault() ?? "Member";
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User logged in successfully: {Email} ({UserId})", user.Email, user.Id);
-            var permissions = await this.GetUserPermissionsAsync(user.Id);
-            var role = await organisationUserRoleRepository.GetRoleByUserIdAsync(user.Id);
-            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken, role?.Role.RoleName)
-            {
-                Permissions = permissions.Select(p => new GetPermissionDto
-                {
-                    Id = p.Id,
-                    OrganisationRoleId = p.OrganisationRoleId,
-                    PermissionKey = p.PermissionKey,
-                    IsAllowed = p.IsAllowed,
-                })
-            };
+            return new AuthResponseDto(accessToken, user.Email!, user.Id, refreshToken, role);
 
         }
 
@@ -144,7 +120,7 @@ namespace EMS.Infrastructure.Repository
 
             var matchedToken = (user.RefreshTokens?
                 .FirstOrDefault(t => t.TokenHash == tokenHash || t.Token == refreshToken));
-            if(matchedToken == null)
+            if (matchedToken == null)
             {
                 logger.LogWarning("Refresh token rotation failed because matching token was not found for user {UserId}", user.Id);
                 throw new Exception("Invalid refresh token");
@@ -172,22 +148,11 @@ namespace EMS.Infrastructure.Repository
                 oldToken.TokenHash = HashToken(oldToken.Token);
                 oldToken.Token = null;
             }
-
+            var role = userManager.GetRolesAsync(user).Result.FirstOrDefault() ?? "Member";
             await SaveRefreshTokenAsync(user, newRefreshToken);
             logger.LogInformation("Refresh token rotated successfully for user {UserId}", user.Id);
-            var permissions = await this.GetUserPermissionsAsync(user.Id);
-            var role = await organisationUserRoleRepository.GetRoleByUserIdAsync(user.Id);
-            return new AuthResponseDto(newAccessToken, user.Email!, user.Id, newRefreshToken, role?.Role.RoleName)
-            {
-                Permissions = permissions.Select(p => new GetPermissionDto
-                {
-                    Id = p.Id,
-                    OrganisationRoleId = p.OrganisationRoleId,
-                    PermissionKey = p.PermissionKey,
-                    IsAllowed = p.IsAllowed,
-                })
-            };
- 
+            return new AuthResponseDto(newAccessToken, user.Email!, user.Id, newRefreshToken, role);
+
         }
         public async Task LogoutAsync(string refreshToken)
         {
@@ -331,7 +296,7 @@ namespace EMS.Infrastructure.Repository
 
             var existingUser = await userManager.FindByEmailAsync(request.Email);
 
-            if (existingUser != null)   
+            if (existingUser != null)
             {
                 logger.LogWarning("Register failed because user already exists: {Email}", existingUser.Email);
                 throw new InvalidOperationException("User already exists");
@@ -357,7 +322,7 @@ namespace EMS.Infrastructure.Repository
             }
 
             //await userManager.AddToRoleAsync(user, role);
-           // logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
+            // logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();
@@ -367,19 +332,6 @@ namespace EMS.Infrastructure.Repository
             return user.Id;
 
         }
-        public async Task<IEnumerable<OrganisationRolePermission>> GetUserPermissionsAsync(string userId)
-        {
-            var userRole = await organisationUserRoleRepository.GetRoleByUserIdAsync(userId);
-            if(userRole != null)
-            {
-                return await rolePermissionsRepository.GetPermissionsForRole(userRole.RoleId);
-            }
-            else
-            {
-                return [];
-            }
-        }
-
 
     }
 }

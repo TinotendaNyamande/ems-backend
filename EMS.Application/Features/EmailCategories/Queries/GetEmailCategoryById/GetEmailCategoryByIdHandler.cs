@@ -5,12 +5,12 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById
 {
-    public class GetEmailCategoryByIdHandler(IEmailCategoryRepository emailCategoryRepository,IMapper mapper) : IRequestHandler<GetEmailCategoryByIdQuery, GetEmailCategoriesDto>
+    public class GetEmailCategoryByIdHandler(IEmailCategoryRepository emailCategoryRepository,IMapper mapper) : IRequestHandler<GetEmailCategoryByIdQuery, GetEmailCategoryDto>
     {
-        public async Task<GetEmailCategoriesDto> Handle(GetEmailCategoryByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetEmailCategoryDto> Handle(GetEmailCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var emailCategory = await emailCategoryRepository.GetCategoryByIdAsync(request.Id);
-            return mapper.Map<GetEmailCategoriesDto>(emailCategory);
+            return mapper.Map<GetEmailCategoryDto>(emailCategory);
         }
     }
 }

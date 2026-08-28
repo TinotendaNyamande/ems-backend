@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Azure.Identity;
-using EMS.Domain.Models;
 using EMS.Application.Dtos.EmailAccounts;
 
 namespace EMS.Infrastructure.Repository;

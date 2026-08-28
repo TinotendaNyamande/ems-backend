@@ -8,15 +8,14 @@ public class Worker(IServiceScopeFactory scopeFactory, ILogger<Worker> logger) :
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (logger.IsEnabled(LogLevel.Information))
-            {
+
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 using var scope = scopeFactory.CreateScope();
-                var service = scope.ServiceProvider.GetService<IEmailReaderProcessor>();
-                await service.ProcessAsync(new CancellationToken());
+                var service = scope.ServiceProvider.GetRequiredService<IEmailReaderProcessor>();
+                await service.ProcessAsync(stoppingToken);
                 logger.LogInformation("Worker finished processing at: {time}", DateTimeOffset.Now);
 
-            }
+            
             await Task.Delay(3000, stoppingToken);
         }
     }

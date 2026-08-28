@@ -5,9 +5,9 @@ using EMS.Application.Features.EmailTasks.Commands.DeleteTask;
 using EMS.Application.Features.EmailTasks.Commands.ReassignTask;
 using EMS.Application.Features.EmailTasks.Commands.ReOpenTask;
 using EMS.Application.Features.EmailTasks.Commands.UpdateStatus;
+using EMS.Application.Features.EmailTasks.Queries.GetTaskByAccount;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
-using EMS.Application.Features.EmailTasks.Queries.GetTaskByOrganisation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,10 +29,10 @@ namespace EMS.API.Controllers
             var tasks = await mediator.Send(new GetTaskByAssignedUserQuery(userId));
             return Ok(tasks);
         }
-        [HttpGet("by-organisation/{organisationId}")]
-        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetByOrganisation(Guid organisationId)
+        [HttpGet("all/emailAccount/{emailAccountId}")]
+        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAll(Guid emailAccountId)
         {
-            var tasks = await mediator.Send(new GetTaskByOrganisationQuery(organisationId));
+            var tasks = await mediator.Send(new GetTaskByAccountQuery(emailAccountId));
             return Ok(tasks);
         }
         [HttpPost("add-notes/{id}")]

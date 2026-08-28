@@ -10,7 +10,7 @@ namespace EMS.Application.Common.Mapping
         public EmailCategoryMappingProfile()
         {
             CreateMap<CreateEmailCategoryCommand,EmailCategory>();
-            CreateMap<EmailCategory,GetEmailCategoriesDto>();
+            CreateMap<EmailCategory,GetEmailCategoryDto>();
         }
     }
 }

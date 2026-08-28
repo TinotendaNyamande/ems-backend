@@ -71,7 +71,6 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRoleSeeder, RolesSeeder>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IOrganisationRepository, OrganisationRepository>();
             services.AddScoped<IEmailAccountRepository, EmailAccountRepository>();
 
             services.AddScoped<IEmailProviderValidator, GmailValidator>();
@@ -79,10 +78,6 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<IEmailProviderValidator, Office365Validator>();
 
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IRolesRepository, RolesRepository>();
-            services.AddScoped<IRolePermissionsRepository, RolePermissionsRepository>();
-            services.AddScoped<IOrganisationUserRoleRepository, OrganisationUserRoleRepository>();
-            services.AddScoped<IJoinRequestsRepository, JoinRequestsRepository>();
             services.AddDataProtection();
             services.AddScoped<IEncryptionService, AESEncryptionService>();
             services.AddScoped<IEmailCategoryRepository, EmailCategoryRepository>();

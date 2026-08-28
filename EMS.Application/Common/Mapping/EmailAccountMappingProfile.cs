@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EMS.Application.Dtos.EmailAccounts;
-using EMS.Application.Dtos.Organisation;
 using EMS.Application.Features.EmailAccounts.Commands.ChangeClientSecret;
 using EMS.Application.Features.EmailAccounts.Commands.ChangeEmailAccountPassword;
 using EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount;
@@ -13,14 +12,7 @@ namespace EMS.Application.Common.Mapping
         public EmailAccountMappingProfile()
         {
             CreateMap<CreateEmailAccountCommand,EmailAccount>();
-            CreateMap<EmailAccount, EmailAccountDto>()
-                .ForMember(dest => dest.ParentOrganisation, opt =>
-                opt.MapFrom(src => new OrganisationDto
-                {
-                    Id = src.Organisation.Id,
-                    Name = src.Organisation.Name,
-                    OwnerId = src.Organisation.OwnerId,
-                }));
+            CreateMap<EmailAccount, EmailAccountDto>();
             CreateMap<ChangeEmailAccountPasswordCommand, ChangeEmailPasswordDto>();
             CreateMap<ChangeClientSecretCommand, ChangeClientSecretDto>();
             CreateMap<EmailAccount,ValidationAndTestEmailAccountDto>();

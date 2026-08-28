@@ -6,8 +6,7 @@ namespace EMS.Application.Features.UsersManagement.Queries.GetUsersForOrganisati
     {
         public GetUsersForOrganisationValidator()
         {
-            RuleFor(x => x.OrganisationId)
-                .NotEmpty().WithMessage("OrganisationId is required.");
+
         }
     }
 }

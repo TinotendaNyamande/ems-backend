@@ -13,7 +13,7 @@ namespace EMS.Application.Interfaces
         Task ChangeTaskStatusAsync (Guid id,TaskStatusList newStatus,string? additionalInformation=null);
         Task<GetTasksDto> GetTaskByIdAsync(Guid id);
         Task<IEnumerable<GetTasksDto>> GetTasksByUserIdAsync(string userId,TaskStatusList? status=null);
-        Task<IEnumerable<GetTasksDto>> GetTasksForOrganisationAsync(Guid organisationId,TaskStatusList? status=null);
+        Task<IEnumerable<GetTasksDto>> GetTasksForAccountAsync(Guid emailAccountId,TaskStatusList? status=null);
         Task EditAdditionalInformationAsync (Guid id,string additionalInfo);
         Task ReOpenTaskAsync(Guid id);
         

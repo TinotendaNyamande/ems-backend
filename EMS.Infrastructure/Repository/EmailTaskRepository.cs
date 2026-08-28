@@ -132,7 +132,7 @@ namespace EMS.Infrastructure.Repository
 
         }
 
-        public async Task<IEnumerable<GetTasksDto>> GetTasksForOrganisationAsync(Guid organisationId, TaskStatusList? status)
+        public async Task<IEnumerable<GetTasksDto>> GetTasksForAccountAsync(Guid emailAccountId, TaskStatusList? status)
         {
 
             var query =
@@ -143,11 +143,6 @@ namespace EMS.Infrastructure.Repository
                 on tasks.EmailId equals emails.Id
                 join emailsAccounts in context.EmailAccounts
                 on emails.EmailAccountId equals emailsAccounts.Id
-                join org in context.Organisations
-                on emailsAccounts.OrganisationId equals org.Id
-                join category in context.EmailCategories
-                on emails.EmailCategoryId equals category.Id
-                where org.Id == organisationId
                 select new GetTasksDto
                 {
                     Id = tasks.Id,
@@ -164,7 +159,7 @@ namespace EMS.Infrastructure.Repository
                     ClosedDate = tasks.ClosedDate,
                     Status = tasks.Status,
                     AdditionalInformation = tasks.AdditionalInformation,
-                    Category = category.CategoryName
+                    Category = ""//category.CategoryName
 
                 };
             if (status.HasValue)

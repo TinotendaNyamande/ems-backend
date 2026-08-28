@@ -1,23 +1,18 @@
 using EMS.Application.Interfaces;
 using EMS.Contracts.Events.Email;
 using EMS.EmailCategorization.Worker.Models;
-using EMS.EmailCategorization.Worker.Services;
 using Microsoft.Extensions.AI;
 
 namespace EMS.EmailCategorization.Worker.Services
 {
-    internal class EmailCategoryProcessor(
+    internal class EmailCategorizerService  (
         IChatClient chat,
-         ILogger<EmailCategoryProcessor> logger,
-         IEmailAccountRepository emailAccountRepository,
+         ILogger<EmailCategorizerService> logger,
          IEmailRepository emailRepository,
-         IOrganisationRepository organisationRepository,
          IEmailCategoryRepository emailCategoryRepository
          ) : IEmailCategorizerService
     {
         private readonly IChatClient _chat = chat;
-        private readonly ILogger<EmailCategoryProcessor> _logger = logger;
-
         private async Task<EmailCategoryResult> CategorizeAsync(
             string subject,
             string body,
@@ -50,7 +45,7 @@ namespace EMS.EmailCategorization.Worker.Services
             Return JSON with keys named category and reason.
             """;
 
-            _logger.LogInformation("Classifying email using {categoryCount} categories", categoryList.Length);
+            logger.LogInformation("Classifying email using {categoryCount} categories", categoryList.Length);
 
             var response = await _chat.GetResponseAsync<EmailCategoryResult>(
                 prompt,
@@ -72,46 +67,26 @@ namespace EMS.EmailCategorization.Worker.Services
             }
 
             result.Category = matchedCategory;
-            _logger.LogInformation("Result returned {result}", result.Category);
+            logger.LogInformation("Result returned {result}", result.Category);
             return result;
         }
-        public async Task<int> ProcessAsync(EmailReceivedEvent message,CancellationToken cancellationToken)
+        public async Task ProcessAsync(EmailReceivedEvent message,CancellationToken cancellationToken)
         {
-            var tasksCount = 0;
             logger.LogInformation("Start: Categorize email service");
-
-            var emailAccounts = await emailAccountRepository
-                .GetAllValidatedAsync();
-
-            logger.LogInformation(
-                "Found {count} validated mailboxes",
-                emailAccounts.Count());
-
-            foreach (var emailAccount in emailAccounts)
-            {
-                var organisation =
-                    await organisationRepository
-                        .GetByIdAsync(emailAccount.OrganisationId);
 
                 var categories =
                     await emailCategoryRepository
-                        .GetEmailCategoriesAsync(organisation.Id);
+                        .GetEmailCategoriesAsync(message.OrganisationId);
 
                 var categoryNames = categories
                     .Select(c => c.CategoryName)
                     .ToArray();
 
-                var emails =
-                    await emailRepository
-                        .GetNewEmailsByEmailAccount(emailAccount.Id);
-
-                var tasks = emails.Select(async email =>
-                {
                     try
                     {
                         var result = await CategorizeAsync(
-                            email.Subject,
-                            email.Body,
+                            message.Subject,
+                            message.Body,
                             categoryNames);
 
                         var matchedCategory = categories
@@ -130,12 +105,12 @@ namespace EMS.EmailCategorization.Worker.Services
                         }
 
                         await emailRepository.AssignNewEmailCategory(
-                            email.Id,
+                            message.EmailId,
                             matchedCategory.Id);
 
                         logger.LogInformation(
                             "Email {EmailId} categorized as {Category}",
-                            email.Id,
+                            message.EmailId,
                             matchedCategory.CategoryName);
                     }
                     catch (Exception ex)
@@ -143,16 +118,12 @@ namespace EMS.EmailCategorization.Worker.Services
                         logger.LogError(
                             ex,
                             "Error categorizing email {EmailId}",
-                            email.Id);
+                            message.EmailId);
                     }
-                });
 
-                await Task.WhenAll(tasks);
-                tasksCount += emails.Count();
 
-            }
-            return tasksCount;
-        }
+            
+            logger.LogInformation("End: Categorize email service");}
 
     }
 }

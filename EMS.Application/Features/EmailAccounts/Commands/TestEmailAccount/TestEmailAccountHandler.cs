@@ -13,11 +13,11 @@ namespace EMS.Application.Features.EmailAccounts.Commands.TestEmailAccount
             var emailAccountDto = mapper.Map<ValidationAndTestEmailAccountDto>(emailAccount);
             if(emailAccount.EmailType==Domain.Enums.EmailType.Office365)
             {
-                emailAccountDto.ClientSecret = encryptionService.DescryptData(emailAccount.ClientSecret);
+                emailAccountDto.ClientSecret = encryptionService.DecryptData(emailAccount.ClientSecret);
             }
             else
             {
-                emailAccountDto.Password = encryptionService.DescryptData(emailAccount.Password);
+                emailAccountDto.Password = encryptionService.DecryptData(emailAccount.Password);
             }
             await emailSender.SendTestEmailAsync(emailAccountDto, request.ToEmail);
         }

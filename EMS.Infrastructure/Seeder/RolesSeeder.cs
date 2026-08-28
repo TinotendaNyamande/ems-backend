@@ -19,7 +19,7 @@ namespace EMS.Infrastructure.Seeder
             await db.Database.MigrateAsync();
             var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
-            string[] roles = ["Admin", "Owner", "Manager", "Member"];
+            string[] roles = ["Admin", "Supervisor", "Member"];
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))

@@ -7,7 +7,7 @@ namespace EMS.Infrastructure.Repository
     {
         private readonly IDataProtector _protector = provider.CreateProtector("EMS.EncryptionService.Purpose");
 
-        public string DescryptData(string value)
+        public string DecryptData(string value)
         {
             return _protector.Unprotect(value);
         }

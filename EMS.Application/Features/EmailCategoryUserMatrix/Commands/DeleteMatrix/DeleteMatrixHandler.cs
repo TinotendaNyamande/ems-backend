@@ -7,7 +7,7 @@ namespace EMS.Application.Features.EmailCategoryUserMatrix.Commands.DeleteMatrix
     {
         public async Task Handle(DeleteMatrixCommand command,CancellationToken cancellationToken)
         {
-            await matrixRepository.DeleteMatrix(command.Id);
+            await matrixRepository.DeleteMatrixAsync(command.Id);
         }
     }
 }

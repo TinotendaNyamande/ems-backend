@@ -14,11 +14,9 @@ namespace EMS.Domain.Models
         public DateTime CreatedAt { get; private set; }
         public DateTime LastUpdatedAt { get; private set; }
         public ICollection<Email> Emails { get; private set; }
-        public Organisation Organisation { get; private set; }
-        public Guid OrganisationId { get; private set; }
         public bool IsValidated { get; private set; } 
 
-        public EmailAccount(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId, Guid organisationId)
+        public EmailAccount(EmailType emailType, string emailAddress, string? password, string? clientId, string? clientSecret, string? tenantId)
         {
 
             EmailType = emailType;
@@ -31,7 +29,6 @@ namespace EMS.Domain.Models
             ClientSecret = null;
             TenantId = null;
             Emails = [];
-            OrganisationId = organisationId;
             IsValidated = false;
 
             switch (emailType)

@@ -1,5 +1,4 @@
-﻿using EMS.Application.Dtos.Organisation;
-using EMS.Domain.Enums;
+﻿using EMS.Domain.Enums;
 
 namespace EMS.Application.Dtos.EmailAccounts
 {
@@ -13,7 +12,6 @@ namespace EMS.Application.Dtos.EmailAccounts
         public string? ClientSecret { get; private set; }
         public string? TenantId { get; private set; }
         public DateTime CreatedAt { get; private set; }
-        public OrganisationDto ParentOrganisation { get; private set; }
         public DateTime LastUpdatedAt { get; private set; }
         public bool IsValidated { get; private set; }
     }

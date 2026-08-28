@@ -15,9 +15,6 @@ namespace EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount
                 .WithMessage("Email is required")
                 .EmailAddress()
                 .WithMessage("Invalid email format");
-            RuleFor(x => x.OrganisationId)
-                .NotEmpty()
-                .WithMessage("You must create an organisation before creating email account");
             RuleFor(x => x.Password)
                 .Must(x=>!string.IsNullOrWhiteSpace(x))
                 .WithMessage("Password cannot be empty for this email type")

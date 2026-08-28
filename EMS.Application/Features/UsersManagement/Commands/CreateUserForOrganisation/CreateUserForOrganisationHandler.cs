@@ -8,10 +8,7 @@ namespace EMS.Application.Features.UsersManagement.Commands.CreateUserForOrganis
 {
     public class CreateUserForOrganisationHandler(
         IAuthService authService,
-        IUserService userService,
-        IJoinRequestsRepository joinRequests,
-        IRolesRepository rolesRepository,
-        IOrganisationUserRoleRepository organisationUserRoleRepository
+        IUserService userService
         ) : IRequestHandler<CreateUserForOrganisationCommand>
     {
         public async Task Handle(CreateUserForOrganisationCommand request, CancellationToken cancellationToken)
@@ -26,16 +23,8 @@ namespace EMS.Application.Features.UsersManagement.Commands.CreateUserForOrganis
             };
 
 
-            var organisationOwnerRole = await rolesRepository.GetRoleByNameAsync(request.Role,request.OrganisationId);
 
             var userId = await authService.CreateUserForOrganisationAsync(request.Role, createUserDto);
-            var OrganisationUserRole = new OrganisationUserRole(userId, organisationOwnerRole.Id);
-            //remove existing roles of the user if any
-            await organisationUserRoleRepository.RemoveRolesFromUserAsync(userId);
-
-            //assign owner role to the user
-            await organisationUserRoleRepository.AddRoleToUserAsync(OrganisationUserRole);
-            await userService.AddUserToOrganisationAsync(request.OrganisationId, userId);
         }
     }
 }

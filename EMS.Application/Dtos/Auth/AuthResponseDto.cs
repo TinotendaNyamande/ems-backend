@@ -1,6 +1,4 @@
-﻿using EMS.Application.Dtos.RolesAndPermissions;
-
-namespace EMS.Application.Dtos.Auth
+﻿namespace EMS.Application.Dtos.Auth
 {
     public class AuthResponseDto(string token, string email, string userId, string refreshToken,string? role)
     {
@@ -10,7 +8,6 @@ namespace EMS.Application.Dtos.Auth
         public string Email { get; set; } = email;
         public string UserId { get; set; } = userId;
         public string? Role { get; set; } = role;
-        public IEnumerable<GetPermissionDto>? Permissions {  get; set; }
     }
 }
 

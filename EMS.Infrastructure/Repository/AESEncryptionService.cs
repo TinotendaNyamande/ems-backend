@@ -10,16 +10,19 @@ namespace EMS.Infrastructure.Repository
     internal class AESEncryptionService : IEncryptionService
     {
         private readonly byte[] key;
-        public AESEncryptionService(IOptions<EncryptionSettings> settings)
+        private readonly ILogger<AESEncryptionService> logger;
+        public AESEncryptionService(IOptions<EncryptionSettings> settings, ILogger<AESEncryptionService> logger)
         {
 
-            key = Convert.FromBase64String(
+            this.key = Convert.FromBase64String(
                 settings.Value.Key);
 
+            this.logger = logger;   
         }
 
         public string EncryptData(string plainText)
         {
+            //logger.LogInformation("Encrypting data using AES encryption: {PlainText}.", plainText);
             using var aes = Aes.Create();
 
             aes.Key = key;
@@ -46,7 +49,7 @@ namespace EMS.Infrastructure.Repository
             return Convert.ToBase64String(result);
         }
 
-        public string DescryptData(string cipherText)
+        public string DecryptData(string cipherText)
         {
             var fullCipher =
      Convert.FromBase64String(cipherText);

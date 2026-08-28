@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixById
 {
-    public record GetMatrixByIdQuery(Guid Id) : IRequest<IEnumerable<GetMatrixDto>>
+    public record GetMatrixByIdQuery(Guid Id) : IRequest<GetMatrixDto>
     {
         
     }

@@ -4,11 +4,11 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixById
 {
-    internal class GetMatrixGetMatrixByIdHandler(IEmailCategoriesUserMatrixRepository matrixRepository) : IRequestHandler<GetMatrixByIdQuery, IEnumerable<GetMatrixDto>>
+    internal class GetMatrixGetMatrixByIdHandler(IEmailCategoriesUserMatrixRepository matrixRepository) : IRequestHandler<GetMatrixByIdQuery, GetMatrixDto>
     {
-        public async Task<IEnumerable<GetMatrixDto>> Handle(GetMatrixByIdQuery request,CancellationToken cancellationToken)
+        public async Task<GetMatrixDto>  Handle(GetMatrixByIdQuery request,CancellationToken cancellationToken)
         {
-            return await matrixRepository.GetMatrixForOrganisation(request.Id);
+            return await matrixRepository.GetMatrixByIdAsync(request.Id);
         }
     }
 }
