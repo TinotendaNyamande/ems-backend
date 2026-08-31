@@ -17,10 +17,6 @@ namespace EMS.Application.Features.EmailTasks.Commands.UpdateStatus
             .Must(x => !string.IsNullOrWhiteSpace(x))
             .WithMessage("Additional information cannot be empty")
             .When(x => x.NewStatus == TaskStatusList.Closed);
-            RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id cannot be empty")
-            .When(x => x.NewStatus == TaskStatusList.Escalated);
         }
     }
 }

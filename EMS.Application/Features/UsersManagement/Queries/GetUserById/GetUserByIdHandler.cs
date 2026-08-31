@@ -2,7 +2,7 @@
 using EMS.Application.Interfaces;
 using MediatR;
 
-namespace EMS.Application.Features.UsersManagement.Queries.GetUserByIdQuery
+namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {
     public class GetUserByIdHandler(IUserService userService) : IRequestHandler<GetUserByIdQuery, UserDto>
     {

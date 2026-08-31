@@ -9,7 +9,8 @@ namespace EMS.Application.Interfaces
         Task LogoutAsync(string userId);
         Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
         Task ChangePasswordAsync(string userId, ChangeUserPasswordDto changePasswordDto);
-        Task<string> CreateUserForOrganisationAsync(string role, RegisterUserDto registerUserDto);
+        Task<UserDto> CreateUserAsync(string role, RegisterUserDto registerUserDto);
+        Task ChangeUserRoleAsync(string userId, string newRole);
 
     }
 }

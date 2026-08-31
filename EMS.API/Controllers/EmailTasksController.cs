@@ -29,7 +29,7 @@ namespace EMS.API.Controllers
             var tasks = await mediator.Send(new GetTaskByAssignedUserQuery(userId));
             return Ok(tasks);
         }
-        [HttpGet("all/emailAccount/{emailAccountId}")]
+        [HttpGet("by-email-account/{emailAccountId}")]
         public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAll(Guid emailAccountId)
         {
             var tasks = await mediator.Send(new GetTaskByAccountQuery(emailAccountId));

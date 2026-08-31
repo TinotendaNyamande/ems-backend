@@ -1,7 +1,7 @@
 ﻿using EMS.Application.Dtos.Auth;
 using MediatR;
 
-namespace EMS.Application.Features.UsersManagement.Queries.GetUserByIdQuery
+namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {
     public class GetUserByIdQuery(string userId) : IRequest<UserDto>
     {

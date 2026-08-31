@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace EMS.Application.Features.UsersManagement.Queries.GetUserByIdQuery
+namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {
     public class GetUserByIdValidator:AbstractValidator<GetUserByIdQuery>
     {

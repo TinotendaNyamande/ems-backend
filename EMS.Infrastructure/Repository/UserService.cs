@@ -30,7 +30,7 @@ namespace EMS.Infrastructure.Repository
             };
         }
 
-        public Task<IEnumerable<UserDto>> GetUsersInOrganisationAsync()
+        public Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
             var query = from user in context.Users
                         join userRole in context.UserRoles on user.Id equals userRole.UserId

@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using EMS.Application.Features.UsersManagement.Commands.CreateUserForOrganisation;
-using EMS.Application.Features.UsersManagement.Queries.GetUserByIdQuery;
-using EMS.Application.Features.UsersManagement.Queries.GetUsersForOrganisationQuery;
+using EMS.Application.Features.UsersManagement.Commands.CreateUser;
+using EMS.Application.Features.UsersManagement.Queries.GetUserById;
+using EMS.Application.Features.UsersManagement.Queries.GetAllUsers;
+using EMS.Application.Features.UsersManagement.Commands.ChangeRole;
 
 
 namespace EMS.API.Controllers
@@ -11,7 +12,7 @@ namespace EMS.API.Controllers
     [ApiController]
     public class UsersController(IMediator mediator,ILogger<UsersController> logger) : ControllerBase
     {
-        [HttpGet("profile/{userId}")]
+        [HttpGet("{userId}")]
 
         public async Task<IActionResult> GetUserInfo(string userId)
         {
@@ -26,26 +27,27 @@ namespace EMS.API.Controllers
             return Ok(userInfo);
         }
         [HttpPost("create-user")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserForOrganisationCommand request)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand request)
         {
             logger.LogInformation("Create user endpoint called for email: {Email}", request.Email);
             await mediator.Send(request);
             logger.LogInformation("Create user endpoint completed for email: {Email})", request.Email);
-            return Ok();
+            return CreatedAtAction(nameof(GetUserInfo), new { userId = request.Email }, null);
         }
-        [HttpGet("all")]
-        public async Task<IActionResult> GetUsersByOrganisation()
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
         {
-            var users = await mediator.Send(new GetUsersForOrganisationQuery());
+            var users =  await mediator.Send(new GetAllUsersQuery());
             return Ok(users);
         }
-        // [HttpPost("assign-role")]
-        // public async Task<IActionResult> AssignRole([FromBody] AssignUserRoleCommand request)
-        // {
-        //     logger.LogInformation("Assign role endpoint called for userId: {UserId} and role: {Role}", request.UserId, request.RoleId);
-        //     await mediator.Send(request);
-        //     logger.LogInformation("Assign role endpoint completed for userId: {UserId} and role: {Role}", request.UserId, request.RoleId);
-        //     return Ok();
-        // }
+        
+        [HttpPost("change-role")]
+        public async Task<IActionResult> ChangeRole([FromBody] ChangeRoleCommand request)
+        {
+            logger.LogInformation("Change role endpoint called for userId: {UserId} and role: {Role}", request.UserId, request.NewRole);
+            await mediator.Send(request);
+            logger.LogInformation("Change role endpoint completed for userId: {UserId} and role: {Role}", request.UserId, request.NewRole);
+            return Ok();
+        }
     }
 }

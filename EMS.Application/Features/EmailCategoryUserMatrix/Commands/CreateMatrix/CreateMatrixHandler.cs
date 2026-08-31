@@ -18,6 +18,7 @@ namespace EMS.Application.Features.EmailCategoryUserMatrix.Commands.CreateMatrix
                 throw new InvalidOperationException("Matrix already exists for the given category and user.");
             }
             var matrix = mapper.Map<EmailCategoriesUserMatrix>(command);
+            await matrixRepository.AddUserToMatrixAsync(matrix);
             return await matrixRepository.GetMatrixByIdAsync(matrix.Id);
         }
     }

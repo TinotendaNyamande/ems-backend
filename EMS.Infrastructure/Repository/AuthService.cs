@@ -290,7 +290,7 @@ namespace EMS.Infrastructure.Repository
             await userManager.ChangePasswordAsync(user, changePasswordDto.Password, changePasswordDto.NewPassword);
         }
 
-        public async Task<string> CreateUserForOrganisationAsync(string role, RegisterUserDto request)
+        public async Task<UserDto> CreateUserAsync(string role, RegisterUserDto request)
         {
             logger.LogInformation("Register attempt for user with email: {Email}", request.Email);
 
@@ -321,7 +321,7 @@ namespace EMS.Infrastructure.Repository
                 throw new Exception(errors);
             }
 
-            //await userManager.AddToRoleAsync(user, role);
+            await userManager.AddToRoleAsync(user, role);
             // logger.LogInformation("Assigned role {Role} to user {UserId}", role, user.Id);
 
             var accessToken = await GenerateTokenAsync(user);
@@ -329,9 +329,23 @@ namespace EMS.Infrastructure.Repository
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
-            return user.Id;
+            return new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = role
+            };
 
         }
 
+        public async Task ChangeUserRoleAsync(string userId, string newRole)
+        {
+            var user = await userManager.FindByIdAsync(userId) ?? throw new ResourceNotFoundException("User",userId);
+            var currentRoles = await userManager.GetRolesAsync(user);
+            await userManager.RemoveFromRolesAsync(user, currentRoles);
+            await userManager.AddToRoleAsync(user, newRole);
+        }
     }
 }

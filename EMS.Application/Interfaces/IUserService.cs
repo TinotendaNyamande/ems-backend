@@ -5,7 +5,7 @@ namespace EMS.Application.Interfaces
     public interface IUserService
     {
         Task<UserDto> GetUserByIdAsync (string userId);
-        Task<IEnumerable<UserDto>> GetUsersInOrganisationAsync();
+        Task<IEnumerable<UserDto>> GetAllUsersAsync();
   
     }
 }
