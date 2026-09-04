@@ -22,7 +22,7 @@ namespace EMS.API.Controllers
             var emailDto= await mediator.Send (new GetEmailAccountQuery(id));
             return Ok(emailDto);
         }
-        [HttpGet("all")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<EmailAccountDto>>> GetEmailAccounts()
         {
             var emailsDto=await mediator.Send(new GetEmailAccountsQuery());

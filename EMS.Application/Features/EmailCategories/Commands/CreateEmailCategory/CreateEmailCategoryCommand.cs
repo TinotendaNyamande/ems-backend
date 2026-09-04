@@ -3,5 +3,5 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Commands.CreateEmailCategory
 {
-    public record CreateEmailCategoryCommand(Guid EmailAccountId, string CategoryName):IRequest<GetEmailCategoryDto>;
+    public record CreateEmailCategoryCommand(Guid EmailAccountId, string CategoryName,double SLAHours):IRequest<GetEmailCategoryDto>;
 }

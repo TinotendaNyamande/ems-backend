@@ -41,7 +41,6 @@ namespace EMS.Infrastructure.Repository
                     0,
                     plainBytes.Length);
 
-            // prepend IV to ciphertext
             var result = aes.IV
                 .Concat(encryptedBytes)
                 .ToArray();

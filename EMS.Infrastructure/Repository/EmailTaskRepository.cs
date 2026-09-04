@@ -173,6 +173,17 @@ namespace EMS.Infrastructure.Repository
 
         }
 
+        public async Task<UserTasksSummaryDto> GetUserTasksSummaryAsync(string userId)
+        {
+            var tasksTotal = await context.EmailTasks.Where(a=>a.AssignedToUser==userId).ToListAsync();
+            var openTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Assigned).ToListAsync();
+            var holdTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Blocked).ToListAsync();
+            var closedTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Closed).ToListAsync();
+            var slaEntries = await context.SLATrackings.Where(a=>a.UserId==userId).ToListAsync();
+            var averageResolutionTime = slaEntries.Any() ? slaEntries.Average(s => s.DurationInHours) : 0;
+            return new UserTasksSummaryDto(tasksTotal.Count,holdTasks.Count,openTasks.Count,closedTasks.Count,averageResolutionTime);
+        }
+
         public async Task ReassignTaskAsync(Guid id, string newUserId)
         {
             logger.LogInformation("Reassigning task {TaskId} to user {NewUserId}", id, newUserId);

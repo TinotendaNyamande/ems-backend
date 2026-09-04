@@ -1,13 +1,12 @@
 using EMS.Application.Dtos.Tasks;
 using EMS.Application.Features.EmailTasks.Commands.AddNotes;
-using EMS.Application.Features.EmailTasks.Commands.CloseTask;
 using EMS.Application.Features.EmailTasks.Commands.DeleteTask;
 using EMS.Application.Features.EmailTasks.Commands.ReassignTask;
-using EMS.Application.Features.EmailTasks.Commands.ReOpenTask;
 using EMS.Application.Features.EmailTasks.Commands.UpdateStatus;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAccount;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
+using EMS.Application.Features.EmailTasks.Queries.GetUserSummary;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,10 +22,10 @@ namespace EMS.API.Controllers
             var task = await mediator.Send(new GetTaskByIdQuery(id));
             return Ok(task);
         }
-        [HttpGet("by-user/{userId}")]
-        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAssignedToUser(string userId)
+        [HttpGet("by-user/{userId}/{status?}")]
+        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAssignedToUser(string userId, string? status = null)
         {
-            var tasks = await mediator.Send(new GetTaskByAssignedUserQuery(userId));
+            var tasks = await mediator.Send(new GetTaskByAssignedUserQuery(userId, status is not null ? Enum.Parse<Domain.Enums.TaskStatusList>(status, true) : null));
             return Ok(tasks);
         }
         [HttpGet("by-email-account/{emailAccountId}")]
@@ -37,16 +36,6 @@ namespace EMS.API.Controllers
         }
         [HttpPost("add-notes/{id}")]
         public async Task<IActionResult> AddNotes(Guid id, AddNotesCommand command)
-        {
-            var updatedCommand = command with
-            {
-                Id = id
-            };
-            await mediator.Send(updatedCommand);
-            return NoContent();
-        }
-        [HttpPost("close-task/{id}")]
-        public async Task<IActionResult> AddNotes(Guid id, CloseTaskCommand command)
         {
             var updatedCommand = command with
             {
@@ -82,15 +71,12 @@ namespace EMS.API.Controllers
             await mediator.Send(new DeleteTaskCommand(id));
             return NoContent();
         }
-        [HttpPost("reopen-task/{id}")]
-        public async Task<IActionResult> ReopenTask(Guid id, ReOpenTaskCommand command)
+        [HttpGet("summary/{userId}")]
+        public async Task<IActionResult> UserTasksSummary(string userId)
         {
-            var updatedCommand = command with
-            {
-                TaskId = id
-            };
-            await mediator.Send(updatedCommand);
-            return NoContent();
+
+            var summary = await mediator.Send(new GetUserSummaryQuery(userId));
+            return Ok(summary);
         }
 
     }

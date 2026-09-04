@@ -9,6 +9,7 @@ namespace EMS.Application.Features.EmailCategories.Commands.CreateEmailCategory
         {
             RuleFor(x => x.CategoryName).Must(x => !string.IsNullOrWhiteSpace(x)).WithMessage("Category name cannot be empty");
             RuleFor(x => x.EmailAccountId).NotEmpty().WithMessage("Email Account Id cannot be empty");
+            RuleFor(x => x.SLAHours).GreaterThan(0).WithMessage("SLA hours must be greater than 0");
         }
 
     }

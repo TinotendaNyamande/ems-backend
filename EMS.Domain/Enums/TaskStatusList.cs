@@ -8,6 +8,7 @@ namespace EMS.Domain.Enums
         InProgress,
         Blocked,
         Escalated,
-        Closed
+        Closed,
+        Hold
     }
 }

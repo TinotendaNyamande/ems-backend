@@ -48,7 +48,7 @@ namespace EMS.API.Controllers
             var emailCategory = await mediator.Send(new GetCategoryByNameQuery(categoryName));
             return Ok(emailCategory); 
         }
-        [HttpGet("all/{emailAccountId}")]
+        [HttpGet("by-email-account/{emailAccountId}")]
         public async Task<ActionResult<IEnumerable<GetEmailCategoryDto>>> GetAll(Guid emailAccountId)
         {
             var categories = await mediator.Send(new GetEmailCategoriesForAccountQuery(emailAccountId));

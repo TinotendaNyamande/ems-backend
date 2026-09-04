@@ -14,6 +14,7 @@ namespace EMS.Infrastructure.persistence
         internal DbSet<RefreshToken> RefreshTokens { get; set; }
         internal DbSet<EmailTask> EmailTasks { get; set; }
         internal DbSet<EmailCategoriesUserMatrix> EmailCategoriesUserMatrices { get; set; }
+        internal DbSet<SLATracking> SLATrackings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -40,6 +41,10 @@ namespace EMS.Infrastructure.persistence
             builder.Entity<EmailTask>()
                 .Property(e => e.Status)
                 .HasConversion<string>();
+            builder.Entity<SLATracking>()
+                .HasOne(s => s.EmailTask)
+                .WithMany(e => e.SLATrackings)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
         }

@@ -9,6 +9,7 @@ IEmailRepository emailRepository,
 IEmailAccountRepository emailAccountRepository,
 IEmailCategoriesUserMatrixRepository matrixRepository,
 IEmailTasksRepository emailTasksRepository,
+ISLATrackingRepository sLATrackingRepository,
 ILogger<TaskAssignmentProcessor> logger
     ) : ITaskAssignmentService
     {
@@ -27,14 +28,16 @@ ILogger<TaskAssignmentProcessor> logger
                     logger.LogInformation("Email category {id}", email.EmailCategoryId);
                     if (email.EmailCategoryId != Guid.Empty && email.EmailCategoryId != null)
                     {
-                        var matrix = await matrixRepository.GetAllAvailableForCategory(email.EmailCategoryId);
+                        var matrix = await matrixRepository.GetAllAvailableForCategoryAsync(email.EmailCategoryId);
                         logger.LogInformation("Found {count} categories matrix", matrix.Count());
                         var pickedMatrix = await DetermineUserToAssign(matrix);
                         logger.LogInformation("Picked user for task {id}", pickedMatrix.UserId);
                         var task = new EmailTask(email.Id, pickedMatrix.UserId);
                         await emailTasksRepository.CreateTaskAsync(task);
                         await emailRepository.EmailAssignedAction(email.Id);
-                        await matrixRepository.UserAssignedTaskAction(pickedMatrix.Id);
+                        await matrixRepository.UserAssignedTaskActionAsync(pickedMatrix.Id);
+                        var slaEntry = new SLATracking(task.Id, pickedMatrix.UserId, "New Task assigned");
+                        await sLATrackingRepository.AddAsync(slaEntry);
                     }
 
                 }

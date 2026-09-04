@@ -14,6 +14,7 @@ namespace EMS.Domain.Models
         public DateTime ClosedDate { get; private set; }
         public TaskStatusList Status { get; set; } = TaskStatusList.Assigned;
         public string? AdditionalInformation { get; private set; }
+        public ICollection<SLATracking> SLATrackings { get; private set; } = new List<SLATracking>();
 
         public void AssignToUser(string newUserId)
         {

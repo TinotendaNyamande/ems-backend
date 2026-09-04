@@ -10,5 +10,6 @@ namespace EMS.Application.Interfaces
         Task DeleteTask (Guid id);
         Task<IEnumerable<GetTasksDto>> GetTasksByUser (string userId,string? status);
         Task<IEnumerable<GetTasksDto>> GetTasksByOrganisation (string userId,string? status);
+       
     }
 }
