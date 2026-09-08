@@ -23,13 +23,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.ReassignTask
                 };
                 await sLATrackingRepository.UpdateAsync(currentSLAEntry.Id, entryDto);
             }
-            var newSLAEntry = new SLATracking
-            {
-                EmailTaskId = command.Id,
-                StartTime = DateTime.UtcNow,
-                Status = SLAEntryStatus.Running,
-                UserId = command.NewUserId
-            };
+            var newSLAEntry = new SLATracking(command.Id,command.NewUserId,"Task reassigned");
             await sLATrackingRepository.AddAsync(newSLAEntry);
         }
     }

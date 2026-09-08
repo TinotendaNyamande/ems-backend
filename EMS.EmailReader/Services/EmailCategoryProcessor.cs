@@ -9,7 +9,6 @@ namespace EMS.EmailReader.Services
          ILogger<EmailCategoryProcessor> logger,
          IEmailAccountRepository emailAccountRepository,
          IEmailRepository emailRepository,
-         IOrganisationRepository organisationRepository,
          IEmailCategoryRepository emailCategoryRepository
          ) : IPipelineStep
     {

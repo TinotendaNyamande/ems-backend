@@ -6,7 +6,7 @@ namespace EMS.Application.Interfaces
     {
         Task<EmailCategory> CreateEmailCategoryAsync(EmailCategory emailCategory);
         Task<IEnumerable<EmailCategory>> GetEmailCategoriesAsync(Guid organisationId);
-        Task RenameEmailCategoryAsync(Guid id,string newName);
+        Task EditEmailCategoryAsync(Guid id,string newName, int slaHours);
         Task DeleteEmailCategoryAsync (Guid id);
         Task<EmailCategory> GetCategoryByIdAsync (Guid id);
         Task<EmailCategory> GetCategoryByNameAsync (string categoryName);

@@ -1,11 +1,11 @@
 ﻿namespace EMS.Domain.Models
 {
-    public class EmailCategory(Guid emailAccountId, string categoryName,double SLAInHours)
+    public class EmailCategory(Guid emailAccountId, string categoryName,double sLAHours)
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public Guid EmailAccountId { get; private set; } = emailAccountId;
         public string CategoryName { get; private set; } = categoryName;
-        public double SLAInHours { get; private set; } = SLAInHours;
+        public double SLAHours { get; private set; } = sLAHours;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public DateTime LastUpdatedAt { get; private set; } = DateTime.UtcNow;
         public ICollection<Email> Emails { get; private set; } = [];
@@ -18,12 +18,12 @@
             CategoryName = categoryName;
             LastUpdatedAt = DateTime.UtcNow;
         }
-        public void ChangeSLAInHours(double sLAInHours)
+        public void ChangeSLAHours(double sLAHours)
         {
-            if (sLAInHours <= 0)
-                throw new ArgumentException("Value must be greater than zero", nameof(sLAInHours));
+            if (sLAHours <= 0)
+                throw new ArgumentException("Value must be greater than zero", nameof(sLAHours));
             
-            SLAInHours = sLAInHours;
+            SLAHours = sLAHours;
             LastUpdatedAt = DateTime.UtcNow;
         }
 

@@ -47,11 +47,12 @@ namespace EMS.Infrastructure.Repository
             return await context.EmailCategories.AsNoTracking().Where(c => c.EmailAccountId == emailAccountId).ToListAsync();
         }
 
-        public async Task RenameEmailCategoryAsync(Guid id, string newName)
+        public async Task EditEmailCategoryAsync(Guid id, string newName, int slaHours)
         {
             var emailCategory = await context.EmailCategories.Where(e => e.Id == id).FirstOrDefaultAsync() ??
                 throw new ResourceNotFoundException("email category", id);
             emailCategory.ChangeCategoryName(newName);
+            emailCategory.ChangeSLAHours(slaHours);
             await context.SaveChangesAsync();
         }
     }

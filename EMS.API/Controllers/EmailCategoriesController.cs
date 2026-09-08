@@ -1,7 +1,7 @@
 using EMS.Application.Dtos.EmailCategories;
 using EMS.Application.Features.EmailCategories.Commands.CreateEmailCategory;
 using EMS.Application.Features.EmailCategories.Commands.DeleteEmailCategory;
-using EMS.Application.Features.EmailCategories.Commands.RenameEmailCategory;
+using EMS.Application.Features.EmailCategories.Commands.EditEmailCategory;
 using EMS.Application.Features.EmailCategories.Queries.GetCategoryByName;
 using EMS.Application.Features.EmailCategories.Queries.GetEmailCategoriesForAccount;
 using EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById;
@@ -21,7 +21,7 @@ namespace EMS.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = emailCategory.Id }, emailCategory);
         }
         [HttpPatch("{id}")]
-        public async Task<IActionResult> RenameCategory(Guid id, RenameEmailCategoryCommand command)
+        public async Task<IActionResult> EditEmailCategory(Guid id, EditEmailCategoryCommand command)
         {
             var updatedCommand = command with
             {

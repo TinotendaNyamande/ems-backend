@@ -5,5 +5,6 @@ namespace EMS.Application.Dtos.EmailCategories
         public Guid Id { get; set; }
         public Guid EmailAccountId { get; set; }
         public string CategoryName { get; set; }
+        public double SLAHours { get; set; }
     }
 }
