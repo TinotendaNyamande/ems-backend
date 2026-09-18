@@ -15,7 +15,7 @@ namespace EMS.EmailCategorization.Worker.Consumers
         protected override async Task HandleAsync(EmailReceivedEvent message, CancellationToken token)
         {
             using var scope = scopeFactory.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IEmailCategorizerService>();
+            var service = scope.ServiceProvider.GetRequiredService<ICategorizeEmails>();
             await service.ProcessAsync(message, token);
         }
     }

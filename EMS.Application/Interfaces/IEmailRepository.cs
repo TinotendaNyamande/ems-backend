@@ -18,5 +18,6 @@ namespace EMS.Application.Interfaces
         Task ChangeEmailStatus(Guid id,EmailStatus newStatus);
         Task AssignNewEmailCategory(Guid id,Guid newCategoryId);
         Task EmailAssignedAction (Guid emailId);
+        Task<IEnumerable<Email>> GetEmailsPendingCategorization();
     }
 }

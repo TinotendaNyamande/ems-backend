@@ -12,33 +12,36 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddInfrastructure(builder.Configuration,builder.Environment);
 builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddSingleton(RabbitMqRoutes.EmailReceived);
-builder.Services.AddScoped<IEmailCategorizerService,EmailCategorizerService>();
+builder.Services.AddScoped<IEmailCategorizerService,RegexEmailCategorizerService>();
+builder.Services.AddScoped<ICategorizeEmails,CategorizeEmails>();
+builder.Services.AddScoped<IEmailEventReader,EmailEventReader>();
 
-var fireworksApiKey = builder.Configuration["Fireworks:APIKey"];
-var fireworksModelId = builder.Configuration["Fireworks:ModelId"]
-    ?? "accounts/fireworks/models/deepseek-v4-flash";
-var fireworksEndpoint = builder.Configuration["Fireworks:Endpoint"]
-    ?? "https://api.fireworks.ai/inference/v1";
+// var fireworksApiKey = builder.Configuration["Fireworks:APIKey"];
+// var fireworksModelId = builder.Configuration["Fireworks:ModelId"]
+//     ?? "accounts/fireworks/models/deepseek-v4-flash";
+// var fireworksEndpoint = builder.Configuration["Fireworks:Endpoint"]
+//     ?? "https://api.fireworks.ai/inference/v1";
 
-builder.Services.AddChatClient(_ =>
-{
-    if (string.IsNullOrWhiteSpace(fireworksApiKey))
-    {
-        throw new InvalidOperationException(
-            "Missing Fireworks API key. Set Fireworks:APIKey in configuration or FIREWORKS_API_KEY as an environment variable.");
-    }
+// builder.Services.AddChatClient(_ =>
+// {
+//     if (string.IsNullOrWhiteSpace(fireworksApiKey))
+//     {
+//         throw new InvalidOperationException(
+//             "Missing Fireworks API key. Set Fireworks:APIKey in configuration or FIREWORKS_API_KEY as an environment variable.");
+//     }
 
-    var openAIClient = new OpenAIClient(
-        new ApiKeyCredential(fireworksApiKey),
-        new OpenAIClientOptions
-        {
-            Endpoint = new Uri(fireworksEndpoint)
-        });
+//     var openAIClient = new OpenAIClient(
+//         new ApiKeyCredential(fireworksApiKey),
+//         new OpenAIClientOptions
+//         {
+//             Endpoint = new Uri(fireworksEndpoint)
+//         });
 
-    return openAIClient.GetChatClient(fireworksModelId).AsIChatClient();
-});
+//     return openAIClient.GetChatClient(fireworksModelId).AsIChatClient();
+// });
 
-builder.Services.AddHostedService<EmailReceivedConsumer>();
+//builder.Services.AddHostedService<EmailReceivedConsumer>();
+builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();
 host.Run();

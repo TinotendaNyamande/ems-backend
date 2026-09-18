@@ -54,7 +54,7 @@ namespace EMS.EmailReader.Worker.Services
             try
             {
                 var hashedPassword = emailAccount.Password ?? throw new Exception("Email account does not have password");
-                var password = encryptionService.DescryptData(hashedPassword);
+                var password = encryptionService.DecryptData(hashedPassword);
                 using var client = new ImapClient();
                 logger.LogInformation("Attempting to connect to client");
                 await client.ConnectAsync("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
@@ -89,18 +89,17 @@ namespace EMS.EmailReader.Worker.Services
                                     message.MessageId
                                 );
                         await SaveEmail(newEmail);
-                        await publisher.PublishAsync(
-                            new EmailReceivedEvent
-                            {
-                                EmailId = emailId,
-                                Subject = message.Subject ?? string.Empty,
-                                Sender = message.From.ToString(),
-                                Body = message.TextBody ?? string.Empty,
-                                OrganisationId = emailAccount.OrganisationId
-                            },
-                            RabbitMqRoutes.EmailReceived,
-                            cancellationToken
-                        );
+                        // await publisher.PublishAsync(
+                        //     new EmailReceivedEvent
+                        //     {
+                        //         EmailId = emailId,
+                        //         Subject = message.Subject ?? string.Empty,
+                        //         Sender = message.From.ToString(),
+                        //         Body = message.TextBody ?? string.Empty,
+                        //     },
+                        //     RabbitMqRoutes.EmailReceived,
+                        //     cancellationToken
+                        // );
 
                     }
                     else
@@ -134,7 +133,7 @@ namespace EMS.EmailReader.Worker.Services
         {
             try
             {
-                var clientSecret = encryptionService.DescryptData(emailAccount.ClientSecret);
+                var clientSecret = encryptionService.DecryptData(emailAccount.ClientSecret);
                 var credential = new ClientSecretCredential(
                   tenantId: emailAccount.TenantId,
                   clientId: emailAccount.ClientId,
@@ -176,7 +175,6 @@ namespace EMS.EmailReader.Worker.Services
                                 Subject = message.Subject ?? string.Empty,
                                 Sender = message.From.ToString(),
                                 Body = message.Body?.Content ?? string.Empty,
-                                OrganisationId = emailAccount.OrganisationId
                             },
                             RabbitMqRoutes.EmailReceived,
                             cancellationToken

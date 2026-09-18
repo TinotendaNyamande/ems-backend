@@ -91,6 +91,11 @@ namespace EMS.Infrastructure.Repository
             return await context.Emails.Where(e=>e.IsAssigned==false && e.EmailAccountId==emailAccountId  &&  e.EmailCategoryId != null).ToListAsync();
         }
 
+        public async Task<IEnumerable<Email>> GetEmailsPendingCategorization()
+        {
+            return await context.Emails.Where(a=>a.EmailCategoryId==null).ToListAsync();
+        }
+
         public async Task<IEnumerable<Email>> GetNewEmailsByEmailAccount(Guid emailAccountId)
         {
             return await context.Emails.Where(e => e.EmailAccountId == emailAccountId && e.Status == EmailStatus.New).ToListAsync();

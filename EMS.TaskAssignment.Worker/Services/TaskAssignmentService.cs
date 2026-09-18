@@ -3,17 +3,17 @@ using EMS.Domain.Models;
 
 namespace EMS.TaskAssignment.Worker.Services
 {
-    public class TaskAssignmentProcessor
+    public class TaskAssignmentService
     (
 IEmailRepository emailRepository,
 IEmailAccountRepository emailAccountRepository,
 IEmailCategoriesUserMatrixRepository matrixRepository,
 IEmailTasksRepository emailTasksRepository,
 ISLATrackingRepository sLATrackingRepository,
-ILogger<TaskAssignmentProcessor> logger
+ILogger<TaskAssignmentService> logger
     ) : ITaskAssignmentService
     {
-        public async Task<int> ProcessAsync(CancellationToken cancellationToken)
+        public async Task ProcessAsync(CancellationToken cancellationToken)
         {
             var tasksCount = 0;
             var emailAccounts = await emailAccountRepository.GetAllValidatedAsync();
@@ -42,7 +42,6 @@ ILogger<TaskAssignmentProcessor> logger
 
                 }
             }
-            return tasksCount;
 
 
         }

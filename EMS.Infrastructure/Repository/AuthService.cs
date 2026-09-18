@@ -54,7 +54,8 @@ namespace EMS.Infrastructure.Repository
                 logger.LogError("Register failed for {Email}: {Errors}", request.Email, errors);
                 throw new Exception(errors);
             }
-            await userManager.AddToRoleAsync(user, "Member");
+            var role = string.IsNullOrEmpty(request.Role) ? "Member" : request.Role;
+            await userManager.AddToRoleAsync(user, role);
 
             var accessToken = await GenerateTokenAsync(user);
             var refreshToken = GenerateRefreshToken();

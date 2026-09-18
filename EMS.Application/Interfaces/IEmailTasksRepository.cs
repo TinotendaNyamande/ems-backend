@@ -17,6 +17,9 @@ namespace EMS.Application.Interfaces
         Task EditAdditionalInformationAsync (Guid id,string additionalInfo);
         Task ReOpenTaskAsync(Guid id);
          Task<UserTasksSummaryDto> GetUserTasksSummaryAsync(string userId);
+         Task<IEnumerable<GetTasksDto>> GetAllTasksAsync();
+         Task<IEnumerable<GetTasksDto>> GetAllOpenTasksAsync();
+         Task<IEnumerable<GetTasksDto>> GetAllOpenTasksByUserIdAsync(string userId);
         
 
     }

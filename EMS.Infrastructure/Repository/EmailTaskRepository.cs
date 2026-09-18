@@ -55,6 +55,113 @@ namespace EMS.Infrastructure.Repository
             await context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<GetTasksDto>> GetAllOpenTasksAsync()
+        {
+             var query =
+            from tasks in context.EmailTasks
+            join user in context.Users
+            on tasks.AssignedToUser equals user.Id
+            join emails in context.Emails
+            on tasks.EmailId equals emails.Id
+            join emailsAccounts in context.EmailAccounts
+            on emails.EmailAccountId equals emailsAccounts.Id
+            where tasks.Status != TaskStatusList.Closed
+            join category in context.EmailCategories
+            on emails.EmailCategoryId equals category.Id
+            select new GetTasksDto
+            {
+                Id = tasks.Id,
+                FromEmail = emails.FromEmail,
+                Subject = emails.Subject,
+                EmailBody = emails.Body,
+                EmailAccountAddress = emailsAccounts.EmailAddress,
+                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserFirstName = user.FirstName,
+                AssignedToUserLastName = user.LastName,
+                CreatedAt = tasks.CreatedAt,
+                UpdatedAt = tasks.UpdatedAt,
+                AssignedToUserDate = tasks.AssignedToUserDate,
+                ClosedDate = tasks.ClosedDate,
+                Status = tasks.Status,
+                AdditionalInformation = tasks.AdditionalInformation,
+                Category = category.CategoryName
+
+            };
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<GetTasksDto>> GetAllOpenTasksByUserIdAsync(string userId)
+        {
+             var query =
+            from tasks in context.EmailTasks
+            join user in context.Users
+            on tasks.AssignedToUser equals user.Id
+            join emails in context.Emails
+            on tasks.EmailId equals emails.Id
+            join emailsAccounts in context.EmailAccounts
+            on emails.EmailAccountId equals emailsAccounts.Id
+            where tasks.AssignedToUser == userId & tasks.Status != TaskStatusList.Closed
+            join category in context.EmailCategories
+            on emails.EmailCategoryId equals category.Id
+            select new GetTasksDto
+            {
+                Id = tasks.Id,
+                FromEmail = emails.FromEmail,
+                Subject = emails.Subject,
+                EmailBody = emails.Body,
+                EmailAccountAddress = emailsAccounts.EmailAddress,
+                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserFirstName = user.FirstName,
+                AssignedToUserLastName = user.LastName,
+                CreatedAt = tasks.CreatedAt,
+                UpdatedAt = tasks.UpdatedAt,
+                AssignedToUserDate = tasks.AssignedToUserDate,
+                ClosedDate = tasks.ClosedDate,
+                Status = tasks.Status,
+                AdditionalInformation = tasks.AdditionalInformation,
+                Category = category.CategoryName
+
+            };
+
+            return await query.ToListAsync();
+        }
+
+        public  async Task<IEnumerable<GetTasksDto>> GetAllTasksAsync()
+        {
+             var query =
+            from tasks in context.EmailTasks
+            join user in context.Users
+            on tasks.AssignedToUser equals user.Id
+            join emails in context.Emails
+            on tasks.EmailId equals emails.Id
+            join emailsAccounts in context.EmailAccounts
+            on emails.EmailAccountId equals emailsAccounts.Id
+            join category in context.EmailCategories
+            on emails.EmailCategoryId equals category.Id
+            select new GetTasksDto
+            {
+                Id = tasks.Id,
+                FromEmail = emails.FromEmail,
+                Subject = emails.Subject,
+                EmailBody = emails.Body,
+                EmailAccountAddress = emailsAccounts.EmailAddress,
+                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserFirstName = user.FirstName,
+                AssignedToUserLastName = user.LastName,
+                CreatedAt = tasks.CreatedAt,
+                UpdatedAt = tasks.UpdatedAt,
+                AssignedToUserDate = tasks.AssignedToUserDate,
+                ClosedDate = tasks.ClosedDate,
+                Status = tasks.Status,
+                AdditionalInformation = tasks.AdditionalInformation,
+                Category = category.CategoryName
+
+            };
+
+            return await query.ToListAsync();
+        }
+
         public async Task<GetTasksDto> GetTaskByIdAsync(Guid id)
         {
             var query =
@@ -177,7 +284,7 @@ namespace EMS.Infrastructure.Repository
         {
             var tasksTotal = await context.EmailTasks.Where(a=>a.AssignedToUser==userId).ToListAsync();
             var openTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Assigned).ToListAsync();
-            var holdTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Blocked).ToListAsync();
+            var holdTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Hold).ToListAsync();
             var closedTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Closed).ToListAsync();
             var slaEntries = await context.SLATrackings.Where(a=>a.UserId==userId).ToListAsync();
             var averageResolutionTime = slaEntries.Any() ? slaEntries.Average(s => s.DurationInHours) : 0;

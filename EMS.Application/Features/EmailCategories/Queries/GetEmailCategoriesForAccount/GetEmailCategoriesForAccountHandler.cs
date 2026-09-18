@@ -9,7 +9,7 @@ namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoriesFor
     {
         public async Task<IEnumerable<GetEmailCategoryDto>> Handle(GetEmailCategoriesForAccountQuery request, CancellationToken cancellationToken)
         {
-            var emailCategories = await emailCategoryRepository.GetEmailCategoriesAsync(request.EmailAccountId);
+            var emailCategories = await emailCategoryRepository.GetEmailCategoriesByEmailAccountAsync(request.EmailAccountId);
             return mapper.Map<IEnumerable<GetEmailCategoryDto>>(emailCategories);
         }
     }

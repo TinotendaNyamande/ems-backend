@@ -13,7 +13,8 @@ namespace EMS.Application.Features.Auth.Commands.Register
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
-                Password = request.Password
+                Password = request.Password,
+                Role = request.Role
             };
 
             return await authService.RegisterAsync(registerDto);

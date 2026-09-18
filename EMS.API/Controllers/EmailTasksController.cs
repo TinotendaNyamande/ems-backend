@@ -3,6 +3,9 @@ using EMS.Application.Features.EmailTasks.Commands.AddNotes;
 using EMS.Application.Features.EmailTasks.Commands.DeleteTask;
 using EMS.Application.Features.EmailTasks.Commands.ReassignTask;
 using EMS.Application.Features.EmailTasks.Commands.UpdateStatus;
+using EMS.Application.Features.EmailTasks.Queries.GetAllOpenTasks;
+using EMS.Application.Features.EmailTasks.Queries.GetAllOpenTasksByUserId;
+using EMS.Application.Features.EmailTasks.Queries.GetAllTasks;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAccount;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
@@ -77,6 +80,24 @@ namespace EMS.API.Controllers
 
             var summary = await mediator.Send(new GetUserSummaryQuery(userId));
             return Ok(summary);
+        }
+        [HttpGet("all-tasks")]
+        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAllTasks()
+        {
+            var tasks = await mediator.Send(new GetAllTasksQuery());
+            return Ok(tasks);
+        }
+        [HttpGet("all-tasks/open")]
+        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAllOpenTasks()
+        {
+            var tasks = await mediator.Send(new GetAllOpenTasksQuery());
+            return Ok(tasks);
+        }
+        [HttpGet("by-user/{userId}/open")]
+        public async Task<ActionResult<IEnumerable<GetTasksDto>>> GetAllOpenTasksByUser(string userId)
+        {
+            var tasks = await mediator.Send(new GetAllOpenTasksByUserIdQuery(userId));
+            return Ok(tasks);
         }
 
     }

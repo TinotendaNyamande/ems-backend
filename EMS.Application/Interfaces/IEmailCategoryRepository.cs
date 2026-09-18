@@ -5,7 +5,7 @@ namespace EMS.Application.Interfaces
     public interface IEmailCategoryRepository
     {
         Task<EmailCategory> CreateEmailCategoryAsync(EmailCategory emailCategory);
-        Task<IEnumerable<EmailCategory>> GetEmailCategoriesAsync(Guid organisationId);
+        Task<IEnumerable<EmailCategory>> GetEmailCategoriesByEmailAccountAsync(Guid emailAccountId);
         Task EditEmailCategoryAsync(Guid id,string newName, int slaHours);
         Task DeleteEmailCategoryAsync (Guid id);
         Task<EmailCategory> GetCategoryByIdAsync (Guid id);

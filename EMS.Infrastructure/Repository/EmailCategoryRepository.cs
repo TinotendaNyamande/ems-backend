@@ -42,7 +42,7 @@ namespace EMS.Infrastructure.Repository
             throw new ResourceNotFoundException("email category", categoryName);
         }
 
-        public async Task<IEnumerable<EmailCategory>> GetEmailCategoriesAsync(Guid emailAccountId)
+        public async Task<IEnumerable<EmailCategory>> GetEmailCategoriesByEmailAccountAsync(Guid emailAccountId)
         {
             return await context.EmailCategories.AsNoTracking().Where(c => c.EmailAccountId == emailAccountId).ToListAsync();
         }
