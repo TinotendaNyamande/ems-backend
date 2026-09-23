@@ -67,11 +67,11 @@ namespace EMS.API.Controllers
             await mediator.Send(updatedCommand);
             return NoContent();
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTask(Guid id)
+        [HttpDelete("{id}/{userId}")]
+        public async Task<IActionResult> DeleteTask(Guid id,string userId)
         {
 
-            await mediator.Send(new DeleteTaskCommand(id));
+            await mediator.Send(new DeleteTaskCommand(id,userId));
             return NoContent();
         }
         [HttpGet("summary/{userId}")]

@@ -5,12 +5,12 @@ namespace EMS.Application.Interfaces
 {
     public interface ISLATrackingRepository
     {
-        Task<SLATracking> GetByIdAsync(Guid id);
-        Task<IEnumerable<SLATracking>> GetByEmailTaskIdAsync(Guid emailTaskId);
-        Task<SLATracking> AddAsync(SLATracking slaTracking);
-        Task UpdateAsync(Guid id,UpdateSLAEntryDto slaTracking);
+        Task<GetSLATrackingDto> GetByIdAsync(Guid id);
+        Task<IEnumerable<GetSLATrackingDto>> GetByEmailTaskIdAsync(Guid emailTaskId);
+        Task<SLATracking> CreateSLAEntryAsync(SLATracking slaTracking);
+        Task StopTimerAsync(Guid id,UpdateSLAEntryDto slaTracking);
         Task DeleteAsync(Guid id);
-        Task<SLATracking> GetCurrentEntryForTaskAsync(Guid emailTaskId);
-        Task<IEnumerable<SLATracking>> GetEntriesByUserIdAsync(string userId);
+        Task<GetSLATrackingDto> GetCurrentEntryForTaskAsync(Guid emailTaskId);
+        Task<IEnumerable<GetSLATrackingDto>> GetEntriesByUserIdAsync(string userId);
     }
 }

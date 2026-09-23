@@ -2,7 +2,8 @@ namespace EMS.Application.Common.Mapping
 {
     using AutoMapper;
     using EMS.Application.Dtos.SLATracking;
-    using EMS.Application.Features.SLAEntriesTracking.Commands.UpdateEntry;
+    using EMS.Application.Features.SLAEntriesTracking.Commands.CreateSLAEntry;
+    using EMS.Application.Features.SLAEntriesTracking.Commands.UpdateSLAEntry;
     using EMS.Domain.Models;
 
     public class SLATrackingMappingProfile : Profile
@@ -10,7 +11,8 @@ namespace EMS.Application.Common.Mapping
         public SLATrackingMappingProfile()
         {
             CreateMap<SLATracking, SLATrackingEntryDto>();
-            CreateMap<UpdateEntryCommand,UpdateSLAEntryDto>();
+            CreateMap<UpdateSLAEntryCommand,UpdateSLAEntryDto>();
+            CreateMap<CreateSLAEntryCommand,SLATracking>();
         }
     }
 }

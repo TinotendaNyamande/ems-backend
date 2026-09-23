@@ -5,7 +5,7 @@ using EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount;
 using EMS.Application.Features.EmailAccounts.Commands.DeleteEmailAccount;
 using EMS.Application.Features.EmailAccounts.Commands.TestEmailAccount;
 using EMS.Application.Features.EmailAccounts.Commands.ValidateEmailAccount;
-using EMS.Application.Features.EmailAccounts.Queries.GetEmailAccount;
+using EMS.Application.Features.EmailAccounts.Queries.GetEmailAccountById;
 using EMS.Application.Features.EmailAccounts.Queries.GetEmailAccounts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace EMS.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EmailAccountDto>> GetEmailAccount(Guid id)
         {
-            var emailDto= await mediator.Send (new GetEmailAccountQuery(id));
+            var emailDto= await mediator.Send (new GetEmailAccountByIdQuery(id));
             return Ok(emailDto);
         }
         [HttpGet]

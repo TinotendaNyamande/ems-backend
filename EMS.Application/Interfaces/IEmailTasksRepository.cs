@@ -6,7 +6,7 @@ namespace EMS.Application.Interfaces
 {
     public interface IEmailTasksRepository
     {
-        Task CreateTaskAsync (EmailTask emailTask);
+        Task<EmailTask> CreateTaskAsync (EmailTask emailTask);
         Task DeleteTaskAsync (Guid id);
         Task ReassignTaskAsync(Guid id,string newUserId);
         Task CloseTaskAsync(Guid id,string additionalInformation);

@@ -52,7 +52,7 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
-        public async Task<IEnumerable<EmailAccount>> GetAllValidatedAsync()
+        public async Task<IEnumerable<EmailAccount>> GetAllValidatedEmailAccountsAsync()
         {
             return await context.EmailAccounts.Where(m=>m.IsValidated).ToListAsync();
         }

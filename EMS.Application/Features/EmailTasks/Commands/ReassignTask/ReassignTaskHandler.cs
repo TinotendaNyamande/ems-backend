@@ -6,11 +6,13 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Commands.ReassignTask
 {
-    internal class ReassignTaskHandler(IEmailTasksRepository tasksRepository, IUserService userService, ISLATrackingRepository sLATrackingRepository) : IRequestHandler<ReassignTaskCommand>
+    internal class ReassignTaskHandler(IEmailTasksRepository tasksRepository, IUserService userService, ISLATrackingRepository sLATrackingRepository,ITaskAuditRepository taskAuditRepository) : IRequestHandler<ReassignTaskCommand>
     {
         public async Task Handle(ReassignTaskCommand command, CancellationToken token)
         {
             await userService.GetUserByIdAsync(command.NewUserId);
+            var audit = new TaskAuditTrail("Task Reassigned", command.UserId, command.Id);
+            await taskAuditRepository.CreateTaskAuditTrailAsync(audit);
             await tasksRepository.ReassignTaskAsync(command.Id, command.NewUserId);
             var currentSLAEntry = await sLATrackingRepository.GetCurrentEntryForTaskAsync(command.Id);
             if (currentSLAEntry != null)
@@ -21,9 +23,9 @@ namespace EMS.Application.Features.EmailTasks.Commands.ReassignTask
                     EndTime = DateTime.UtcNow,
                     Status = SLAEntryStatus.Stopped
                 };
-                await sLATrackingRepository.UpdateAsync(currentSLAEntry.Id, entryDto);
+                await sLATrackingRepository.StopTimerAsync(currentSLAEntry.Id, entryDto);
             }
-            var newSLAEntry = new SLATracking(command.Id,command.NewUserId,"Task reassigned");
+            var newSLAEntry = new SLATracking(command.Id, command.NewUserId, "Task reassigned");
             await sLATrackingRepository.AddAsync(newSLAEntry);
         }
     }

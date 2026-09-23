@@ -13,11 +13,10 @@ namespace EMS.Domain.Models
         public string UserId { get; private set; }= userId;
         public string Comments { get; private set; }= comments;
         public double? DurationInHours { get; private set; }
-        public void StopEntry(string comments)
+        public void StopEntry()
         {
             EndTime = DateTime.UtcNow;
             Status = SLAEntryStatus.Stopped;
-            Comments = comments;
             DurationInHours = (EndTime - StartTime)?.TotalHours;
         }
 

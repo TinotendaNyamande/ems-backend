@@ -13,28 +13,57 @@ namespace EMS.Infrastructure.Repository
     {
 
 
-        public async Task<SLATracking> AddAsync(SLATracking slaEntry)
+        public async Task<SLATracking> CreateSLAEntryAsync(SLATracking slaEntry)
         {
             context.SLATrackings.Add(slaEntry);
             await context.SaveChangesAsync();
             return slaEntry;
         }
 
-        public async Task UpdateAsync(Guid id, UpdateSLAEntryDto slaEntry)
+        public async Task StopTimerAsync(Guid id, UpdateSLAEntryDto slaEntry)
         {
             var entry = await context.SLATrackings.FindAsync(id) ?? throw new ResourceNotFoundException("SLA Entry", id);
-            entry.StopEntry(slaEntry.Comments);
+            entry.StopEntry();
             await context.SaveChangesAsync();
         }
-        public async Task<SLATracking> GetByIdAsync(Guid id)
+        public async Task<GetSLATrackingDto> GetByIdAsync(Guid id)
         {
-            return await context.SLATrackings.FindAsync(id) ?? throw new ResourceNotFoundException("SLA Entry", id);
+            var query =
+                from sla in context.SLATrackings
+                join user in context.Users
+                on sla.UserId equals user.Id
+                where sla.Id==id
+                select new GetSLATrackingDto
+                {
+                    Id=sla.Id,
+                    StartTime=sla.StartTime,
+                    EndTime=sla.EndTime,
+                    Comments=sla.Comments,
+                    Status=sla.Status,
+                    UserName = user.UserName
+                };
+            return await query.FirstOrDefaultAsync()??throw new ResourceNotFoundException("SLA Entry",id);
         }
 
-        public async Task<IEnumerable<SLATracking>> GetByEmailTaskIdAsync(Guid emailTaskId)
+        public async Task<IEnumerable<GetSLATrackingDto>> GetByEmailTaskIdAsync(Guid emailTaskId)
         {
-            var slaEntries = await context.SLATrackings.Where(s => s.EmailTaskId == emailTaskId).ToListAsync();
-            return slaEntries;
+           var query = 
+                from sla in context.SLATrackings
+                join user in context.Users
+                on sla.UserId equals user.Id
+                where sla.EmailTaskId == emailTaskId
+                 orderby sla.StartTime descending
+                select new GetSLATrackingDto
+                {
+                    Id=sla.Id,
+                    StartTime= sla.StartTime,
+                    EndTime=sla.EndTime,
+                    Status=sla.Status,
+                    Comments = sla.Comments,
+                    UserName = user.UserName
+                };
+            
+            return await query.ToListAsync();
         }
 
 
@@ -48,17 +77,48 @@ namespace EMS.Infrastructure.Repository
             }
         }
 
-        public async Task<SLATracking> GetCurrentEntryForTaskAsync(Guid emailTaskId)
+        public async Task<GetSLATrackingDto> GetCurrentEntryForTaskAsync(Guid emailTaskId)
         {
-            var currentEntry = await context.SLATrackings
-                .Where(s => s.EmailTaskId == emailTaskId && s.Status == SLAEntryStatus.Running && s.EndTime == null)
-                .FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("SLA Entry for Email Task", emailTaskId);
-            return currentEntry;
+
+            var query = 
+                from sla in context.SLATrackings
+                join user in context.Users
+                on sla.UserId equals user.Id
+                where sla.EmailTaskId == emailTaskId
+                && sla.Status== SLAEntryStatus.Running && sla.EndTime==null
+                 orderby sla.StartTime descending
+                select new GetSLATrackingDto
+                {
+                    Id=sla.Id,
+                    StartTime= sla.StartTime,
+                    EndTime=sla.EndTime,
+                    Status=sla.Status,
+                    Comments = sla.Comments,
+                    UserName = user.UserName
+                };
+            
+            return await query.FirstOrDefaultAsync()?? throw new ResourceNotFoundException("SLA Entry for Email Task", emailTaskId);;
         }
 
-        public async Task<IEnumerable<SLATracking>> GetEntriesByUserIdAsync(string userId)
+        public async Task<IEnumerable<GetSLATrackingDto>> GetEntriesByUserIdAsync(string userId)
         {
-            return await context.SLATrackings.Where(s => s.UserId == userId).ToListAsync();
+                      var query = 
+                from sla in context.SLATrackings
+                join user in context.Users
+                on sla.UserId equals user.Id
+                where sla.UserId == userId
+                orderby sla.StartTime descending
+                select new GetSLATrackingDto
+                {
+                    Id=sla.Id,
+                    StartTime= sla.StartTime,
+                    EndTime=sla.EndTime,
+                    Status=sla.Status,
+                    Comments = sla.Comments,
+                    UserName = user.UserName
+                };
+            
+            return await query.ToListAsync();
         }
     }
 }

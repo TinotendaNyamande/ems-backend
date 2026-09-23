@@ -15,6 +15,7 @@ namespace EMS.Infrastructure.persistence
         internal DbSet<EmailTask> EmailTasks { get; set; }
         internal DbSet<EmailCategoriesUserMatrix> EmailCategoriesUserMatrices { get; set; }
         internal DbSet<SLATracking> SLATrackings { get; set; }
+        internal DbSet<TaskAuditTrail> TaskAuditTrails {get;set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -44,6 +45,10 @@ namespace EMS.Infrastructure.persistence
             builder.Entity<SLATracking>()
                 .HasOne(s => s.EmailTask)
                 .WithMany(e => e.SLATrackings)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TaskAuditTrail>()
+                .HasOne(e=>e.EmailTask)
+                .WithMany(a=>a.TaskAuditTrails)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

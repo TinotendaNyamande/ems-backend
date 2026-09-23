@@ -32,10 +32,11 @@ namespace EMS.Infrastructure.Repository
             await context.SaveChangesAsync();
         }
 
-        public async Task CreateTaskAsync(EmailTask emailTask)
+        public async Task<EmailTask> CreateTaskAsync(EmailTask emailTask)
         {
             context.Add(emailTask);
             await context.SaveChangesAsync();
+            return emailTask;
         }
 
         public async Task DeleteTaskAsync(Guid id)

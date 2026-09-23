@@ -1,14 +1,16 @@
+using EMS.Application.Features.Emails.Queries.GetEmailsPendingCategorization;
 using EMS.Application.Interfaces;
 using EMS.Contracts.Events.Email;
+using MediatR;
 
 namespace EMS.EmailCategorization.Worker.Services
 {
-    internal class EmailEventReader(IEmailRepository emailRepository,ICategorizeEmails categorizeEmails):IEmailEventReader
+    internal class EmailEventReader(IMediator mediator,ICategorizeEmails categorizeEmails):IEmailEventReader
     {
 
         public async Task ReadEmailsPendingCategorizationAsync(CancellationToken cancellationToken)
         {
-            var emails = await emailRepository.GetEmailsPendingCategorization();
+            var emails = await mediator.Send(new GetEmailsPendingCategorizationQuery(),cancellationToken);
             foreach(var email in emails)
             {
                 var emailEvent = new EmailReceivedEvent

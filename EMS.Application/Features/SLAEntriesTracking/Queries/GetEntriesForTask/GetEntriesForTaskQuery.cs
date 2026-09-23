@@ -4,7 +4,7 @@ namespace EMS.Application.Features.SLAEntriesTracking.Queries.GetEntriesForTask
     using MediatR;
     using System.Collections.Generic;
 
-    public record GetEntriesForTaskQuery (Guid EmailTaskId): IRequest<IEnumerable<SLATrackingEntryDto>>
+    public record GetEntriesForTaskQuery (Guid EmailTaskId): IRequest<IEnumerable<GetSLATrackingDto>>
     {
     }
 }

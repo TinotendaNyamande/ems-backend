@@ -1,6 +1,4 @@
 using System.Text.RegularExpressions;
-using EMS.Application.Interfaces;
-using EMS.Contracts.Events.Email;
 using EMS.EmailCategorization.Worker.Models;
 
 namespace EMS.EmailCategorization.Worker.Services

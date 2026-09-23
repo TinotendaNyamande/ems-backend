@@ -108,7 +108,7 @@ namespace EMS.Infrastructure.Repository
             return await query.ToListAsync();
         }
 
-        public async Task UserAssignedTaskActionAsync(Guid matrixId)
+        public async Task RecordUserAssignedTaskActionAsync(Guid matrixId)
         {
             var matrix = await context.EmailCategoriesUserMatrices.FindAsync(matrixId)
             ?? throw new ResourceNotFoundException("Matrix", matrixId);

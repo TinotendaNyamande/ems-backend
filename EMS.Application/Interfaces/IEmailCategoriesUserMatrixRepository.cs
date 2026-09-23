@@ -8,7 +8,7 @@ namespace EMS.Application.Interfaces
         Task AddUserToMatrixAsync(EmailCategoriesUserMatrix userMatrix);
         Task DeleteMatrixAsync(Guid id);
         Task<IEnumerable<EmailCategoriesUserMatrix>> GetAllAvailableForCategoryAsync(Guid? categoryId);
-        Task UserAssignedTaskActionAsync(Guid matrxiId);
+        Task RecordUserAssignedTaskActionAsync(Guid matrxiId);
         Task<IEnumerable<GetMatrixDto>> GetMatrixForEmailAccountAsync(Guid emailAccountId);
         Task<IEnumerable<GetMatrixDto>> GetMatrixForUserAsync(string id);
         Task<GetMatrixDto> GetMatrixByIdAsync (Guid id);
