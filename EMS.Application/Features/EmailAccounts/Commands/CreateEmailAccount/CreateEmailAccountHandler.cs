@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
@@ -6,7 +7,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount
 {
-    public class CreateEmailAccountHandler(IEmailAccountRepository emailConfigurationRepository, IMapper mapper, IEncryptionService encryptionService) : IRequestHandler<CreateEmailAccountCommand, EmailAccountDto>
+    public class CreateEmailAccountHandler(IEmailAccountRepository emailConfigurationRepository, IMapper mapper, IEncryptionService encryptionService) : ICommandHandler<CreateEmailAccountCommand, EmailAccountDto>
     {
         public async Task<EmailAccountDto> Handle(CreateEmailAccountCommand request, CancellationToken cancellationToken)
         {

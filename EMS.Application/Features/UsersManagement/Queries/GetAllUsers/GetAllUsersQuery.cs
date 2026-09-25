@@ -1,9 +1,9 @@
-﻿using EMS.Application.Dtos.Auth;
-using MediatR;
+﻿using EMS.Application.Abstractions;
+using EMS.Application.Dtos.Auth;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetAllUsers
 {
-    public record GetAllUsersQuery():IRequest<IEnumerable<UserDto>>
+    public record GetAllUsersQuery():ICommand<IEnumerable<UserDto>>
     {
     }
 }

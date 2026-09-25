@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
 using EMS.Application.Interfaces;
 using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetEmailAccounts
 {
-    public class GetEmailAccountsHandler(IEmailAccountRepository emailAccountRepository,IMapper mapper) : IRequestHandler<GetEmailAccountsQuery, IEnumerable<EmailAccountDto>>
+    public class GetEmailAccountsHandler(IEmailAccountRepository emailAccountRepository,IMapper mapper) : ICommandHandler<GetEmailAccountsQuery, IEnumerable<EmailAccountDto>>
     {
         public async Task<IEnumerable<EmailAccountDto>> Handle(GetEmailAccountsQuery request, CancellationToken cancellationToken)
         {

@@ -12,9 +12,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddInfrastructure(builder.Configuration,builder.Environment);
 builder.Services.AddRabbitMQ(builder.Configuration);
 builder.Services.AddSingleton(RabbitMqRoutes.EmailReceived);
-builder.Services.AddScoped<IEmailCategorizerService,RegexEmailCategorizerService>();
-builder.Services.AddScoped<ICategorizeEmails,CategorizeEmails>();
-builder.Services.AddScoped<IEmailEventReader,EmailEventReader>();
+builder.Services.AddScoped<IEmailCategorizerProcess,EmailCategorizerProcess>();
 
 // var fireworksApiKey = builder.Configuration["Fireworks:APIKey"];
 // var fireworksModelId = builder.Configuration["Fireworks:ModelId"]

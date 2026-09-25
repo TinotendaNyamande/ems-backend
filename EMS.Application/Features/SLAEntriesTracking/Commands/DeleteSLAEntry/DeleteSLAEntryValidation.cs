@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace EMS.Application.Features.SLAEntriesTracking.Commands.DeleteSLAEntry
 {
-    public class DeleteEntryValidation : AbstractValidator<DeleteEntryCommand>
+    public class DeleteEntryValidation : AbstractValidator<DeleteSLAEntryCommand>
     {
         public DeleteEntryValidation()
         {

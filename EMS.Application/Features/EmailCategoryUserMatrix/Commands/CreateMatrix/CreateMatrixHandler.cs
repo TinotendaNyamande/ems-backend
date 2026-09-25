@@ -1,4 +1,5 @@
 using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategoryMatrix;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
@@ -6,7 +7,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Commands.CreateMatrix
 {
-    internal class CreateMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository,IEmailCategoryRepository emailCategoryRepository,IUserService userService, IMapper mapper) : IRequestHandler<CreateMatrixCommand, GetMatrixDto>
+    internal class CreateMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository,IEmailCategoryRepository emailCategoryRepository,IUserService userService, IMapper mapper) : ICommandHandler<CreateMatrixCommand, GetMatrixDto>
     {
         public async Task<GetMatrixDto> Handle(CreateMatrixCommand command, CancellationToken cancellationToken)
         {

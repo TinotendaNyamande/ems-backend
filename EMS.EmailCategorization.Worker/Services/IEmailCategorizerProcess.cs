@@ -1,6 +1,6 @@
 namespace EMS.EmailCategorization.Worker.Services
 {
-    public interface IEmailEventReader
+    public interface IEmailCategorizerProcess
     {
         Task ReadEmailsPendingCategorizationAsync(CancellationToken cancellationToken);
     }

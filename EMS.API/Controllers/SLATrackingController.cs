@@ -1,9 +1,9 @@
 namespace EMS.API.Controllers
 {
-    using EMS.Application.Features.SLAEntriesTracking.Commands.DeleteEntry;
-    using EMS.Application.Features.SLAEntriesTracking.Commands.UpdateEntry;
+    using EMS.Application.Features.SLAEntriesTracking.Commands.DeleteSLAEntry;
+    using EMS.Application.Features.SLAEntriesTracking.Commands.UpdateSLAEntry;
     using EMS.Application.Features.SLAEntriesTracking.Queries.GetEntriesForTask;
-    using EMS.Application.Features.SLAEntriesTracking.Queries.GetEntryById;
+    using EMS.Application.Features.SLAEntriesTracking.Queries.GetSLAEntryById;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +15,7 @@ namespace EMS.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var query = new GetEntryByIdQuery(id);
+            var query = new GetSLAEntryByIdQuery(id);
             var result = await mediator.Send(query);
             return Ok(result);
         }
@@ -30,7 +30,7 @@ namespace EMS.API.Controllers
 
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateEntryCommand slaTracking)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateSLAEntryCommand slaTracking)
         {
             var updatedCommand = slaTracking with { Id = id };
             await mediator.Send(updatedCommand);
@@ -40,7 +40,7 @@ namespace EMS.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var command = new DeleteEntryCommand(id);
+            var command = new DeleteSLAEntryCommand(id);
             await mediator.Send(command);
             return NoContent();
         }

@@ -6,9 +6,9 @@ namespace EMS.Application.Features.EmailAccounts.Commands.TestEmailAccount
     {
         public TestEmailValidator()
         {
-            RuleFor(x => x.Id)
+            RuleFor(x => x.EmailAccountId)
                 .NotEmpty()
-                .WithMessage("Mail box config id cannot be empty");
+                .WithMessage("Email account id cannot be empty");
             RuleFor(x => x.ToEmail)
                 .NotEmpty()
                 .WithMessage("Receiver Email address is required")

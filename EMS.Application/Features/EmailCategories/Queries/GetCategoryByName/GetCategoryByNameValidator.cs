@@ -6,7 +6,8 @@ namespace EMS.Application.Features.EmailCategories.Queries.GetCategoryByName
     {
         public GetCategoryByNameValidator()
         {
-            RuleFor(x => x.CategoryName)
-                .NotEmpty().WithMessage("Category name is required.");        }
+            RuleFor(x => x.CategoryName).Must(x=>!string.IsNullOrWhiteSpace(x)).WithMessage("Category name is required.");
+            RuleFor(x=>x.EmailAccountId).NotEmpty().WithMessage("Email account id cannot be empty");
+        }
     }
 }

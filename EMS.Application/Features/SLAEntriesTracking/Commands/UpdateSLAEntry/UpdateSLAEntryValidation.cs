@@ -8,7 +8,6 @@ namespace EMS.Application.Features.SLAEntriesTracking.Commands.UpdateSLAEntry
         {
             RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required.");
             RuleFor(x => x.Status).NotEmpty().WithMessage("Status is required.");
-            RuleFor(x => x.Comments).NotEmpty().WithMessage("Comments is required.");
         }
     }
 }

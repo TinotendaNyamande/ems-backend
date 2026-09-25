@@ -31,7 +31,7 @@ namespace EMS.API.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEmailCategory(Guid id,[FromQuery] Guid? newCategoryId)
+        public async Task<IActionResult> DeleteEmailCategory(Guid id,[FromQuery] Guid newCategoryId)
         {
             await mediator.Send(new DeleteEmailCategoryCommand(id,newCategoryId));
             return NoContent();
@@ -42,10 +42,10 @@ namespace EMS.API.Controllers
             var emailCategory = await mediator.Send(new GetEmailCategoryByIdQuery(id));
             return Ok(emailCategory);
         }
-                [HttpGet("by-name/{categoryName}")]
-        public async Task<ActionResult<GetEmailCategoryDto>> GetByName(string categoryName)
+        [HttpGet("by-name/{categoryName}/{emailAccountId}")]
+        public async Task<ActionResult<GetEmailCategoryDto>> GetByName(string categoryName,Guid emailAccountId)
         {
-            var emailCategory = await mediator.Send(new GetCategoryByNameQuery(categoryName));
+            var emailCategory = await mediator.Send(new GetCategoryByNameQuery(emailAccountId,categoryName));
             return Ok(emailCategory); 
         }
         [HttpGet("by-email-account/{emailAccountId}")]

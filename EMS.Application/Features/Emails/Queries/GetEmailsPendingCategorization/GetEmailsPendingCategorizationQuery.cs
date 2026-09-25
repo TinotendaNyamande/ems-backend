@@ -1,7 +1,7 @@
+using EMS.Application.Abstractions;
 using EMS.Domain.Models;
-using MediatR;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailsPendingCategorization
 {
-    public record GetEmailsPendingCategorizationQuery():IRequest<IEnumerable<Email>>;
+    public record GetEmailsPendingCategorizationQuery():ICommand<IEnumerable<Email>>;
 }

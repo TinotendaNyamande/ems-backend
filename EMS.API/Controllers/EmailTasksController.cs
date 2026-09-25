@@ -52,7 +52,7 @@ namespace EMS.API.Controllers
         {
             var updatedCommand = command with
             {
-                Id = id
+                TaskId = id
             };
             await mediator.Send(updatedCommand);
             return NoContent();

@@ -1,11 +1,12 @@
 using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategories;
 using EMS.Application.Interfaces;
 using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById
 {
-    public class GetEmailCategoryByIdHandler(IEmailCategoryRepository emailCategoryRepository,IMapper mapper) : IRequestHandler<GetEmailCategoryByIdQuery, GetEmailCategoryDto>
+    public class GetEmailsByCategoryIdHandler(IEmailCategoryRepository emailCategoryRepository,IMapper mapper) : ICommandHandler<GetEmailCategoryByIdQuery, GetEmailCategoryDto>
     {
         public async Task<GetEmailCategoryDto> Handle(GetEmailCategoryByIdQuery request, CancellationToken cancellationToken)
         {

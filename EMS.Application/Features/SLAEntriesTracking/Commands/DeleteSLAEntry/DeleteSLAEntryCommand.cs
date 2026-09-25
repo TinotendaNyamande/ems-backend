@@ -1,8 +1,9 @@
 namespace EMS.Application.Features.SLAEntriesTracking.Commands.DeleteSLAEntry
 {
+    using EMS.Application.Abstractions;
     using MediatR;
 
-    public record DeleteEntryCommand(Guid Id) : IRequest
+    public record DeleteSLAEntryCommand(Guid Id) : ICommand
     {
     }
 

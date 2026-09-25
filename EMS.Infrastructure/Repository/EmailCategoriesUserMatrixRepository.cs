@@ -12,7 +12,6 @@ namespace EMS.Infrastructure.Repository
         public async Task AddUserToMatrixAsync(EmailCategoriesUserMatrix userMatrix)
         {
             context.Add(userMatrix);
-            await context.SaveChangesAsync();
         }
 
         public async Task DeleteMatrixAsync(Guid id)
@@ -113,7 +112,6 @@ namespace EMS.Infrastructure.Repository
             var matrix = await context.EmailCategoriesUserMatrices.FindAsync(matrixId)
             ?? throw new ResourceNotFoundException("Matrix", matrixId);
             matrix.ChangeLastAssignedDate();
-            await context.SaveChangesAsync();
         }
     }
 }

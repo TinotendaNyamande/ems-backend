@@ -21,7 +21,6 @@ namespace EMS.Infrastructure.Repository
             {
                 task.EditAdditionalInfo(additionalInformation);
             }
-            await context.SaveChangesAsync();
         }
 
         public async Task CloseTaskAsync(Guid id, string additionalInformation)
@@ -29,13 +28,11 @@ namespace EMS.Infrastructure.Repository
             var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
              throw new ResourceNotFoundException("Task", id);
             task.CloseTask(additionalInformation);
-            await context.SaveChangesAsync();
         }
 
         public async Task<EmailTask> CreateTaskAsync(EmailTask emailTask)
         {
             context.Add(emailTask);
-            await context.SaveChangesAsync();
             return emailTask;
         }
 
@@ -53,7 +50,6 @@ namespace EMS.Infrastructure.Repository
             var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
              throw new ResourceNotFoundException("Task", id);
             task.EditAdditionalInfo(additionalInfo);
-            await context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<GetTasksDto>> GetAllOpenTasksAsync()
@@ -300,7 +296,6 @@ namespace EMS.Infrastructure.Repository
             logger.LogInformation("Task {TaskId} found. Current assigned user: {CurrentUserId}", id, task.AssignedToUser);
             task.AssignToUser(newUserId);
             logger.LogInformation("Task {TaskId} reassigned to user {NewUserId}. Updating database.", id, newUserId);
-            await context.SaveChangesAsync();
             logger.LogInformation("Task {TaskId} successfully reassigned to user {NewUserId}.", id, newUserId);
         }
         public async Task ReOpenTaskAsync(Guid id)
@@ -308,7 +303,6 @@ namespace EMS.Infrastructure.Repository
             var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
             throw new ResourceNotFoundException("Task", id);
             task.ReOpenTask();
-            await context.SaveChangesAsync();
         }
     }
 }

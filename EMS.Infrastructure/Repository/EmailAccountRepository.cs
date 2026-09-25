@@ -19,7 +19,6 @@ namespace EMS.Infrastructure.Repository
                 throw new InvalidOperationException("Incorrect old client secret provided");
             }
             email.ChangeClientSecret(changeClientSecretDto.NewSecret);
-            await context.SaveChangesAsync();
 
         }
 
@@ -33,14 +32,12 @@ namespace EMS.Infrastructure.Repository
                 throw new InvalidOperationException("Incorrect old password provided");
             }
             email.ChangePassword(changePasswordDto.NewPassword);
-            await context.SaveChangesAsync();
         }
 
         public async Task CreateEmailAccountAsync(EmailAccount EmailAccount)
         {
 
             context.Add(EmailAccount);
-            await context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Guid id)
@@ -57,7 +54,7 @@ namespace EMS.Infrastructure.Repository
             return await context.EmailAccounts.Where(m=>m.IsValidated).ToListAsync();
         }
 
-        public async Task<EmailAccount> GetEmailAccountAsync(Guid id)
+        public async Task<EmailAccount> GetEmailAccountByIdAsync(Guid id)
         {
             return await context.EmailAccounts
                 .AsNoTracking()
@@ -77,14 +74,12 @@ namespace EMS.Infrastructure.Repository
         {
             var emailAccount = context.EmailAccounts.Find(id) ?? throw new ResourceNotFoundException("Email Account", id);
             emailAccount.Invalidate();
-            await context.SaveChangesAsync();
         }
 
         public async Task MarkAsValidated(Guid id)
         {
             var emailAccount = context.EmailAccounts.Find(id) ?? throw new ResourceNotFoundException("Email Account", id);
             emailAccount.Validate();
-            await context.SaveChangesAsync();
         }
     }
 }

@@ -12,7 +12,6 @@ namespace EMS.Infrastructure.Repository
         public async Task<TaskAuditTrail> CreateTaskAuditTrailAsync(TaskAuditTrail taskAuditTrail)
         {
             context.TaskAuditTrails.Add(taskAuditTrail);
-            await context.SaveChangesAsync();
             return taskAuditTrail;
         }
 

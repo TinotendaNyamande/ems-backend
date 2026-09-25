@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.Auth.Commands.ChangeUserPassword
 {
-    public class ChangeUserPasswordHandler(IAuthService authService,IMapper mapper) : IRequestHandler<ChangeUserPasswordCommand>
+    public class ChangeUserPasswordHandler(IAuthService authService,IMapper mapper) : ICommandHandler<ChangeUserPasswordCommand>
     {
         public async Task Handle(ChangeUserPasswordCommand request, CancellationToken cancellationToken)
         {

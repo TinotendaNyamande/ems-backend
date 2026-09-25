@@ -9,7 +9,7 @@ namespace EMS.Application.Interfaces
         Task DeleteAsync(Guid id);
         Task ChangePasswordAsync(Guid id, ChangeEmailPasswordDto changePasswordDto);
         Task ChangeApplicationSecretAsync(Guid id, ChangeClientSecretDto changeClientSecretDto);
-        Task<EmailAccount> GetEmailAccountAsync(Guid id);
+        Task<EmailAccount> GetEmailAccountByIdAsync(Guid id);
         Task<IEnumerable<EmailAccount>> GetEmailAccountsAsync();
         Task MarkAsValidated (Guid id);
         Task MarkAsInvalidated (Guid id);

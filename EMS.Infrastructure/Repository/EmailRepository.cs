@@ -23,38 +23,34 @@ namespace EMS.Infrastructure.Repository
             var email = await context.Emails.FindAsync(id) ?? throw new ResourceNotFoundException("Email", id);
             email.ChangeStatus(EmailStatus.Categorized);
             email.ChangeCategory(newCategoryId);
-            await context.SaveChangesAsync();
         }
 
-        public async Task ChangeCategoryForBulkEmailsAsync(Guid oldCategoryId, Guid newCategoryId)
-        {
-            var emails = await context.Emails
-            .Where(e => e.EmailCategoryId == oldCategoryId)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(
-                e => e.EmailCategoryId, newCategoryId
-            ));
+        // public async Task ChangeCategoryForBulkEmailsAsync(Guid EmailID,Guid oldCategoryId, Guid newCategoryId)
+        // {
+        //     var emails = await context.Emails
+        //     .Where(e => e.EmailCategoryId == oldCategoryId)
+        //     .ExecuteUpdateAsync(setters => setters.SetProperty(
+        //         e => e.EmailCategoryId, newCategoryId
+        //     ));
 
-        }
+        // }
 
         public async Task ChangeEmailCategoryAsync(Guid id, Guid newCategoryId)
         {
             var emailCategory = await context.Emails.FindAsync(id)
             ?? throw new ResourceNotFoundException("Email category", id);
             emailCategory.ChangeCategory(newCategoryId);
-            await context.SaveChangesAsync();
         }
 
         public async Task ChangeEmailStatusAsync(Guid id, EmailStatus newStatus)
         {
             var email = await context.Emails.FindAsync(id) ?? throw new ResourceNotFoundException("Email", id);
             email.ChangeStatus(newStatus);
-            await context.SaveChangesAsync();
         }
 
         public async Task<Email> CreateEmailAsync(Email email)
         {
             context.Add(email);
-            await context.SaveChangesAsync();
             return email;
         }
 
@@ -71,7 +67,6 @@ namespace EMS.Infrastructure.Repository
         {
             var email = await context.Emails.FindAsync(emailId) ?? throw new ResourceNotFoundException("Email", emailId);
             email.NewEmailAssigned();
-            await context.SaveChangesAsync();
         }
 
         public async Task<Email> GetEmailByIdAsync(Guid id)
@@ -85,7 +80,7 @@ namespace EMS.Infrastructure.Repository
             return await context.Emails.Where(e => e.ExternalMessageId == messageId).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Email>> GetEmailsByCategoryAsync(Guid categoryId)
+        public async Task<IEnumerable<Email>> GetEmailsByCategoryIdAsync(Guid categoryId)
         {
             return await context.Emails.Where(e => e.EmailCategoryId == categoryId).ToListAsync();
 

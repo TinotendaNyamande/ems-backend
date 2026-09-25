@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
 using EMS.Application.Interfaces;
 using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.ChangeEmailAccountPassword
 {
-    public class ChangeEmailPasswordHandler(IEmailAccountRepository emailConfigurationRepository,IMapper mapper,IEncryptionService encryptionService) : IRequestHandler<ChangeEmailAccountPasswordCommand>
+    public class ChangeEmailPasswordHandler(IEmailAccountRepository emailConfigurationRepository,IMapper mapper,IEncryptionService encryptionService) : ICommandHandler<ChangeEmailAccountPasswordCommand>
     {
         public async Task Handle(ChangeEmailAccountPasswordCommand request, CancellationToken cancellationToken)
         {

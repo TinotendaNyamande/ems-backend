@@ -1,8 +1,9 @@
+using EMS.Application.Abstractions;
 using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Commands.DeleteTask
 {
-    public record DeleteTaskCommand (Guid Id,string UserId) : IRequest
+    public record DeleteTaskCommand (Guid Id,string UserId) : ICommand
     {
         
     }

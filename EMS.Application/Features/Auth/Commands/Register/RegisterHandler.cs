@@ -1,10 +1,11 @@
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
 using MediatR;
 
 namespace EMS.Application.Features.Auth.Commands.Register
 {
-    public class RegisterHandler(IAuthService authService) : IRequestHandler<RegisterCommand, AuthResponseDto>
+    public class RegisterHandler(IAuthService authService) : ICommandHandler<RegisterCommand, AuthResponseDto>
     {
         public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {

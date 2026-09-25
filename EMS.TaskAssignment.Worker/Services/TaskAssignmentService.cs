@@ -27,20 +27,7 @@ namespace EMS.TaskAssignment.Worker.Services
                     logger.LogInformation("Email category {id}", email.EmailCategoryId);
                     if (email.EmailCategoryId != Guid.Empty && email.EmailCategoryId != null)
                     {
-                        var matrix = await mediator.Send(new GetAllUsersAvailableForCategoryQuery(email.EmailCategoryId), cancellationToken);//await matrixRepository.GetAllAvailableForCategoryAsync(email.EmailCategoryId);
-                        logger.LogInformation("Found {count} categories matrix", matrix.Count());
-                        var pickedMatrix = await DetermineUserToAssign(matrix);
-                        logger.LogInformation("Picked user for task {id}", pickedMatrix.UserId);
-                        var task = await mediator.Send(new CreateTaskCommand(email.Id, pickedMatrix.UserId), cancellationToken);
-
-                        await mediator.Send(new MarkEmailAsAssignedCommand(email.Id), cancellationToken);
-
-                        await mediator.Send(new RecordUserAssignedTaskActionCommand(pickedMatrix.Id), cancellationToken);
-
-                        await mediator.Send(new CreateSLAEntryCommand(task.Id, "New task assigned"), cancellationToken);
-
-
-                        await mediator.Send(new CreateAuditTrailEntryCommand(task.Id, "System", "Task assigned to user"),cancellationToken);
+                       
                     }
 
                 }
@@ -48,19 +35,6 @@ namespace EMS.TaskAssignment.Worker.Services
 
 
         }
-        private static async Task<EmailCategoriesUserMatrix> DetermineUserToAssign(IEnumerable<EmailCategoriesUserMatrix> matrix)
-        {
-            var candidates = matrix.Where(x => x.IsAvailable).ToList();
 
-            if (candidates.Count == 0)
-                throw new InvalidOperationException("No available users found for this category.");
-
-            var selected = candidates
-                .OrderBy(x => x.LastAssignedAt == default ? DateTime.MinValue : x.LastAssignedAt)
-                .ThenBy(x => x.Id)
-                .First();
-
-            return selected;
-        }
     }
 }

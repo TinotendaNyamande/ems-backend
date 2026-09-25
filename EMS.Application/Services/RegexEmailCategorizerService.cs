@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
-using EMS.EmailCategorization.Worker.Models;
+using EMS.Application.Interfaces;
+using EMS.Application.Models;
 
-namespace EMS.EmailCategorization.Worker.Services
+namespace EMS.Application.Services
 {
     internal class RegexEmailCategorizerService(
         ) : IEmailCategorizerService
@@ -69,9 +70,7 @@ namespace EMS.EmailCategorization.Worker.Services
         public Task<EmailCategoryResult> CategorizeAsync(
             string? subject,
             string? body,
-            IEnumerable<string> categoryNames,
-            CancellationToken cancellationToken
-            )
+            IEnumerable<string> categoryNames)
         {
             // Deduplicate & keep deterministic order
             var categoriesList = categoryNames

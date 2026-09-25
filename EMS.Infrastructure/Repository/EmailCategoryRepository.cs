@@ -11,7 +11,6 @@ namespace EMS.Infrastructure.Repository
         public async Task<EmailCategory> CreateEmailCategoryAsync(EmailCategory emailCategory)
         {
             context.Add(emailCategory);
-            await context.SaveChangesAsync();
             return emailCategory;
         }
 
@@ -36,9 +35,9 @@ namespace EMS.Infrastructure.Repository
             throw new ResourceNotFoundException("email category", id);
         }
 
-        public async Task<EmailCategory> GetCategoryByNameAsync(string categoryName)
+        public async Task<EmailCategory> GetCategoryByNameAsync(Guid emailAccountId,string categoryName)
         {
-            return await context.EmailCategories.AsNoTracking().Where(e => e.CategoryName == categoryName).FirstOrDefaultAsync() ??
+            return await context.EmailCategories.AsNoTracking().Where(e => e.CategoryName == categoryName && e.EmailAccountId==emailAccountId).FirstOrDefaultAsync() ??
             throw new ResourceNotFoundException("email category", categoryName);
         }
 
@@ -53,7 +52,6 @@ namespace EMS.Infrastructure.Repository
                 throw new ResourceNotFoundException("email category", id);
             emailCategory.ChangeCategoryName(newName);
             emailCategory.ChangeSLAHours(slaHours);
-            await context.SaveChangesAsync();
         }
     }
 }

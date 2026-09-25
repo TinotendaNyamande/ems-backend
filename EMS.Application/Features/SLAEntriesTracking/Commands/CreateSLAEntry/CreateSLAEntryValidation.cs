@@ -7,6 +7,7 @@ namespace EMS.Application.Features.SLAEntriesTracking.Commands.CreateSLAEntry
         public CreateSLAEntryValidation()
         {
             RuleFor(x=>x.EmailTaskId).NotEmpty().WithMessage("Email Task Id cannot be empty");
+            RuleFor(x=>x.UserId).NotEmpty().WithMessage("User Id cannot be empty");
             RuleFor(x=>x.Comments).Must(x=>!string.IsNullOrWhiteSpace(x)).WithMessage("Comment cannot be empty");
         }
     }

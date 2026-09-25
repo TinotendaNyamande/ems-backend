@@ -1,102 +1,72 @@
-using EMS.Application.Dtos.SLATracking;
+using EMS.Application.Abstractions;
+using EMS.Application.Features.AuditTrail.Commands.CreateAuditTrailEntry;
+using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
+using EMS.Application.Features.SLAEntriesTracking.Commands.CreateSLAEntry;
+using EMS.Application.Features.SLAEntriesTracking.Commands.UpdateSLAEntry;
+using EMS.Application.Features.SLAEntriesTracking.Queries.GetRunningSLAEntryForTask;
 using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
-using EMS.Domain.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.EmailTasks.Commands.UpdateStatus
 {
-    internal class UpdateStatusHandler(IEmailTasksRepository tasksRepository, ISLATrackingRepository sLATrackingRepository,
-    ITaskAuditRepository taskAuditRepository, ILogger<UpdateStatusHandler> logger
-    ) : IRequestHandler<UpdateStatusCommand>
+    internal class UpdateStatusHandler(IEmailTasksRepository tasksRepository, IMediator mediator, ILogger<UpdateStatusHandler> logger
+    ) : ICommandHandler<UpdateStatusCommand>
     {
-        public async Task Handle(UpdateStatusCommand command, CancellationToken token)
+        public async Task Handle(UpdateStatusCommand command, CancellationToken cancellationToken)
         {
             logger.LogInformation("Updating status for task {TaskId} to {NewStatus}", command.Id, command.NewStatus);
-
             await tasksRepository.ChangeTaskStatusAsync(
                 command.Id,
                 command.NewStatus,
                 command.AdditionalInformation);
-            var audit = new TaskAuditTrail($"Task status changed to {command.NewStatus}", command.UserId, command.Id);
-            await taskAuditRepository.CreateTaskAuditTrailAsync(audit);
+            var runningSLAEntry = await mediator.Send(new GetRunningSLAEntryForTaskQuery(command.Id), cancellationToken);
+            var task = await mediator.Send(new GetTaskByIdQuery(command.Id),cancellationToken);
+            await mediator.Send(new CreateAuditTrailEntryCommand(command.Id, command.UserId, $"Task status changed to {command.NewStatus}"), cancellationToken);
             if (command.NewStatus == TaskStatusList.Closed)
             {
-                var task = await tasksRepository.GetTaskByIdAsync(command.Id);
-                if (task != null)
-                {
-                    var slaEntry = await sLATrackingRepository.GetCurrentEntryForTaskAsync(task.Id);
-                    if (slaEntry != null)
-                    {
-                        var updateSLAEntryDto = new UpdateSLAEntryDto
-                        {
-                            EndTime = DateTime.UtcNow,
-                            Status = SLAEntryStatus.Stopped,
-                            Comments = command.AdditionalInformation
-                        };
-                        await sLATrackingRepository.StopTimerAsync(slaEntry.Id, updateSLAEntryDto);
-                    }
 
+                {
+                    await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
                 }
+
             }
             if (command.NewStatus == TaskStatusList.Hold)
             {
-                var task = await tasksRepository.GetTaskByIdAsync(command.Id);
-                if (task != null)
                 {
-                    var slaEntry = await sLATrackingRepository.GetCurrentEntryForTaskAsync(task.Id);
-                    if (slaEntry != null)
+                    if (runningSLAEntry != null)
                     {
-                        var updateSLAEntryDto = new UpdateSLAEntryDto
-                        {
-                            EndTime = DateTime.UtcNow,
-                            Status = SLAEntryStatus.Stopped,
-                        };
-                        await sLATrackingRepository.StopTimerAsync(slaEntry.Id, updateSLAEntryDto);
-                        var newSLAEntry = new SLATracking(task.Id, task.AssignedToUser, "Task put on hold");
-                        await sLATrackingRepository.AddAsync(newSLAEntry);
+                        await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
                     }
+                    await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task put on hold"), cancellationToken);
+
 
                 }
             }
             if (command.NewStatus == TaskStatusList.Assigned)
             {
-                var task = await tasksRepository.GetTaskByIdAsync(command.Id);
-                if (task != null)
+
+                if (runningSLAEntry != null)
                 {
-                    var slaEntry = await sLATrackingRepository.GetCurrentEntryForTaskAsync(task.Id);
-                    if (slaEntry != null)
-                    {
-                        var updateSLAEntryDto = new UpdateSLAEntryDto
-                        {
-                            EndTime = DateTime.UtcNow,
-                            Status = SLAEntryStatus.Stopped,
-                        };
-                        await sLATrackingRepository.StopTimerAsync(slaEntry.Id, updateSLAEntryDto);
-                        var newSLAEntry = new SLATracking(task.Id, task.AssignedToUser, "Task resumed from hold");
-                        await sLATrackingRepository.AddAsync(newSLAEntry);
-                    }
+                    await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
+
                 }
+                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task assigned to user"), cancellationToken);
+
+
             }
             if (command.NewStatus == TaskStatusList.Escalated)
             {
-                var task = await tasksRepository.GetTaskByIdAsync(command.Id);
-                if (task != null)
+
+                if (runningSLAEntry != null)
                 {
-                    var slaEntry = await sLATrackingRepository.GetCurrentEntryForTaskAsync(task.Id);
-                    if (slaEntry != null)
-                    {
-                        var updateSLAEntryDto = new UpdateSLAEntryDto
-                        {
-                            EndTime = DateTime.UtcNow,
-                            Status = SLAEntryStatus.Stopped,
-                        };
-                        await sLATrackingRepository.StopTimerAsync(slaEntry.Id, updateSLAEntryDto);
-                        var newSLAEntry = new SLATracking(task.Id, task.AssignedToUser, "Task Escalated");
-                        await sLATrackingRepository.AddAsync(newSLAEntry);
-                    }
+                    await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
+
                 }
+                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task escalated"), cancellationToken);
+
+
             }
 
         }

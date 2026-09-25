@@ -1,4 +1,5 @@
 using AutoMapper;
+using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Emails;
 using EMS.Application.Features.Emails.Commands.CreateEmail;
 using EMS.Application.Interfaces;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox
 {
-    internal class ReadEmailsFromInboxHandler(IEmailRepository emailRepository, IEncryptionService encryptionService,IMapper mapper) : IRequestHandler<ReadEmailsFromInboxCommand>
+    internal class ReadEmailsFromInboxHandler(IEmailRepository emailRepository, IEncryptionService encryptionService,IMapper mapper) : ICommandHandler<ReadEmailsFromInboxCommand>
     {
         public async Task Handle(ReadEmailsFromInboxCommand request, CancellationToken cancellationToken)
         {
@@ -16,13 +17,13 @@ namespace EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox
             if (request.EmailType == EmailType.Gmail)
             {
                 var password = encryptionService.DecryptData(request.Password);
-                var gmailMessages = await emailRepository.GetUnreadMessagesFromGmailInboxAsync(request.Id, request.EmailAddress, password, cancellationToken);
+                var gmailMessages = await emailRepository.GetUnreadMessagesFromGmailInboxAsync(request.EmailAccountId, request.EmailAddress, password, cancellationToken);
                 messages.AddRange(gmailMessages);
             }
             else if (request.EmailType == EmailType.Office365)
             {
                 var encryptedClientSecret = encryptionService.DecryptData(request.ClientSecret);
-                var office365Messages = await emailRepository.GetUnreadMessagesFromOffice365InboxAsync(request.Id, request.TenantId, request.ClientId, encryptedClientSecret, request.EmailAddress, cancellationToken);
+                var office365Messages = await emailRepository.GetUnreadMessagesFromOffice365InboxAsync(request.EmailAccountId, request.TenantId, request.ClientId, encryptedClientSecret, request.EmailAddress, cancellationToken);
                 messages.AddRange(office365Messages);
             }
             else

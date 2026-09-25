@@ -1,10 +1,11 @@
+using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Commands.AddNotes
 {
-    internal class AddNotesHandler(IEmailTasksRepository tasksRepository,ITaskAuditRepository taskAuditRepository) : IRequestHandler<AddNotesCommand>
+    internal class AddNotesHandler(IEmailTasksRepository tasksRepository,ITaskAuditRepository taskAuditRepository) : ICommandHandler<AddNotesCommand>
     {
         public async Task Handle(AddNotesCommand command,CancellationToken cancellation)
         {

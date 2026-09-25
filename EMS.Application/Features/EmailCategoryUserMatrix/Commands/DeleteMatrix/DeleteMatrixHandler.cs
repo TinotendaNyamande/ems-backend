@@ -1,9 +1,10 @@
+using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
 using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Commands.DeleteMatrix
 {
-    internal class DeleteMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository):IRequestHandler<DeleteMatrixCommand>
+    internal class DeleteMatrixHandler(IEmailCategoriesUserMatrixRepository matrixRepository):ICommandHandler<DeleteMatrixCommand>
     {
         public async Task Handle(DeleteMatrixCommand command,CancellationToken cancellationToken)
         {

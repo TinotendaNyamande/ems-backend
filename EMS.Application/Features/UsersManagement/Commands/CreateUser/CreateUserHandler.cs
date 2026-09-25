@@ -1,4 +1,5 @@
-﻿using EMS.Application.Dtos.Auth;
+﻿using EMS.Application.Abstractions;
+using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
 using MediatR;
 
@@ -6,7 +7,7 @@ namespace EMS.Application.Features.UsersManagement.Commands.CreateUser
 {
     public class CreateUserHandler(
         IAuthService authService
-        ) : IRequestHandler<CreateUserCommand, UserDto>
+        ) : ICommandHandler<CreateUserCommand, UserDto>
     {
         public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {

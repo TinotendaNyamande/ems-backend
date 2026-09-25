@@ -199,7 +199,6 @@ namespace EMS.Infrastructure.Repository
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim("FirstName", user.FirstName),
-                new Claim("OrganisationId", user.OrganisationId.HasValue ? user.OrganisationId.Value.ToString() : string.Empty)
             };
 
             var roles = await userManager.GetRolesAsync(user);

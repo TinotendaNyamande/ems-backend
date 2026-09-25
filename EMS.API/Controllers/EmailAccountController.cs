@@ -63,7 +63,7 @@ namespace EMS.API.Controllers
         [HttpPost("{id}/send-test-email")]
         public async Task<IActionResult> TestEmail(Guid id, [FromBody] TestEmailAccountCommand command)
         {
-            var updatedCommand = command with { Id = id };
+            var updatedCommand = command with { EmailAccountId = id };
             await mediator.Send(updatedCommand);
             return NoContent();
         }

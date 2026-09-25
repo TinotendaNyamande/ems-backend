@@ -7,9 +7,9 @@ namespace EMS.Application.Features.EmailAccounts.Commands.ValidateEmailAccount
     {
         public ValidateConfigValidator()
         {
-            RuleFor(x => x.Id)
+            RuleFor(x => x.EmailAccountId)
                 .NotEmpty()
-                .WithMessage("Mail box config id cannot be empty");
+                .WithMessage("Email Account id cannot be empty");
 
         }
     }

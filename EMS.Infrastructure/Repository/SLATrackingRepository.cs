@@ -16,7 +16,6 @@ namespace EMS.Infrastructure.Repository
         public async Task<SLATracking> CreateSLAEntryAsync(SLATracking slaEntry)
         {
             context.SLATrackings.Add(slaEntry);
-            await context.SaveChangesAsync();
             return slaEntry;
         }
 
@@ -24,7 +23,6 @@ namespace EMS.Infrastructure.Repository
         {
             var entry = await context.SLATrackings.FindAsync(id) ?? throw new ResourceNotFoundException("SLA Entry", id);
             entry.StopEntry();
-            await context.SaveChangesAsync();
         }
         public async Task<GetSLATrackingDto> GetByIdAsync(Guid id)
         {
@@ -97,7 +95,7 @@ namespace EMS.Infrastructure.Repository
                     UserName = user.UserName
                 };
             
-            return await query.FirstOrDefaultAsync()?? throw new ResourceNotFoundException("SLA Entry for Email Task", emailTaskId);;
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetSLATrackingDto>> GetEntriesByUserIdAsync(string userId)
