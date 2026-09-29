@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using EMS.Application.Dtos.Tasks;
 using EMS.Application.Features.EmailTasks.Commands.AddNotes;
 using EMS.Application.Features.EmailTasks.Commands.DeleteTask;
@@ -11,13 +12,14 @@ using EMS.Application.Features.EmailTasks.Queries.GetTaskByAssignedUser;
 using EMS.Application.Features.EmailTasks.Queries.GetTaskById;
 using EMS.Application.Features.EmailTasks.Queries.GetUserSummary;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmailTasksController(IMediator mediator) : ControllerBase
+    public class EmailTasksController(IMediator mediator,ILogger<EmailTasksController> logger) : ControllerBase
     {
         [HttpGet("{id}")]
         public async Task<ActionResult<GetTasksDto>> GetById(Guid id)
@@ -60,6 +62,7 @@ namespace EMS.API.Controllers
         [HttpPatch("update-status/{id}")]
         public async Task<IActionResult> UpdateStatus(Guid id, UpdateStatusCommand command)
         {
+
             var updatedCommand = command with
             {
                 Id = id
@@ -70,8 +73,7 @@ namespace EMS.API.Controllers
         [HttpDelete("{id}/{userId}")]
         public async Task<IActionResult> DeleteTask(Guid id,string userId)
         {
-
-            await mediator.Send(new DeleteTaskCommand(id,userId));
+            await mediator.Send(new DeleteTaskCommand(id, userId));
             return NoContent();
         }
         [HttpGet("summary/{userId}")]

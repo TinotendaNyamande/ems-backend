@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetAllTasks
 {
-    internal class GetAllTasksHandler(IEmailTasksRepository emailTasksRepository) : ICommandHandler<GetAllTasksQuery, IEnumerable<GetTasksDto>>
+    internal class GetAllTasksHandler(IEmailTasksRepository emailTasksRepository) : IQueryHandler<GetAllTasksQuery, IEnumerable<GetTasksDto>>
     {
         public async Task<IEnumerable<GetTasksDto>> Handle(GetAllTasksQuery request, CancellationToken cancellationToken)
         {

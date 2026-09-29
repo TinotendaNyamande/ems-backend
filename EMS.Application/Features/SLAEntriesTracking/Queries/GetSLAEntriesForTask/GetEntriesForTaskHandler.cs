@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EMS.Application.Features.SLAEntriesTracking.Queries.GetEntriesForTask
 {
-    internal class GetEntriesForTaskHandler(ISLATrackingRepository slaTrackingRepository, IMapper mapper) : ICommandHandler<GetEntriesForTaskQuery, IEnumerable<GetSLATrackingDto>>
+    internal class GetEntriesForTaskHandler(ISLATrackingRepository slaTrackingRepository, IMapper mapper) : IQueryHandler<GetEntriesForTaskQuery, IEnumerable<GetSLATrackingDto>>
     {
         public async Task<IEnumerable<GetSLATrackingDto>> Handle(GetEntriesForTaskQuery request, CancellationToken cancellationToken)
         {

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById
 {
-    public record GetEmailCategoryByIdQuery(Guid Id) : ICommand<GetEmailCategoryDto>
+    public record GetEmailCategoryByIdQuery(Guid Id) : IQuery<GetEmailCategoryDto>
     {
         
     }

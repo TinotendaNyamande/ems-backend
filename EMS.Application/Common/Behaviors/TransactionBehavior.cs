@@ -13,36 +13,29 @@ namespace EMS.Application.Common.Behaviors
             RequestHandlerDelegate<TResponse> next,
             CancellationToken ct)
         {
-            var ctxId = (uow as IUnitOfWork)?.GetHashCode();  // or expose ContextId
-            Console.WriteLine($"--> {typeof(TRequest).Name} | HasActive={uow.HasActiveTransaction} | ctx={ctxId}");
             if (request is not ICommandBase)
-                return await next();
+                return await next(ct);
 
             if (uow.HasActiveTransaction)
             {
-                Console.WriteLine($"    short-circuit (already in tx) for {typeof(TRequest).Name}");
-                return await next();
+                return await next(ct);
 
             }
 
-            Console.WriteLine($"    BEGIN tx for {typeof(TRequest).Name}");
 
             await using var tx = await uow.BeginTransactionAsync(ct);
             try
             {
-                var response = await next();
+                var response = await next(ct);
 
                 var saved = await uow.SaveChangesAsync(ct);
-                Console.WriteLine($"    SaveChanges returned {saved} for {typeof(TRequest).Name}");
 
                 await tx.CommitAsync(ct);
-                Console.WriteLine($"    COMMIT for {typeof(TRequest).Name}");
 
                 return response;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                Console.WriteLine($"    ROLLBACK for {typeof(TRequest).Name}: {ex.Message}");
 
                 await tx.RollbackAsync(ct);
                 throw;

@@ -4,5 +4,5 @@ using MediatR;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailByMessageId
 {
-    public record GetEmailByMessageIdQuery(string MessageId):ICommand<Email>;
+    public record GetEmailByMessageIdQuery(string MessageId):IQuery<Email>;
 }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EMS.Application.Features.SLAEntriesTracking.Queries.GetSLAEntryById
 {
-    public record GetSLAEntryByIdQuery(Guid Id) : ICommand<GetSLATrackingDto>
+    public record GetSLAEntryByIdQuery(Guid Id) : IQuery<GetSLATrackingDto>
     {
     }
 

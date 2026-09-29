@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailsPendingAssignment
 {
-    internal class GetEmailsPendingAssignmentHandler(IEmailRepository emailRepository) : ICommandHandler<GetEmailsPendingAssignmentQuery, IEnumerable<Email>>
+    internal class GetEmailsPendingAssignmentHandler(IEmailRepository emailRepository) : IQueryHandler<GetEmailsPendingAssignmentQuery, IEnumerable<Email>>
     {
         public async Task<IEnumerable<Email>> Handle(GetEmailsPendingAssignmentQuery request, CancellationToken cancellationToken)
         {

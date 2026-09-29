@@ -43,6 +43,7 @@ namespace EMS.Infrastructure.Repository
                 join task in context.EmailTasks
                 on audit.EmailTaskId equals task.Id
                 where audit.EmailTaskId == emailTaskId
+                orderby audit.CreatedAt descending
                 select new GetTaskAuditTrailDto
                 (
                     audit.Id,

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {
-    public class GetUserByIdHandler(IUserService userService) : ICommandHandler<GetUserByIdQuery, UserDto>
+    public class GetUserByIdHandler(IUserService userService) : IQueryHandler<GetUserByIdQuery, UserDto>
     {
         public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {

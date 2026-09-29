@@ -3,5 +3,5 @@ using EMS.Application.Dtos.Tasks;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetUserSummary
 {
-    public record GetUserSummaryQuery(string UserId):ICommand<UserTasksSummaryDto> {};
+    public record GetUserSummaryQuery(string UserId):IQuery<UserTasksSummaryDto> {};
 }

@@ -4,5 +4,5 @@ using MediatR;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailsPendingAssignment
 {
-    public record GetEmailsPendingAssignmentQuery(Guid EmailAccountId):ICommand<IEnumerable<Email>>;
+    public record GetEmailsPendingAssignmentQuery(Guid EmailAccountId):IQuery<IEnumerable<Email>>;
 }

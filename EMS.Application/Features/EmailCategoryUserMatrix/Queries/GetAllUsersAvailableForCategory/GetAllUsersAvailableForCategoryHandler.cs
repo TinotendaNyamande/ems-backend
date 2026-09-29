@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetAllUsersAvailableForCategory
 {
-    internal class GetAllUsersAvailableForCategoryHandler(IEmailCategoriesUserMatrixRepository emailCategoriesUserMatrixRepository) : ICommandHandler<GetAllUsersAvailableForCategoryQuery, IEnumerable<EmailCategoriesUserMatrix>>
+    internal class GetAllUsersAvailableForCategoryHandler(IEmailCategoriesUserMatrixRepository emailCategoriesUserMatrixRepository) : IQueryHandler<GetAllUsersAvailableForCategoryQuery, IEnumerable<EmailCategoriesUserMatrix>>
     {
         public async Task<IEnumerable<EmailCategoriesUserMatrix>> Handle(GetAllUsersAvailableForCategoryQuery request, CancellationToken cancellationToken)
         {

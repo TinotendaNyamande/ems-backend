@@ -4,5 +4,5 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetAllTasks
 {
-    public record GetAllTasksQuery():ICommand<IEnumerable<GetTasksDto>> {};
+    public record GetAllTasksQuery():IQuery<IEnumerable<GetTasksDto>> {};
 }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoriesForAccount
 {
-    public record GetEmailCategoriesForAccountQuery(Guid EmailAccountId) :ICommand <IEnumerable<GetEmailCategoryDto>>
+    public record GetEmailCategoriesForAccountQuery(Guid EmailAccountId) :IQuery <IEnumerable<GetEmailCategoryDto>>
     {
         
     }

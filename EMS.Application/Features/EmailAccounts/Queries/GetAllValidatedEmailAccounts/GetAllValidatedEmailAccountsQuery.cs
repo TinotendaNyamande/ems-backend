@@ -4,5 +4,5 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetAllValidatedEmailAccounts
 {
-    public record GetAllValidatedEmailAccountsQuery:ICommand<IEnumerable<EmailAccount>>;
+    public record GetAllValidatedEmailAccountsQuery:IQuery<IEnumerable<EmailAccount>>;
 }

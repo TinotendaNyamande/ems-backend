@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetAllUsers
 {
-    public class GetAllUsersHandler(IUserService userService) : ICommandHandler<GetAllUsersQuery, IEnumerable<UserDto>>
+    public class GetAllUsersHandler(IUserService userService) : IQueryHandler<GetAllUsersQuery, IEnumerable<UserDto>>
     {
         public async Task<IEnumerable<UserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {

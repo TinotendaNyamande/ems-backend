@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetTaskByAccount
 {
-    public record GetTaskByAccountQuery(Guid EmailAccountId, TaskStatusList? Status = null) : ICommand<IEnumerable<GetTasksDto>>
+    public record GetTaskByAccountQuery(Guid EmailAccountId, TaskStatusList? Status = null) : IQuery<IEnumerable<GetTasksDto>>
     {
     }
 }

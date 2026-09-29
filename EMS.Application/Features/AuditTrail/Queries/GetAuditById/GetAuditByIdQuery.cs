@@ -3,5 +3,5 @@ using EMS.Application.Dtos.TaskAuditTrail;
 
 namespace EMS.Application.Features.AuditTrail.Queries.GetAuditById
 {
-    public record GetAuditByIdQuery(Guid Id):ICommand<GetTaskAuditTrailDto>;
+    public record GetAuditByIdQuery(Guid Id):IQuery<GetTaskAuditTrailDto>;
 }

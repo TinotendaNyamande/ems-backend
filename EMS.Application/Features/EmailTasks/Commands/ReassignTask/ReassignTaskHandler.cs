@@ -23,7 +23,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.ReassignTask
                 await mediator.Send(new UpdateSLAEntryCommand(currentSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
 
             }
-            await mediator.Send(new CreateSLAEntryCommand(command.TaskId, command.UserId, "Task reassigned"), cancellationToken);
+            await mediator.Send(new CreateSLAEntryCommand(command.TaskId, command.NewUserId, "Task reassigned"), cancellationToken);
 
         }
     }

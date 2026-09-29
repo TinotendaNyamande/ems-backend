@@ -4,7 +4,7 @@ using EMS.Application.Interfaces;
 
 namespace EMS.Application.Features.AuditTrail.Queries.GetAuditById
 {
-    internal class GetAuditByIdHandler(ITaskAuditRepository taskAuditRepository) : ICommandHandler<GetAuditByIdQuery, GetTaskAuditTrailDto>
+    internal class GetAuditByIdHandler(ITaskAuditRepository taskAuditRepository) : IQueryHandler<GetAuditByIdQuery, GetTaskAuditTrailDto>
     {
         public async Task<GetTaskAuditTrailDto> Handle(GetAuditByIdQuery request, CancellationToken cancellationToken)
         {

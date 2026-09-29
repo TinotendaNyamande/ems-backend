@@ -6,7 +6,7 @@ namespace EMS.Application.Features.SLAEntriesTracking.Queries.GetSLAEntryById
     using EMS.Application.Interfaces;
     using MediatR;
 
-    public class GetSLAEntryByIdHandler(ISLATrackingRepository slaTrackingRepository,IMapper mapper) : ICommandHandler<GetSLAEntryByIdQuery, GetSLATrackingDto>
+    public class GetSLAEntryByIdHandler(ISLATrackingRepository slaTrackingRepository) : IQueryHandler<GetSLAEntryByIdQuery, GetSLATrackingDto>
     {
 
         public async Task<GetSLATrackingDto> Handle(GetSLAEntryByIdQuery request, CancellationToken cancellationToken)

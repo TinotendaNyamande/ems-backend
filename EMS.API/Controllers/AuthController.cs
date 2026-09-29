@@ -6,6 +6,7 @@ using EMS.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -122,6 +123,7 @@ namespace EMS.API.Controllers
 
         private void SetRefreshTokenCookie(string refreshToken)
         {
+
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 logger.LogWarning("Refresh token cookie was not set because token was empty");

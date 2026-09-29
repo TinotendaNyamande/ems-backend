@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailsByCategoryId
 {
-    internal class GetEmailsByCategoryIdHandler(IEmailRepository emailRepository) : ICommandHandler<GetEmailsByCategoryIdQuery, IEnumerable<Email>>
+    internal class GetEmailsByCategoryIdHandler(IEmailRepository emailRepository) : IQueryHandler<GetEmailsByCategoryIdQuery, IEnumerable<Email>>
     {
         public async Task<IEnumerable<Email>> Handle(GetEmailsByCategoryIdQuery request, CancellationToken cancellationToken)
         {

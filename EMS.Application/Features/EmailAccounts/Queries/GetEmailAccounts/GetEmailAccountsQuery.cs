@@ -3,7 +3,7 @@ using EMS.Application.Dtos.EmailAccounts;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetEmailAccounts
 {
-    public record GetEmailAccountsQuery():ICommand<IEnumerable<EmailAccountDto>>
+    public record GetEmailAccountsQuery():IQuery<IEnumerable<EmailAccountDto>>
     {
       
     }

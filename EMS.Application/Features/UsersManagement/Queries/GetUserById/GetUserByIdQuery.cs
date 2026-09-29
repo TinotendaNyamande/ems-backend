@@ -3,7 +3,7 @@ using EMS.Application.Dtos.Auth;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {
-    public class GetUserByIdQuery(string userId) : ICommand<UserDto>
+    public class GetUserByIdQuery(string userId) : IQuery<UserDto>
     {
         public string UserId { get; init; } = userId;
     }

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetUserSummary
 {
-    public class GetUserSummaryHandler(IEmailTasksRepository tasksRepository) : ICommandHandler<GetUserSummaryQuery, UserTasksSummaryDto>
+    public class GetUserSummaryHandler(IEmailTasksRepository tasksRepository) : IQueryHandler<GetUserSummaryQuery, UserTasksSummaryDto>
     {
         public async Task<UserTasksSummaryDto> Handle(GetUserSummaryQuery request, CancellationToken cancellationToken)
         {

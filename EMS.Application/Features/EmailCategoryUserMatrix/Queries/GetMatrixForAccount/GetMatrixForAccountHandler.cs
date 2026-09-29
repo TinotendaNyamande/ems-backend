@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixForAccount
 {
-    internal class GetMatrixForAccountHandler(IEmailCategoriesUserMatrixRepository matrixRepository) : ICommandHandler<GetMatrixForAccountQuery, IEnumerable<GetMatrixDto>>
+    internal class GetMatrixForAccountHandler(IEmailCategoriesUserMatrixRepository matrixRepository) : IQueryHandler<GetMatrixForAccountQuery, IEnumerable<GetMatrixDto>>
     {
         public async Task<IEnumerable<GetMatrixDto>> Handle(GetMatrixForAccountQuery request,CancellationToken cancellationToken)
         {

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetAllValidatedEmailAccounts
 {
-    internal class GetAllValidatedEmailAccountsHandler(IEmailAccountRepository emailAccountRepository) : ICommandHandler<GetAllValidatedEmailAccountsQuery, IEnumerable<EmailAccount>>
+    internal class GetAllValidatedEmailAccountsHandler(IEmailAccountRepository emailAccountRepository) : IQueryHandler<GetAllValidatedEmailAccountsQuery, IEnumerable<EmailAccount>>
     {
         public async Task<IEnumerable<EmailAccount>> Handle(GetAllValidatedEmailAccountsQuery request, CancellationToken cancellationToken)
         {

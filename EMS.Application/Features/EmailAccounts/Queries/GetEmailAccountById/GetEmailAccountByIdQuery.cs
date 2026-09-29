@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetEmailAccountById
 {
-    public class GetEmailAccountByIdQuery(Guid id):ICommand<EmailAccountDto>
+    public class GetEmailAccountByIdQuery(Guid id):IQuery<EmailAccountDto>
     {
         public Guid Id { get; init; } = id;
     }

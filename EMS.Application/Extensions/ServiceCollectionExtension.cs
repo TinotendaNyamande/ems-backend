@@ -16,8 +16,9 @@ namespace EMS.Application.Extensions
             services.AddValidatorsFromAssembly(typeof(CreateEmailAccountValidator).Assembly);
             services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(typeof(CreateEmailAccountHandler).Assembly));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+                services.AddScoped(typeof(IPipelineBehavior<,>),typeof(LoggingBehavior<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
             services.AddAutoMapper(cfg =>
                 cfg.AddMaps(typeof(EmailAccountMappingProfile).Assembly));
             services.AddScoped<IEmailCategorizerService,RegexEmailCategorizerService>();

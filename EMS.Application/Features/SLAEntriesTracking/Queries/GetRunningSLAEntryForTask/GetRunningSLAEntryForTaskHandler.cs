@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EMS.Application.Features.SLAEntriesTracking.Queries.GetRunningSLAEntryForTask
 {
-    internal class GetRunningSLAEntryForTaskHandler(ISLATrackingRepository sLATrackingRepository) : ICommandHandler<GetRunningSLAEntryForTaskQuery, GetSLATrackingDto>
+    internal class GetRunningSLAEntryForTaskHandler(ISLATrackingRepository sLATrackingRepository) : IQueryHandler<GetRunningSLAEntryForTaskQuery, GetSLATrackingDto>
     {
         public async Task<GetSLATrackingDto> Handle(GetRunningSLAEntryForTaskQuery request, CancellationToken cancellationToken)
         {
