@@ -1,19 +1,5 @@
-using EMS.Application.Interfaces;
-using EMS.Domain.Models;
-using Azure.Identity;
-using MailKit;
-using MailKit.Net.Imap;
-using MailKit.Security;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
-using EMS.Domain.Enums;
-using EMS.Infrastructure.RabbitMQServices;
-using EMS.Contracts.Events.Email;
-using EMS.Infrastructure.RabbitMQServices.Constants;
 using MediatR;
-using EMS.Application.Features.Emails.Commands.CreateEmail;
 using EMS.Application.Features.EmailAccounts.Queries.GetAllValidatedEmailAccounts;
-using EMS.Application.Features.Emails.Queries.GetEmailByMessageId;
 using EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox;
 
 namespace EMS.EmailReader.Worker.Services

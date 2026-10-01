@@ -12,7 +12,7 @@ public class Worker(IServiceScopeFactory scopeFactory,ILogger<Worker> logger) : 
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 using var scope = scopeFactory.CreateScope();
-                var service = scope.ServiceProvider.GetRequiredService<IEmailEventReader>();
+                var service = scope.ServiceProvider.GetRequiredService<IEmailCategorizerProcess>();
                 await service.ReadEmailsPendingCategorizationAsync(stoppingToken);
                 logger.LogInformation("Worker finished processing at: {time}", DateTimeOffset.Now);
                 

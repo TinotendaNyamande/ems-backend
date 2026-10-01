@@ -2,6 +2,7 @@ using EMS.Application.Features.AuditTrail.Commands.CreateAuditTrailEntry;
 using EMS.Application.Features.EmailAccounts.Queries.GetAllValidatedEmailAccounts;
 using EMS.Application.Features.EmailCategoryUserMatrix.Commands.RecordUserAssignedTaskAction;
 using EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetAllUsersAvailableForCategory;
+using EMS.Application.Features.Emails.Commands.AssignEmailToUser;
 using EMS.Application.Features.Emails.Commands.MarkEmailAsAssigned;
 using EMS.Application.Features.Emails.Queries.GetEmailsPendingAssignment;
 using EMS.Application.Features.EmailTasks.Commands.CreateTask;
@@ -27,12 +28,11 @@ namespace EMS.TaskAssignment.Worker.Services
                     logger.LogInformation("Email category {id}", email.EmailCategoryId);
                     if (email.EmailCategoryId != Guid.Empty && email.EmailCategoryId != null)
                     {
-                       
+                       await mediator.Send(new AssignEmailToUserCommand(email.Id, email.EmailCategoryId.Value), cancellationToken);
                     }
 
                 }
             }
-
 
         }
 

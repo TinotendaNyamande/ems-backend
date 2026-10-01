@@ -1,6 +1,6 @@
 ﻿namespace EMS.Domain.Models
 {
-    public class EmailAttachment(Guid emailId, string fileName, string filePath, string fileType)
+    public class EmailAttachment(Guid emailId, string fileName, string filePath, string fileType,long fileSize)
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public Email Email { get; private set; }
@@ -8,5 +8,6 @@
         public string FileName { get; private set; } = fileName;
         public string FilePath { get; private set; } = filePath;
         public string FileType { get; private set; } = fileType;
+        public long FileSize {get;private set;}=fileSize;
     }
 }

@@ -23,6 +23,7 @@ namespace EMS.Application.Extensions
                 cfg.AddMaps(typeof(EmailAccountMappingProfile).Assembly));
             services.AddScoped<IEmailCategorizerService,RegexEmailCategorizerService>();
             services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
+            services.AddScoped<IEmailAttachmentDownloadService, EmailAttachmentDownloadService>();
 
             return services;
         }

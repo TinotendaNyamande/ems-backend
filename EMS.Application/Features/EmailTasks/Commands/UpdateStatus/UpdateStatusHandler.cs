@@ -39,7 +39,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.UpdateStatus
                     {
                         await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
                     }
-                    await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task put on hold"), cancellationToken);
+                    await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUserId, "Task put on hold"), cancellationToken);
 
 
                 }
@@ -52,7 +52,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.UpdateStatus
                     await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
 
                 }
-                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task assigned to user"), cancellationToken);
+                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUserId, "Task assigned to user"), cancellationToken);
 
 
             }
@@ -64,7 +64,7 @@ namespace EMS.Application.Features.EmailTasks.Commands.UpdateStatus
                     await mediator.Send(new UpdateSLAEntryCommand(runningSLAEntry.Id, DateTime.UtcNow, SLAEntryStatus.Stopped), cancellationToken);
 
                 }
-                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUser, "Task escalated"), cancellationToken);
+                await mediator.Send(new CreateSLAEntryCommand(command.Id, task.AssignedToUserId, "Task escalated"), cancellationToken);
 
 
             }

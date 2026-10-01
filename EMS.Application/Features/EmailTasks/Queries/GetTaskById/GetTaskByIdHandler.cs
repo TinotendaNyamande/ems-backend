@@ -5,9 +5,9 @@ using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetTaskById
 {
-    public class GetTaskByIdHandler(IEmailTasksRepository tasksRepository) : IQueryHandler<GetTaskByIdQuery, GetTasksDto>
+    public class GetTaskByIdHandler(IEmailTasksRepository tasksRepository) : IQueryHandler<GetTaskByIdQuery, GetTasksDetailsDto>
     {
-        public async Task<GetTasksDto> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetTasksDetailsDto> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
         {
             return await tasksRepository.GetTaskByIdAsync(request.Id);
         }

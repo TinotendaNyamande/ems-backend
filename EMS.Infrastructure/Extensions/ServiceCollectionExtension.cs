@@ -87,7 +87,8 @@ namespace EMS.Infrastructure.Extensions
             services.AddScoped<ISLATrackingRepository, SLATrackingRepository>();
             services.AddScoped<ITaskAuditRepository,TaskAuditRepository>();
             services.AddScoped<IUnitOfWork,UnitOfWork>();
-            //services.AddScoped<ITransaction,Transaction>();
+            services.AddScoped<IEmailAttachmentRepository,EmailAttachmentRepository>();
+            services.AddScoped<IFileStorageRepository, LocalFileStorage>();
             return services;
         }
         public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration config)

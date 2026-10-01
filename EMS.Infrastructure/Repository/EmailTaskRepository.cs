@@ -70,18 +70,12 @@ namespace EMS.Infrastructure.Repository
                 Id = tasks.Id,
                 FromEmail = emails.FromEmail,
                 Subject = emails.Subject,
-                EmailBody = emails.Body,
-                EmailAccountAddress = emailsAccounts.EmailAddress,
-                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserId = tasks.AssignedToUser,
                 AssignedToUserFirstName = user.FirstName,
                 AssignedToUserLastName = user.LastName,
-                CreatedAt = tasks.CreatedAt,
-                UpdatedAt = tasks.UpdatedAt,
-                AssignedToUserDate = tasks.AssignedToUserDate,
-                ClosedDate = tasks.ClosedDate,
                 Status = tasks.Status,
-                AdditionalInformation = tasks.AdditionalInformation,
-                Category = category.CategoryName
+                Category = category.CategoryName,
+                CreatedAt = tasks.CreatedAt
 
             };
 
@@ -106,19 +100,12 @@ namespace EMS.Infrastructure.Repository
                 Id = tasks.Id,
                 FromEmail = emails.FromEmail,
                 Subject = emails.Subject,
-                EmailBody = emails.Body,
-                EmailAccountAddress = emailsAccounts.EmailAddress,
-                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserId = tasks.AssignedToUser,
                 AssignedToUserFirstName = user.FirstName,
                 AssignedToUserLastName = user.LastName,
-                CreatedAt = tasks.CreatedAt,
-                UpdatedAt = tasks.UpdatedAt,
-                AssignedToUserDate = tasks.AssignedToUserDate,
-                ClosedDate = tasks.ClosedDate,
                 Status = tasks.Status,
-                AdditionalInformation = tasks.AdditionalInformation,
-                Category = category.CategoryName
-
+                Category = category.CategoryName,
+                CreatedAt = tasks.CreatedAt
             };
 
             return await query.ToListAsync();
@@ -141,25 +128,18 @@ namespace EMS.Infrastructure.Repository
                 Id = tasks.Id,
                 FromEmail = emails.FromEmail,
                 Subject = emails.Subject,
-                EmailBody = emails.Body,
-                EmailAccountAddress = emailsAccounts.EmailAddress,
-                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserId = tasks.AssignedToUser,
                 AssignedToUserFirstName = user.FirstName,
                 AssignedToUserLastName = user.LastName,
-                CreatedAt = tasks.CreatedAt,
-                UpdatedAt = tasks.UpdatedAt,
-                AssignedToUserDate = tasks.AssignedToUserDate,
-                ClosedDate = tasks.ClosedDate,
                 Status = tasks.Status,
-                AdditionalInformation = tasks.AdditionalInformation,
-                Category = category.CategoryName
-
+                Category = category.CategoryName,
+                CreatedAt = tasks.CreatedAt
             };
 
             return await query.ToListAsync();
         }
 
-        public async Task<GetTasksDto> GetTaskByIdAsync(Guid id)
+        public async Task<GetTasksDetailsDto> GetTaskByIdAsync(Guid id)
         {
             var query =
                 from tasks in context.EmailTasks
@@ -172,14 +152,14 @@ namespace EMS.Infrastructure.Repository
                 join category in context.EmailCategories
                 on emails.EmailCategoryId equals category.Id
                 where tasks.Id == id
-                select new GetTasksDto
+                select new GetTasksDetailsDto
                 {
                     Id = tasks.Id,
                     FromEmail = emails.FromEmail,
                     Subject = emails.Subject,
                     EmailBody = emails.Body,
                     EmailAccountAddress = emailsAccounts.EmailAddress,
-                    AssignedToUser = tasks.AssignedToUser,
+                    AssignedToUserId = tasks.AssignedToUser,
                     AssignedToUserFirstName = user.FirstName,
                     AssignedToUserLastName = user.LastName,
                     CreatedAt = tasks.CreatedAt,
@@ -188,7 +168,8 @@ namespace EMS.Infrastructure.Repository
                     ClosedDate = tasks.ClosedDate,
                     Status = tasks.Status,
                     AdditionalInformation = tasks.AdditionalInformation,
-                    Category = category.CategoryName
+                    Category = category.CategoryName,
+                    Attachments = emails.EmailAttachments.Select(a => new GetAttachmentDTO(a.Id, a.FileName, a.FileType, a.FileSize)).ToList()
 
                 };
             return await query.FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Task", id);
@@ -213,18 +194,12 @@ namespace EMS.Infrastructure.Repository
                 Id = tasks.Id,
                 FromEmail = emails.FromEmail,
                 Subject = emails.Subject,
-                EmailBody = emails.Body,
-                EmailAccountAddress = emailsAccounts.EmailAddress,
-                AssignedToUser = tasks.AssignedToUser,
+                AssignedToUserId = tasks.AssignedToUser,
                 AssignedToUserFirstName = user.FirstName,
                 AssignedToUserLastName = user.LastName,
-                CreatedAt = tasks.CreatedAt,
-                UpdatedAt = tasks.UpdatedAt,
-                AssignedToUserDate = tasks.AssignedToUserDate,
-                ClosedDate = tasks.ClosedDate,
                 Status = tasks.Status,
-                AdditionalInformation = tasks.AdditionalInformation,
-                Category = category.CategoryName
+                Category = category.CategoryName,
+                CreatedAt = tasks.CreatedAt
 
             };
             if (status.HasValue)
@@ -247,24 +222,20 @@ namespace EMS.Infrastructure.Repository
                 on tasks.EmailId equals emails.Id
                 join emailsAccounts in context.EmailAccounts
                 on emails.EmailAccountId equals emailsAccounts.Id
+                where emails.EmailAccountId == emailAccountId
+                join category in context.EmailCategories
+                on emails.EmailCategoryId equals category.Id
                 select new GetTasksDto
                 {
                     Id = tasks.Id,
                     FromEmail = emails.FromEmail,
                     Subject = emails.Subject,
-                    EmailBody = emails.Body,
-                    EmailAccountAddress = emailsAccounts.EmailAddress,
-                    AssignedToUser = tasks.AssignedToUser,
+                    AssignedToUserId = tasks.AssignedToUser,
                     AssignedToUserFirstName = user.FirstName,
                     AssignedToUserLastName = user.LastName,
-                    CreatedAt = tasks.CreatedAt,
-                    UpdatedAt = tasks.UpdatedAt,
-                    AssignedToUserDate = tasks.AssignedToUserDate,
-                    ClosedDate = tasks.ClosedDate,
                     Status = tasks.Status,
-                    AdditionalInformation = tasks.AdditionalInformation,
-                    Category = ""//category.CategoryName
-
+                    Category = category.CategoryName,
+                    CreatedAt = tasks.CreatedAt
                 };
             if (status.HasValue)
             {

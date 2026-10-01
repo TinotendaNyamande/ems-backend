@@ -11,7 +11,11 @@ namespace EMS.Application.Common.Mapping
         public EmailMappingProfile()
         {
             CreateMap<CreateEmailCommand,Email>();
-            CreateMap<IncomingEmailDto,Email>();
+            CreateMap<IncomingEmailDto,Email>()
+                .ForMember(
+                dest => dest.EmailAttachments,
+                opt => opt.MapFrom(src => src.EmailAttachments));
+            CreateMap<EmailAttachmentDto,EmailAttachment>();
         }
     }
 }
