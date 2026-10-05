@@ -7,7 +7,7 @@ namespace EMS.Application.Interfaces
     {
         Task<TaskAuditTrail> CreateTaskAuditTrailAsync(TaskAuditTrail taskAuditTrail);
         Task<IEnumerable<GetTaskAuditTrailDto>> GetTaskAuditTrail (Guid emailTaskId);
-        Task<GetTaskAuditTrailDto> GetAuditTrailEntryById(Guid id);
+        Task<GetTaskAuditTrailDto?> GetAuditTrailEntryById(Guid id);
         
 
     }

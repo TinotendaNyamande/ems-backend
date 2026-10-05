@@ -1,7 +1,6 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
-using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Commands.AddNotes
 {

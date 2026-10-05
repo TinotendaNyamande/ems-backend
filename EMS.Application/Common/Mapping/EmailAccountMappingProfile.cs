@@ -13,9 +13,6 @@ namespace EMS.Application.Common.Mapping
         {
             CreateMap<CreateEmailAccountCommand,EmailAccount>();
             CreateMap<EmailAccount, EmailAccountDto>();
-            CreateMap<ChangeEmailAccountPasswordCommand, ChangeEmailPasswordDto>();
-            CreateMap<ChangeClientSecretCommand, ChangeClientSecretDto>();
-            CreateMap<EmailAccount,ValidationAndTestEmailAccountDto>();
         }
     }
 }

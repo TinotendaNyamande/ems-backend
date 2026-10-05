@@ -8,9 +8,8 @@ namespace EMS.Application.Interfaces
         Task<IEnumerable<EmailCategory>> GetEmailCategoriesByEmailAccountAsync(Guid emailAccountId);
         Task EditEmailCategoryAsync(Guid id,string newName, int slaHours);
         Task DeleteEmailCategoryAsync (Guid id);
-        Task<EmailCategory> GetCategoryByIdAsync (Guid id);
-        Task<EmailCategory> GetCategoryByNameAsync (Guid emailAccountId,string categoryName);
-        Task<bool> EmailCategoryExistsInEmailAccountAsync(Guid EmailAccountId, string categoryName);
+        Task<EmailCategory?> GetCategoryByIdAsync (Guid id);
+        Task<EmailCategory?> GetCategoryByNameAsync (Guid emailAccountId,string categoryName);
         
     }
 }

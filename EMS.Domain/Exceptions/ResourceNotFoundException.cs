@@ -1,4 +1,4 @@
-﻿namespace Projects.Domain.Exceptions
+﻿namespace EMS.Domain.Exceptions
 {
     public class ResourceNotFoundException(string resourceName, object? key) :
         Exception(key is null ?

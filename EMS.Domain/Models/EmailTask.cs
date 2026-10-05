@@ -7,7 +7,7 @@ namespace EMS.Domain.Models
         public Guid Id { get; private set; } = new Guid();
         public Email? Email { get; private set; }
         public Guid EmailId { get; private set; } = emailId;
-        public string? AssignedToUser { get; private set; } = assignedToUser;
+        public string AssignedToUser { get; private set; } = assignedToUser;
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
         public DateTime AssignedToUserDate { get; private set; } = DateTime.UtcNow;

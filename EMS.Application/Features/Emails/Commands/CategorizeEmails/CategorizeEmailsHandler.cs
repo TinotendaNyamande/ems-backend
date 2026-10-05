@@ -1,6 +1,5 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Emails.Commands.CategorizeEmails

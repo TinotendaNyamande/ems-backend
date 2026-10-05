@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.ValidateEmailAccount
 {
-    public class ValidateConfigValidator:AbstractValidator<ValidateAccountCommand>
+    public class ValidateAccountValidator:AbstractValidator<ValidateAccountCommand>
     {
-        public ValidateConfigValidator()
+        public ValidateAccountValidator()
         {
             RuleFor(x => x.EmailAccountId)
                 .NotEmpty()

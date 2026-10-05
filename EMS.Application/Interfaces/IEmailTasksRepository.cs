@@ -11,7 +11,7 @@ namespace EMS.Application.Interfaces
         Task ReassignTaskAsync(Guid id,string newUserId);
         Task CloseTaskAsync(Guid id,string additionalInformation);
         Task ChangeTaskStatusAsync (Guid id,TaskStatusList newStatus,string? additionalInformation=null);
-        Task<GetTasksDetailsDto> GetTaskByIdAsync(Guid id);
+        Task<GetTasksDetailsDto?> GetTaskByIdAsync(Guid id);
         Task<IEnumerable<GetTasksDto>> GetTasksByUserIdAsync(string userId,TaskStatusList? status=null);
         Task<IEnumerable<GetTasksDto>> GetTasksForAccountAsync(Guid emailAccountId,TaskStatusList? status=null);
         Task EditAdditionalInformationAsync (Guid id,string additionalInfo);

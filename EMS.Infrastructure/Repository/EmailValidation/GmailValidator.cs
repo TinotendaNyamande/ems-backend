@@ -13,11 +13,11 @@ namespace EMS.Infrastructure.Repository.EmailValidation
     {
         public EmailType EmailType => EmailType.Gmail;
 
-        public async Task<bool> IsEmailConfigValidAsync(ValidationAndTestEmailAccountDto config)
+        public async Task<bool> IsEmailConfigValidAsync(Guid Id, string EmailAddress, EmailType EmailType, string? Password, string? ClientId, string? ClientSecret, string? TenantId)
         {
             try
             {
-                logger.LogInformation("Trying to validate email {email}",config.EmailAddress);
+                logger.LogInformation("Trying to validate email {email}",EmailAddress);
                 using var client = new MailKit.Net.Smtp.SmtpClient();
 
                 await client.ConnectAsync(
@@ -26,10 +26,14 @@ namespace EMS.Infrastructure.Repository.EmailValidation
                     SecureSocketOptions.StartTls
                 );
                 logger.LogInformation("Connected to smtp server");
+                if(string.IsNullOrEmpty(Password))
+                {
+                    throw new EmailValidationException("Password is required for Gmail validation.");
+                }
 
                 await client.AuthenticateAsync(
-                    config.EmailAddress,
-                    config.Password
+                    EmailAddress,
+                    Password
                 );
                 logger.LogInformation("Email details authentication process finished");
                 logger.LogInformation("Auth process results {results}",client.IsAuthenticated);

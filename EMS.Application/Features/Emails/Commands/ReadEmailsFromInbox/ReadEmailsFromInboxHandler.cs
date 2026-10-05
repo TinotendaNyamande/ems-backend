@@ -1,16 +1,18 @@
-using AutoMapper;
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Emails;
-using EMS.Application.Features.EmailAttachments.Commands.CreateEmailAttachment;
 using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Models;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox
 {
-    internal class ReadEmailsFromInboxHandler(IEmailRepository emailRepository, IEncryptionService encryptionService, IMediator mediator, ILogger<ReadEmailsFromInboxHandler> logger) : ICommandHandler<ReadEmailsFromInboxCommand>
+    internal class ReadEmailsFromInboxHandler(
+        IEmailRepository emailRepository,
+        IEmailAttachmentRepository emailAttachmentRepository,
+         IEncryptionService encryptionService,
+          ILogger<ReadEmailsFromInboxHandler> logger
+          ) : ICommandHandler<ReadEmailsFromInboxCommand>
     {
         public async Task Handle(ReadEmailsFromInboxCommand request, CancellationToken cancellationToken)
         {
@@ -32,7 +34,7 @@ namespace EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox
                     throw new InvalidOperationException("Client secret is required for Office365 email type");
                 }
                 var encryptedClientSecret = encryptionService.DecryptData(request.ClientSecret);
-                if(string.IsNullOrEmpty(request.TenantId) || string.IsNullOrEmpty(request.ClientId))
+                if (string.IsNullOrEmpty(request.TenantId) || string.IsNullOrEmpty(request.ClientId))
                 {
                     throw new InvalidOperationException("TenantId and ClientId are required for Office365 email type");
                 }
@@ -48,15 +50,17 @@ namespace EMS.Application.Features.Emails.Commands.ReadEmailsFromInbox
                 var isProcessed = await emailRepository.GetEmailByMessageIdAsync(message.ExternalMessageId);
                 if (isProcessed == null)
                 {
-                  
+
                     var email = new Email(message.FromEmail, message.ToEmail, message.Subject, message.Body, request.EmailAccountId, message.ExternalMessageId);
                     foreach (var attachment in message.EmailAttachments)
                     {
-                        await mediator.Send(new CreateEmailAttachmentCommand(email.Id, attachment.FileName, attachment.FilePath, attachment.FileType, attachment.FileSize), cancellationToken);
+                        var emailAttachment = new EmailAttachment(email.Id, attachment.FileName, attachment.FilePath, attachment.FileType, attachment.FileSize);
+                        await emailAttachmentRepository.CreateEmailAttachmentAsync(emailAttachment, cancellationToken);
                     }
 
                     await emailRepository.CreateEmailAsync(email);
-                }else
+                }
+                else
                 {
                     logger.LogInformation("Email with messageId {messageId} has already been processed", message.ExternalMessageId);
                 }

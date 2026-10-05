@@ -1,6 +1,5 @@
 ﻿using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
-using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetEmailAccountById
 {

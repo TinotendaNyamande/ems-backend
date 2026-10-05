@@ -1,7 +1,6 @@
 ﻿using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
 using EMS.Domain.Enums;
-using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.CreateEmailAccount
 {

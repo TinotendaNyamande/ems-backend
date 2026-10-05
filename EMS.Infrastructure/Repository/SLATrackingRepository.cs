@@ -1,7 +1,7 @@
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using EMS.Application.Dtos.SLATracking;
 using EMS.Domain.Enums;
@@ -19,12 +19,12 @@ namespace EMS.Infrastructure.Repository
             return slaEntry;
         }
 
-        public async Task StopTimerAsync(Guid id, UpdateSLAEntryDto slaEntry)
+        public async Task StopTimerAsync(Guid id)
         {
             var entry = await context.SLATrackings.FindAsync(id) ?? throw new ResourceNotFoundException("SLA Entry", id);
             entry.StopEntry();
         }
-        public async Task<GetSLATrackingDto> GetByIdAsync(Guid id)
+        public async Task<GetSLATrackingDto?> GetByIdAsync(Guid id)
         {
             var query =
                 from sla in context.SLATrackings
@@ -40,7 +40,7 @@ namespace EMS.Infrastructure.Repository
                     Status=sla.Status,
                     UserName = user.UserName
                 };
-            return await query.FirstOrDefaultAsync()??throw new ResourceNotFoundException("SLA Entry",id);
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetSLATrackingDto>> GetByEmailTaskIdAsync(Guid emailTaskId)
@@ -68,14 +68,12 @@ namespace EMS.Infrastructure.Repository
 
         public async Task DeleteAsync(Guid id)
         {
-            var affectedRows = await context.SLATrackings.Where(s => s.Id == id).ExecuteDeleteAsync();
-            if (affectedRows == 0)
-            {
-                throw new ResourceNotFoundException("SLA Entry", id);
-            }
+            var slaEntry = await context.SLATrackings.FindAsync(id) ??
+             throw new ResourceNotFoundException("SLA Entry", id);
+            context.Remove(slaEntry);
         }
 
-        public async Task<GetSLATrackingDto> GetCurrentEntryForTaskAsync(Guid emailTaskId)
+        public async Task<GetSLATrackingDto?> GetCurrentEntryForTaskAsync(Guid emailTaskId)
         {
 
             var query = 

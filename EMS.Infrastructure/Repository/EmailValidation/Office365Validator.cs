@@ -10,14 +10,14 @@ namespace EMS.Infrastructure.Repository.EmailValidation
     internal class Office365Validator : IEmailProviderValidator
     {
         public EmailType EmailType => EmailType.Office365;
-        public async Task<bool> IsEmailConfigValidAsync(ValidationAndTestEmailAccountDto config)
+        public async Task<bool> IsEmailConfigValidAsync(Guid Id, string EmailAddress, EmailType EmailType, string? Password, string? ClientId, string? ClientSecret, string? TenantId)
         {
             try
             {
                 var app = ConfidentialClientApplicationBuilder
-                    .Create(config.ClientId)
-                    .WithClientSecret(config.ClientSecret)
-                    .WithAuthority($"https://login.microsoftonline.com/{config.TenantId}")
+                    .Create(ClientId)
+                    .WithClientSecret(ClientSecret)
+                    .WithAuthority($"https://login.microsoftonline.com/{TenantId}")
                     .Build();
 
                 var result = await app.AcquireTokenForClient(

@@ -6,7 +6,7 @@ namespace EMS.Domain.Models
         public string Comments {get;private set;}=comments;
         public DateTime CreatedAt {get;private set;}= DateTime.UtcNow;
         public string UserId {get;private set;}= userId;
-        public EmailTask EmailTask {get;private set;}
+        public EmailTask EmailTask {get;private set;}=null!;
         public Guid EmailTaskId {get;private set;}=emailTaskId;
     }
 }

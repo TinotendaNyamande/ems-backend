@@ -1,7 +1,6 @@
 ﻿using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Queries.GetUserById
 {

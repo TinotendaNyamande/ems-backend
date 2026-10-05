@@ -1,7 +1,6 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.Auth.Commands.Register
 {
@@ -9,14 +8,7 @@ namespace EMS.Application.Features.Auth.Commands.Register
     {
         public async Task<AuthResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var registerDto = new RegisterUserDto
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                Password = request.Password,
-                Role = request.Role
-            };
+            var registerDto = new RegisterUserDto(request.FirstName, request.LastName, request.Email, request.Password,request.Role);
 
             return await authService.RegisterAsync(registerDto);
         }

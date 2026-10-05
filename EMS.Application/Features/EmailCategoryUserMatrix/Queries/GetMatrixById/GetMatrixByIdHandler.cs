@@ -1,7 +1,7 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategoryMatrix;
 using EMS.Application.Interfaces;
-using MediatR;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixById
 {
@@ -9,7 +9,7 @@ namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixById
     {
         public async Task<GetMatrixDto>  Handle(GetMatrixByIdQuery request,CancellationToken cancellationToken)
         {
-            return await matrixRepository.GetMatrixByIdAsync(request.Id);
+            return await matrixRepository.GetMatrixByIdAsync(request.Id)?? throw new ResourceNotFoundException("Email category user matrix", request.Id);
         }
     }
 }

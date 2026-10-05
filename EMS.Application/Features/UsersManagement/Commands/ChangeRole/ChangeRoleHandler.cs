@@ -1,6 +1,5 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Commands.ChangeRole
 {

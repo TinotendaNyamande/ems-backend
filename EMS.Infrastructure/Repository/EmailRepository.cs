@@ -1,6 +1,5 @@
 using Azure.Identity;
 using EMS.Application.Dtos.Emails;
-using EMS.Application.Features.Emails.Commands.CreateEmail;
 using EMS.Application.Interfaces;
 using EMS.Domain.Enums;
 using EMS.Domain.Models;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using MimeKit;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -26,16 +25,6 @@ namespace EMS.Infrastructure.Repository
             email.ChangeStatus(EmailStatus.Categorized);
             email.ChangeCategory(newCategoryId);
         }
-
-        // public async Task ChangeCategoryForBulkEmailsAsync(Guid EmailID,Guid oldCategoryId, Guid newCategoryId)
-        // {
-        //     var emails = await context.Emails
-        //     .Where(e => e.EmailCategoryId == oldCategoryId)
-        //     .ExecuteUpdateAsync(setters => setters.SetProperty(
-        //         e => e.EmailCategoryId, newCategoryId
-        //     ));
-
-        // }
 
         public async Task ChangeEmailCategoryAsync(Guid id, Guid newCategoryId)
         {
@@ -58,11 +47,8 @@ namespace EMS.Infrastructure.Repository
 
         public async Task DeleteEmailAsync(Guid id)
         {
-            var affectedRows = await context.Emails.Where(e => e.Id == id).ExecuteDeleteAsync();
-            if (affectedRows == 0)
-            {
-                throw new ResourceNotFoundException("Email", id);
-            }
+            var email = await context.Emails.FindAsync(id) ?? throw new ResourceNotFoundException("Email", id);
+            context.Remove(email);
         }
 
         public async Task MarkEmailAsAssignedAsync(Guid emailId)
@@ -71,13 +57,12 @@ namespace EMS.Infrastructure.Repository
             email.NewEmailAssigned();
         }
 
-        public async Task<Email> GetEmailByIdAsync(Guid id)
+        public async Task<Email?> GetEmailByIdAsync(Guid id)
         {
-            return await context.Emails.AsNoTracking().Where(e => e.Id == id).FirstOrDefaultAsync() ??
-            throw new ResourceNotFoundException("Email", id);
+            return await context.Emails.AsNoTracking().Where(e => e.Id == id).FirstOrDefaultAsync() ;
         }
 
-        public async Task<Email> GetEmailByMessageIdAsync(string messageId)
+        public async Task<Email?> GetEmailByMessageIdAsync(string messageId)
         {
             return await context.Emails.Where(e => e.ExternalMessageId == messageId).FirstOrDefaultAsync();
         }
@@ -116,6 +101,10 @@ namespace EMS.Infrastructure.Repository
         {
             var newEmails = new List<IncomingEmailDto>();
             var attachmentBasePath = configuration["EmailAttachmentsPath"];
+            if (string.IsNullOrEmpty(attachmentBasePath))
+            {
+                throw new InvalidOperationException("EmailAttachmentsPath is not configured.");
+            }
 
             try
             {
@@ -172,7 +161,7 @@ namespace EMS.Infrastructure.Repository
                                               ?? "attachment",
                                     FileType: attachment.ContentType?.MimeType ?? "application/octet-stream",
                                     FileSize: attachment.ContentDisposition?.Size
-                                          ?? (attachment is MimePart mp ? mp.Content.Stream.Length : 0),
+                                          ?? (attachment is MimePart mp ? mp.Content!.Stream!.Length : 0),
                                     FilePath: savedPath));
 
                                 logger.LogInformation("Saved attachment {file} to {path}",
@@ -190,7 +179,7 @@ namespace EMS.Infrastructure.Repository
                         message.To.ToString(),
                         message.Subject ?? string.Empty,
                         message.TextBody ?? string.Empty,
-                        message.MessageId,
+                        message.MessageId!,
                         attachments));
 
                     logger.LogInformation("Marking message with ID {id} as read", message.MessageId);
@@ -230,7 +219,7 @@ namespace EMS.Infrastructure.Repository
                 });
                 logger.LogInformation("Successfully connected to Office 365 account inbox for account id {id}", id);
 
-                foreach (var message in messages.Value)
+                foreach (var message in messages!.Value!)
                 {
                     logger.LogInformation("Start: Reading individual messages for Office 365 account {id}", id);
                     logger.LogInformation("Start: processing message with message Id {id}", message.Id);
@@ -240,10 +229,10 @@ namespace EMS.Infrastructure.Repository
                     newEmails.Add(new IncomingEmailDto
                       (
                          message.From?.EmailAddress?.Address ?? string.Empty,
-                         string.Join(", ", message.ToRecipients.Select(r => r.EmailAddress?.Address)),
+                         string.Join(", ", message.ToRecipients!.Select(r => r.EmailAddress?.Address)),
                           message.Subject ?? string.Empty,
                           message.Body?.Content ?? string.Empty,
-                          message.Id,
+                          message.Id!,
                           attachments
                       )
                     );
@@ -288,12 +277,12 @@ namespace EMS.Infrastructure.Repository
 
             switch (attachment)
             {
-                case MessagePart messagePart:   // e.g. attached .eml
-                    await messagePart.Message.WriteToAsync(stream, cancellationToken);
+                case MessagePart messagePart:   
+                    await messagePart!.Message!.WriteToAsync(stream, cancellationToken);
                     break;
 
                 case MimePart mimePart:
-                    await mimePart.Content.DecodeToAsync(stream, cancellationToken);
+                    await mimePart!.Content!.DecodeToAsync(stream, cancellationToken);
                     break;
 
                 default:
@@ -312,10 +301,8 @@ namespace EMS.Infrastructure.Repository
             var invalid = Path.GetInvalidFileNameChars();
             var cleaned = new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray());
 
-            // Defend against path traversal
             cleaned = Path.GetFileName(cleaned);
 
-            // Cap the length to keep paths sane
             const int maxLen = 150;
             if (cleaned.Length > maxLen)
             {

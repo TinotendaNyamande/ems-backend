@@ -5,12 +5,11 @@ using EMS.Application.Interfaces;
 
 namespace EMS.Application.Features.SLAEntriesTracking.Commands.UpdateSLAEntry
 {
-    internal class UpdateSLAEntryHandler(ISLATrackingRepository sLATrackingRepository, IMapper mapper) : ICommandHandler<UpdateSLAEntryCommand>
+    internal class UpdateSLAEntryHandler(ISLATrackingRepository sLATrackingRepository) : ICommandHandler<UpdateSLAEntryCommand>
     {
         public async Task Handle(UpdateSLAEntryCommand request, CancellationToken cancellationToken)
         {
-            var entryDto = mapper.Map<UpdateSLAEntryDto>(request);
-            await sLATrackingRepository.StopTimerAsync(request.Id, entryDto);
+            await sLATrackingRepository.StopTimerAsync(request.Id);
 
         }
     }

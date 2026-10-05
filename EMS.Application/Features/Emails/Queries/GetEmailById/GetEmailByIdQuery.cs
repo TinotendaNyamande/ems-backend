@@ -3,5 +3,5 @@ using EMS.Domain.Models;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailById
 {
-    public record GetEmailByIdQuery(Guid Id):IQuery<Email>;
+    public record GetEmailByIdQuery(Guid Id):IQuery<Email?>;
 }

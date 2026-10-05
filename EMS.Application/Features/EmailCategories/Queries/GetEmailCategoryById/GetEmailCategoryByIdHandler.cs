@@ -2,7 +2,6 @@ using AutoMapper;
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategories;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById
 {

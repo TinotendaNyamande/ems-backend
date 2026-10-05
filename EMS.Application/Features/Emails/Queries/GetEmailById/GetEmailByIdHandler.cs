@@ -1,15 +1,15 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
-using MediatR;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Application.Features.Emails.Queries.GetEmailById
 {
-    internal class GetEmailByIdHandler(IEmailRepository emailRepository) : IQueryHandler<GetEmailByIdQuery, Email>
+    internal class GetEmailByIdHandler(IEmailRepository emailRepository) : IQueryHandler<GetEmailByIdQuery, Email?>
     {
-        public Task<Email> Handle(GetEmailByIdQuery request, CancellationToken cancellationToken)
+        public Task<Email?> Handle(GetEmailByIdQuery request, CancellationToken cancellationToken)
         {
-            return emailRepository.GetEmailByIdAsync(request.Id);
+            return emailRepository.GetEmailByIdAsync(request.Id)?? throw new ResourceNotFoundException("Email", request.Id);
         }
     }
 }

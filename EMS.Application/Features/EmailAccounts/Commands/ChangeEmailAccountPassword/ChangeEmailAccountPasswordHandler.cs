@@ -1,18 +1,14 @@
-﻿using AutoMapper;
-using EMS.Application.Abstractions;
-using EMS.Application.Dtos.EmailAccounts;
+﻿using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.ChangeEmailAccountPassword
 {
-    public class ChangeEmailPasswordHandler(IEmailAccountRepository emailConfigurationRepository,IMapper mapper,IEncryptionService encryptionService) : ICommandHandler<ChangeEmailAccountPasswordCommand>
+    public class ChangeEmailPasswordHandler(IEmailAccountRepository emailAccountRepository,IEncryptionService encryptionService) : ICommandHandler<ChangeEmailAccountPasswordCommand>
     {
         public async Task Handle(ChangeEmailAccountPasswordCommand request, CancellationToken cancellationToken)
         {
-            var changePasswordDto = mapper.Map<ChangeEmailPasswordDto>(request);
-            changePasswordDto.NewPassword = encryptionService.EncryptData(changePasswordDto.NewPassword);
-            await emailConfigurationRepository.ChangePasswordAsync(request.EmailId,changePasswordDto);
+            var newPassword = encryptionService.EncryptData(request.NewPassword);
+            await emailAccountRepository.ChangePasswordAsync(request.EmailId, request.OldPassword, newPassword);
         }
     }
 }

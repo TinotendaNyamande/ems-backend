@@ -2,33 +2,33 @@
 using EMS.Domain.Enums;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Azure.Identity;
-using EMS.Application.Dtos.EmailAccounts;
 
 namespace EMS.Infrastructure.Repository;
 
-internal class EmailSender : IEmailSender
+internal class EmailSender() : IEmailSender
 {
-    private readonly IConfiguration _configuration;
 
-    public EmailSender(IConfiguration configuration)
+    public async Task SendTestEmailAsync(EmailType emailType,string emailAddress,string? password,string? clientId,string? clientSecret,string? tenantId,string toEmail)
     {
-        _configuration = configuration;
-    }
-
-    public async Task SendTestEmailAsync(ValidationAndTestEmailAccountDto config, string toEmail)
-    {
-        switch (config.EmailType)
+        switch (emailType)
         {
             case EmailType.Gmail:
-                await SendGmailEmail(config, toEmail);
+                if(string.IsNullOrEmpty(emailAddress) || string.IsNullOrEmpty(password))
+                {
+                    throw new ArgumentException("Email address and password must be provided for Gmail.");
+                }
+                await SendGmailEmail(emailAddress, password, toEmail);
                 break;
 
             case EmailType.Office365:
-                await SendOffice365Email(config, toEmail);
+                if(string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(emailAddress))
+                {
+                    throw new ArgumentException("All credentials must be provided for Office365.");
+                }
+                await SendOffice365Email(tenantId, clientId, clientSecret, emailAddress, toEmail);
                 break;
 
             default:
@@ -36,15 +36,17 @@ internal class EmailSender : IEmailSender
         }
     }
 
-    private async Task SendGmailEmail(ValidationAndTestEmailAccountDto config, string toEmail)
+    private static async Task SendGmailEmail(string emailAddress, string password, string toEmail)
     {
-        var email = config.EmailAddress;
-        var password = config.Password;
+        if(string.IsNullOrEmpty(emailAddress) || string.IsNullOrEmpty(password))
+        {
+            throw new ArgumentException("Email address and password must be provided for Gmail.");
+        }
 
         var message = new MimeKit.MimeMessage();
 
         message.From.Add(
-            new MimeKit.MailboxAddress("EMS System", email));
+            new MimeKit.MailboxAddress("EMS System", emailAddress));
 
         message.To.Add(
             new MimeKit.MailboxAddress("", toEmail));
@@ -63,19 +65,15 @@ internal class EmailSender : IEmailSender
             587,
             SecureSocketOptions.StartTls);
 
-        await client.AuthenticateAsync(email, password);
+        await client.AuthenticateAsync(emailAddress, password);
 
         await client.SendAsync(message);
 
         await client.DisconnectAsync(true);
     }
 
-    private async Task SendOffice365Email(ValidationAndTestEmailAccountDto config, string toEmail)
+    private static async Task SendOffice365Email(string tenantId, string clientId, string clientSecret, string senderEmail, string toEmail)
     {
-        var tenantId = config.TenantId;
-        var clientId = config.ClientId;
-        var clientSecret = config.ClientSecret;
-        var senderEmail = config.EmailAddress;
 
         var credential = new ClientSecretCredential(
             tenantId,

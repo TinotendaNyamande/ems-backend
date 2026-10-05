@@ -5,7 +5,7 @@ using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -14,7 +14,7 @@ namespace EMS.Infrastructure.Repository
 
         public async Task ChangeTaskStatusAsync(Guid id, TaskStatusList newStatus, string? additionalInformation = null)
         {
-            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            var task = await context.EmailTasks.FindAsync(id) ??
             throw new ResourceNotFoundException("Task", id);
             task.ChangeStatus(newStatus);
             if (!string.IsNullOrEmpty(additionalInformation))
@@ -25,7 +25,7 @@ namespace EMS.Infrastructure.Repository
 
         public async Task CloseTaskAsync(Guid id, string additionalInformation)
         {
-            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            var task = await context.EmailTasks.FindAsync(id) ??
              throw new ResourceNotFoundException("Task", id);
             task.CloseTask(additionalInformation);
         }
@@ -38,108 +38,106 @@ namespace EMS.Infrastructure.Repository
 
         public async Task DeleteTaskAsync(Guid id)
         {
-            var affectedRows = await context.EmailTasks.Where(t => t.Id == id).ExecuteDeleteAsync();
-            if (affectedRows == 0)
-            {
-                throw new ResourceNotFoundException("Task", id);
-            }
+            var task = await context.EmailTasks.FindAsync(id) ??
+             throw new ResourceNotFoundException("Task", id);
+            context.Remove(task);
         }
 
         public async Task EditAdditionalInformationAsync(Guid id, string additionalInfo)
         {
-            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            var task = await context.EmailTasks.FindAsync(id) ??
              throw new ResourceNotFoundException("Task", id);
             task.EditAdditionalInfo(additionalInfo);
         }
 
         public async Task<IEnumerable<GetTasksDto>> GetAllOpenTasksAsync()
         {
-             var query =
-            from tasks in context.EmailTasks
-            join user in context.Users
-            on tasks.AssignedToUser equals user.Id
-            join emails in context.Emails
-            on tasks.EmailId equals emails.Id
-            join emailsAccounts in context.EmailAccounts
-            on emails.EmailAccountId equals emailsAccounts.Id
-            where tasks.Status != TaskStatusList.Closed
-            join category in context.EmailCategories
-            on emails.EmailCategoryId equals category.Id
-            select new GetTasksDto
-            {
-                Id = tasks.Id,
-                FromEmail = emails.FromEmail,
-                Subject = emails.Subject,
-                AssignedToUserId = tasks.AssignedToUser,
-                AssignedToUserFirstName = user.FirstName,
-                AssignedToUserLastName = user.LastName,
-                Status = tasks.Status,
-                Category = category.CategoryName,
-                CreatedAt = tasks.CreatedAt
+            var query =
+           from tasks in context.EmailTasks
+           join user in context.Users
+           on tasks.AssignedToUser equals user.Id
+           join emails in context.Emails
+           on tasks.EmailId equals emails.Id
+           join emailsAccounts in context.EmailAccounts
+           on emails.EmailAccountId equals emailsAccounts.Id
+           where tasks.Status != TaskStatusList.Closed
+           join category in context.EmailCategories
+           on emails.EmailCategoryId equals category.Id
+           select new GetTasksDto
+           {
+               Id = tasks.Id,
+               FromEmail = emails.FromEmail,
+               Subject = emails.Subject,
+               AssignedToUserId = tasks.AssignedToUser,
+               AssignedToUserFirstName = user.FirstName,
+               AssignedToUserLastName = user.LastName,
+               Status = tasks.Status,
+               Category = category.CategoryName,
+               CreatedAt = tasks.CreatedAt
 
-            };
+           };
 
             return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<GetTasksDto>> GetAllOpenTasksByUserIdAsync(string userId)
         {
-             var query =
-            from tasks in context.EmailTasks
-            join user in context.Users
-            on tasks.AssignedToUser equals user.Id
-            join emails in context.Emails
-            on tasks.EmailId equals emails.Id
-            join emailsAccounts in context.EmailAccounts
-            on emails.EmailAccountId equals emailsAccounts.Id
-            where tasks.AssignedToUser == userId & tasks.Status != TaskStatusList.Closed
-            join category in context.EmailCategories
-            on emails.EmailCategoryId equals category.Id
-            select new GetTasksDto
-            {
-                Id = tasks.Id,
-                FromEmail = emails.FromEmail,
-                Subject = emails.Subject,
-                AssignedToUserId = tasks.AssignedToUser,
-                AssignedToUserFirstName = user.FirstName,
-                AssignedToUserLastName = user.LastName,
-                Status = tasks.Status,
-                Category = category.CategoryName,
-                CreatedAt = tasks.CreatedAt
-            };
+            var query =
+           from tasks in context.EmailTasks
+           join user in context.Users
+           on tasks.AssignedToUser equals user.Id
+           join emails in context.Emails
+           on tasks.EmailId equals emails.Id
+           join emailsAccounts in context.EmailAccounts
+           on emails.EmailAccountId equals emailsAccounts.Id
+           where tasks.AssignedToUser == userId && tasks.Status != TaskStatusList.Closed
+           join category in context.EmailCategories
+           on emails.EmailCategoryId equals category.Id
+           select new GetTasksDto
+           {
+               Id = tasks.Id,
+               FromEmail = emails.FromEmail,
+               Subject = emails.Subject,
+               AssignedToUserId = tasks.AssignedToUser,
+               AssignedToUserFirstName = user.FirstName,
+               AssignedToUserLastName = user.LastName,
+               Status = tasks.Status,
+               Category = category.CategoryName,
+               CreatedAt = tasks.CreatedAt
+           };
 
             return await query.ToListAsync();
         }
 
-        public  async Task<IEnumerable<GetTasksDto>> GetAllTasksAsync()
+        public async Task<IEnumerable<GetTasksDto>> GetAllTasksAsync()
         {
-             var query =
-            from tasks in context.EmailTasks
-            join user in context.Users
-            on tasks.AssignedToUser equals user.Id
-            join emails in context.Emails
-            on tasks.EmailId equals emails.Id
-            join emailsAccounts in context.EmailAccounts
-            on emails.EmailAccountId equals emailsAccounts.Id
-            join category in context.EmailCategories
-            on emails.EmailCategoryId equals category.Id
-            select new GetTasksDto
-            {
-                Id = tasks.Id,
-                FromEmail = emails.FromEmail,
-                Subject = emails.Subject,
-                AssignedToUserId = tasks.AssignedToUser,
-                AssignedToUserFirstName = user.FirstName,
-                AssignedToUserLastName = user.LastName,
-                Status = tasks.Status,
-                Category = category.CategoryName,
-                CreatedAt = tasks.CreatedAt
-            };
+            var query =
+           from tasks in context.EmailTasks
+           join user in context.Users
+           on tasks.AssignedToUser equals user.Id
+           join emails in context.Emails
+           on tasks.EmailId equals emails.Id
+           join emailsAccounts in context.EmailAccounts
+           on emails.EmailAccountId equals emailsAccounts.Id
+           join category in context.EmailCategories
+           on emails.EmailCategoryId equals category.Id
+           select new GetTasksDto
+           {
+               Id = tasks.Id,
+               FromEmail = emails.FromEmail,
+               Subject = emails.Subject,
+               AssignedToUserId = tasks.AssignedToUser,
+               AssignedToUserFirstName = user.FirstName,
+               AssignedToUserLastName = user.LastName,
+               Status = tasks.Status,
+               Category = category.CategoryName,
+               CreatedAt = tasks.CreatedAt
+           };
 
             return await query.ToListAsync();
         }
 
-        public async Task<GetTasksDetailsDto> GetTaskByIdAsync(Guid id)
+        public async Task<GetTasksDetailsDto?> GetTaskByIdAsync(Guid id)
         {
             var query =
                 from tasks in context.EmailTasks
@@ -152,27 +150,12 @@ namespace EMS.Infrastructure.Repository
                 join category in context.EmailCategories
                 on emails.EmailCategoryId equals category.Id
                 where tasks.Id == id
-                select new GetTasksDetailsDto
-                {
-                    Id = tasks.Id,
-                    FromEmail = emails.FromEmail,
-                    Subject = emails.Subject,
-                    EmailBody = emails.Body,
-                    EmailAccountAddress = emailsAccounts.EmailAddress,
-                    AssignedToUserId = tasks.AssignedToUser,
-                    AssignedToUserFirstName = user.FirstName,
-                    AssignedToUserLastName = user.LastName,
-                    CreatedAt = tasks.CreatedAt,
-                    UpdatedAt = tasks.UpdatedAt,
-                    AssignedToUserDate = tasks.AssignedToUserDate,
-                    ClosedDate = tasks.ClosedDate,
-                    Status = tasks.Status,
-                    AdditionalInformation = tasks.AdditionalInformation,
-                    Category = category.CategoryName,
-                    Attachments = emails.EmailAttachments.Select(a => new GetAttachmentDTO(a.Id, a.FileName, a.FileType, a.FileSize)).ToList()
+                select new GetTasksDetailsDto(tasks.Id, emails.FromEmail, emails.Subject!, emails.Body!, emailsAccounts.EmailAddress, tasks.AssignedToUser, user.FirstName!, user.LastName!, tasks.CreatedAt, tasks.UpdatedAt, tasks.AssignedToUserDate, tasks.ClosedDate, tasks.Status, tasks.AdditionalInformation, category.CategoryName,
+                emails.EmailAttachments.Select(a => new GetAttachmentDTO(a.Id, a.FileName, a.FileType, a.FileSize)).ToList());
 
-                };
-            return await query.FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Task", id);
+
+                
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<GetTasksDto>> GetTasksByUserIdAsync(string userId, TaskStatusList? status)
@@ -250,28 +233,33 @@ namespace EMS.Infrastructure.Repository
 
         public async Task<UserTasksSummaryDto> GetUserTasksSummaryAsync(string userId)
         {
-            var tasksTotal = await context.EmailTasks.Where(a=>a.AssignedToUser==userId).ToListAsync();
-            var openTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Assigned).ToListAsync();
-            var holdTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Hold).ToListAsync();
-            var closedTasks = await context.EmailTasks.Where(a=>a.AssignedToUser==userId && a.Status== TaskStatusList.Closed).ToListAsync();
-            var slaEntries = await context.SLATrackings.Where(a=>a.UserId==userId).ToListAsync();
-            var averageResolutionTime = slaEntries.Any() ? slaEntries.Average(s => s.DurationInHours) : 0;
-            return new UserTasksSummaryDto(tasksTotal.Count,holdTasks.Count,openTasks.Count,closedTasks.Count,averageResolutionTime);
+            var counts = await context.EmailTasks
+                .Where(t => t.AssignedToUser == userId)
+                .GroupBy(t => t.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var averageResolutionTime = await context.SLATrackings
+                .Where(s => s.UserId == userId)
+                .Select(s => s.DurationInHours)
+                .AverageAsync() ?? 0;
+            var tasksTotal = counts.Where(c => c.Status == TaskStatusList.Assigned || c.Status == TaskStatusList.Hold || c.Status == TaskStatusList.Closed).ToList();
+            var holdTasks = counts.Where(c => c.Status == TaskStatusList.Hold).ToList();
+            var openTasks = counts.Where(c => c.Status == TaskStatusList.Assigned).ToList();
+            var closedTasks = counts.Where(c => c.Status == TaskStatusList.Closed).ToList();
+            return new UserTasksSummaryDto(tasksTotal.Count, holdTasks.Count, openTasks.Count, closedTasks.Count, averageResolutionTime);
         }
 
         public async Task ReassignTaskAsync(Guid id, string newUserId)
         {
             logger.LogInformation("Reassigning task {TaskId} to user {NewUserId}", id, newUserId);
-            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            var task = await context.EmailTasks.FindAsync(id) ??
             throw new ResourceNotFoundException("Task", id);
-            logger.LogInformation("Task {TaskId} found. Current assigned user: {CurrentUserId}", id, task.AssignedToUser);
             task.AssignToUser(newUserId);
-            logger.LogInformation("Task {TaskId} reassigned to user {NewUserId}. Updating database.", id, newUserId);
-            logger.LogInformation("Task {TaskId} successfully reassigned to user {NewUserId}.", id, newUserId);
         }
         public async Task ReOpenTaskAsync(Guid id)
         {
-            var task = await context.EmailTasks.Where(t => t.Id == id).FirstOrDefaultAsync() ??
+            var task = await context.EmailTasks.FindAsync(id) ??
             throw new ResourceNotFoundException("Task", id);
             task.ReOpenTask();
         }

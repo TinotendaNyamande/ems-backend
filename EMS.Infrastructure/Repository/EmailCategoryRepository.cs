@@ -2,7 +2,7 @@ using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -16,11 +16,8 @@ namespace EMS.Infrastructure.Repository
 
         public async Task DeleteEmailCategoryAsync(Guid id)
         {
-            var deletedRows = await context.EmailCategories.Where(e => e.Id == id).ExecuteDeleteAsync();
-            if (deletedRows == 0)
-            {
-                throw new ResourceNotFoundException("email category", id);
-            }
+            var emailCategory = await context.EmailCategories.FindAsync(id) ?? throw new ResourceNotFoundException("email category", id);
+            context.Remove(emailCategory);
         }
 
         public Task<bool> EmailCategoryExistsInEmailAccountAsync(Guid EmailAccountId, string categoryName)
@@ -29,16 +26,15 @@ namespace EMS.Infrastructure.Repository
             return exists;
         }
 
-        public async Task<EmailCategory> GetCategoryByIdAsync(Guid id)
+        public async Task<EmailCategory?> GetCategoryByIdAsync(Guid id)
         {
-            return await context.EmailCategories.AsNoTracking().Where(e => e.Id == id).FirstOrDefaultAsync() ??
-            throw new ResourceNotFoundException("email category", id);
+            return await context.EmailCategories.AsNoTracking().Where(e => e.Id == id).FirstOrDefaultAsync() ;
+            
         }
 
-        public async Task<EmailCategory> GetCategoryByNameAsync(Guid emailAccountId,string categoryName)
+        public async Task<EmailCategory?> GetCategoryByNameAsync(Guid emailAccountId,string categoryName)
         {
-            return await context.EmailCategories.AsNoTracking().Where(e => e.CategoryName == categoryName && e.EmailAccountId==emailAccountId).FirstOrDefaultAsync() ??
-            throw new ResourceNotFoundException("email category", categoryName);
+            return await context.EmailCategories.AsNoTracking().Where(e => e.CategoryName == categoryName && e.EmailAccountId==emailAccountId).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<EmailCategory>> GetEmailCategoriesByEmailAccountAsync(Guid emailAccountId)

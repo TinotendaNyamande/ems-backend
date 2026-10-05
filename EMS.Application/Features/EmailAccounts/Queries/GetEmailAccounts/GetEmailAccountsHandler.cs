@@ -2,7 +2,6 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailAccounts;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Queries.GetEmailAccounts
 {

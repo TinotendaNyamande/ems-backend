@@ -1,16 +1,19 @@
 using EMS.Application.Abstractions;
-using EMS.Application.Features.AuditTrail.Commands.CreateAuditTrailEntry;
-using EMS.Application.Features.EmailCategoryUserMatrix.Commands.RecordUserAssignedTaskAction;
-using EMS.Application.Features.Emails.Commands.MarkEmailAsAssigned;
-using EMS.Application.Features.EmailTasks.Commands.CreateTask;
-using EMS.Application.Features.SLAEntriesTracking.Commands.CreateSLAEntry;
 using EMS.Application.Interfaces;
-using MediatR;
+using EMS.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace EMS.Application.Features.Emails.Commands.AssignEmailToUser
 {
-    internal class AssignEmailToUserHandler(ILogger<AssignEmailToUserHandler> logger, IEmailCategoriesUserMatrixRepository matrixRepository, ITaskAssignmentService taskAssignmentService, IMediator mediator) : ICommandHandler<AssignEmailToUserCommand>
+    internal class AssignEmailToUserHandler(
+        IEmailTasksRepository emailTasksRepository,
+        IEmailRepository emailRepository,
+         ILogger<AssignEmailToUserHandler> logger,
+          IEmailCategoriesUserMatrixRepository matrixRepository,
+          ITaskAssignmentService taskAssignmentService,
+          ISLATrackingRepository slaTrackingRepository,
+          ITaskAuditRepository taskAuditRepository
+          ) : ICommandHandler<AssignEmailToUserCommand>
     {
         public async Task Handle(AssignEmailToUserCommand request, CancellationToken cancellationToken)
         {
@@ -21,12 +24,11 @@ namespace EMS.Application.Features.Emails.Commands.AssignEmailToUser
             var pickedUserMatrix = await taskAssignmentService.PickUserAsync(matrix);
             logger.LogInformation("Picked user for task {id}", pickedUserMatrix.UserId);
 
-            var task = await mediator.Send(new CreateTaskCommand(request.EmailId, pickedUserMatrix.UserId), cancellationToken);
-
-            await mediator.Send(new MarkEmailAsAssignedCommand(request.EmailId), cancellationToken);
-            await mediator.Send(new RecordUserAssignedTaskActionCommand(pickedUserMatrix.Id), cancellationToken);
-            await mediator.Send(new CreateSLAEntryCommand(task.Id,pickedUserMatrix.UserId, "New task assigned"), cancellationToken);
-            await mediator.Send(new CreateAuditTrailEntryCommand(task.Id, "System", "Task assigned to user"), cancellationToken);
+            var task = await emailTasksRepository.CreateTaskAsync(new EmailTask(request.EmailId, pickedUserMatrix.UserId));
+            await emailRepository.MarkEmailAsAssignedAsync(request.EmailId);
+            await matrixRepository.RecordUserAssignedTaskActionAsync(pickedUserMatrix.Id);
+            await slaTrackingRepository.CreateSLAEntryAsync(new SLATracking(task.Id, pickedUserMatrix.UserId, "New task assigned"));
+            await taskAuditRepository.CreateTaskAuditTrailAsync(new TaskAuditTrail("New task assigned", pickedUserMatrix.UserId, task.Id));
 
         }
     }

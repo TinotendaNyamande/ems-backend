@@ -5,7 +5,7 @@ namespace EMS.Domain.Models
     public class SLATracking(Guid emailTaskId, string userId,string comments)
     {
         public Guid Id { get;private set; }= Guid.NewGuid();
-        public EmailTask EmailTask { get;private set; }
+        public EmailTask EmailTask { get;private set; }=null!;
         public Guid EmailTaskId { get;private set; }= emailTaskId;
         public DateTime StartTime { get;private set; }= DateTime.UtcNow;
         public DateTime? EndTime { get; private set; }

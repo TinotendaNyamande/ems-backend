@@ -1,6 +1,5 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategories;
-using MediatR;
 
 namespace EMS.Application.Features.EmailCategories.Queries.GetEmailCategoryById
 {

@@ -1,7 +1,6 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategoryMatrix;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.EmailCategoryUserMatrix.Queries.GetMatrixForUser
 {

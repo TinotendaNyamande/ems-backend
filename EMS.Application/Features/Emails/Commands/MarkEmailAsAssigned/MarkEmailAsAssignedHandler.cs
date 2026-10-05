@@ -1,7 +1,5 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Interfaces;
-using FluentValidation;
-using MediatR;
 
 namespace EMS.Application.Features.Emails.Commands.MarkEmailAsAssigned
 {

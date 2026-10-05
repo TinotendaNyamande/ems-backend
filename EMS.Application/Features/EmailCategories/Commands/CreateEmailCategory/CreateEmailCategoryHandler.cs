@@ -1,20 +1,19 @@
 using AutoMapper;
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.EmailCategories;
-using EMS.Application.Features.EmailAccounts.Queries.GetEmailAccountById;
-using EMS.Application.Features.EmailCategories.Queries.GetCategoryByName;
 using EMS.Application.Interfaces;
 using EMS.Domain.Models;
-using MediatR;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Application.Features.EmailCategories.Commands.CreateEmailCategory
 {
-    public class CreateEmailCategoryHandler(IEmailCategoryRepository emailCategoryRepository,IMapper mapper,IMediator mediator) : ICommandHandler<CreateEmailCategoryCommand, GetEmailCategoryDto>
+    public class CreateEmailCategoryHandler(IEmailCategoryRepository emailCategoryRepository,IEmailAccountRepository emailAccountRepository, IMapper mapper) : ICommandHandler<CreateEmailCategoryCommand, GetEmailCategoryDto>
     {
         public async Task<GetEmailCategoryDto> Handle(CreateEmailCategoryCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new GetEmailAccountByIdQuery(request.EmailAccountId),cancellationToken);
-            var emailCategoryExists = await mediator.Send(new GetCategoryByNameQuery(request.EmailAccountId,request.CategoryName),cancellationToken);
+            var emailAccount = await emailAccountRepository.GetEmailAccountByIdAsync(request.EmailAccountId)
+            ?? throw new ResourceNotFoundException("Email Account", request.EmailAccountId);
+            var emailCategoryExists = await emailCategoryRepository.GetCategoryByNameAsync(request.EmailAccountId, request.CategoryName);
             if (emailCategoryExists != null)
             {
                 throw new InvalidOperationException($"Email category with name '{request.CategoryName}' already exists in this email account.");

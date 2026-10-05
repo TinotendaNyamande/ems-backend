@@ -6,7 +6,6 @@ using EMS.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 

@@ -1,6 +1,6 @@
 using EMS.Application.Dtos.Tasks;
 using EMS.Application.Interfaces;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Application.Services
 {

@@ -1,7 +1,6 @@
 ﻿using EMS.Domain.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Projects.Domain.Exceptions;
 using System.Diagnostics;
 
 namespace EMS.API.Middleware

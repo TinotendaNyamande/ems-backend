@@ -3,7 +3,6 @@ using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -15,7 +14,7 @@ namespace EMS.Infrastructure.Repository
             return taskAuditTrail;
         }
 
-        public async Task<GetTaskAuditTrailDto> GetAuditTrailEntryById(Guid id)
+        public async Task<GetTaskAuditTrailDto?> GetAuditTrailEntryById(Guid id)
         {
             var query =
     from audit in context.TaskAuditTrails
@@ -27,12 +26,12 @@ namespace EMS.Infrastructure.Repository
     select new GetTaskAuditTrailDto
     (
         audit.Id,
-        audit.UserId == "System" ? "System" : user.UserName,
+        audit.UserId == "System" ? "System" : user.UserName!,
         audit.Comments,
          audit.CreatedAt,
          task.Id
     );
-            return await query.FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Adit trail entry", id);
+            return await query.FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<GetTaskAuditTrailDto>> GetTaskAuditTrail(Guid emailTaskId)
         {
@@ -47,7 +46,7 @@ namespace EMS.Infrastructure.Repository
                 select new GetTaskAuditTrailDto
                 (
                     audit.Id,
-                    audit.UserId == "System" ? "System" : user.UserName,
+                    audit.UserId == "System" ? "System" : user.UserName!,
                     audit.Comments,
                      audit.CreatedAt,
                     emailTaskId

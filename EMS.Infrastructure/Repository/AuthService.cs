@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -198,7 +198,7 @@ namespace EMS.Infrastructure.Repository
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!),
-                new Claim("FirstName", user.FirstName),
+                new Claim("FirstName", user.FirstName!),
             };
 
             var roles = await userManager.GetRolesAsync(user);
@@ -329,14 +329,8 @@ namespace EMS.Infrastructure.Repository
 
             await SaveRefreshTokenAsync(user, refreshToken);
             logger.LogInformation("User registered successfully: {Email} ({UserId})", user.Email, user.Id);
-            return new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email!,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Role = role
-            };
+            return new UserDto(user.Id, user.Email!, user.FirstName, user.LastName, role);
+   
 
         }
 

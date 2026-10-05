@@ -6,6 +6,6 @@ namespace EMS.Application.Interfaces
 {
     public interface IEmailSender
     {
-        Task SendTestEmailAsync(ValidationAndTestEmailAccountDto config, string toEmail);
+        Task SendTestEmailAsync(EmailType emailType,string emailAddress,string? password,string? clientId,string? clientSecret,string? tenantId,string toEmail);
     }
 }

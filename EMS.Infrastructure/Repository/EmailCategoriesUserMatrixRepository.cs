@@ -3,7 +3,7 @@ using EMS.Application.Interfaces;
 using EMS.Domain.Models;
 using EMS.Infrastructure.persistence;
 using Microsoft.EntityFrameworkCore;
-using Projects.Domain.Exceptions;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Infrastructure.Repository
 {
@@ -37,27 +37,20 @@ namespace EMS.Infrastructure.Repository
             return matrix;
         }
 
-        public async Task<GetMatrixDto> GetMatrixByIdAsync(Guid id)
+        public async Task<GetMatrixDto?> GetMatrixByIdAsync(Guid id)
         {
-                        var query = from matrices in context.EmailCategoriesUserMatrices.AsNoTracking()
+            var query = from matrices in context.EmailCategoriesUserMatrices.AsNoTracking()
                         join categories in context.EmailCategories.AsNoTracking()
                         on matrices.EmailCategoryId equals categories.Id
                         join users in context.Users.AsNoTracking()
                         on matrices.UserId equals users.Id
                         where matrices.Id == id
                         select new GetMatrixDto
-                        {
-                            Id = matrices.Id,
-                            UserFirstName = users.FirstName,
-                            UserLastName = users.LastName,
-                            Userid = matrices.UserId,
-                            CategoryId = matrices.EmailCategoryId,
-                            CategoryName = categories.CategoryName,
-                            IsAvailable = matrices.IsAvailable,
-                            LastAssignedDate = matrices.LastAssignedAt
+                        (categories.CategoryName, matrices.EmailCategoryId, users.FirstName!, users.LastName!, matrices.UserId, matrices.Id,
+                        matrices.IsAvailable, matrices.LastAssignedAt);
 
-                        };
-            var result = await query.FirstOrDefaultAsync() ?? throw new ResourceNotFoundException("Email category matrix", id);
+
+            var result = await query.FirstOrDefaultAsync();
             return result;
         }
 
@@ -70,17 +63,8 @@ namespace EMS.Infrastructure.Repository
                         on matrices.UserId equals users.Id
                         where categories.EmailAccountId == emailAccountId
                         select new GetMatrixDto
-                        {
-                            Id = matrices.Id,
-                            UserFirstName = users.FirstName,
-                            UserLastName = users.LastName,
-                            Userid = matrices.UserId,
-                            CategoryId = matrices.EmailCategoryId,
-                            CategoryName = categories.CategoryName,
-                            IsAvailable = matrices.IsAvailable,
-                            LastAssignedDate = matrices.LastAssignedAt
-
-                        };
+                        (categories.CategoryName, matrices.EmailCategoryId, users.FirstName!, users.LastName!, matrices.UserId, matrices.Id,
+                        matrices.IsAvailable, matrices.LastAssignedAt);
             return await query.ToListAsync();
         }
 
@@ -92,18 +76,9 @@ namespace EMS.Infrastructure.Repository
                         join users in context.Users.AsNoTracking()
                         on matrices.UserId equals users.Id
                         where users.Id == id
-                        select new GetMatrixDto
-                        {
-                            Id = matrices.Id,
-                            UserFirstName = users.FirstName,
-                            UserLastName = users.LastName,
-                            Userid = matrices.UserId,
-                            CategoryId = matrices.EmailCategoryId,
-                            CategoryName = categories.CategoryName,
-                            IsAvailable = matrices.IsAvailable,
-                            LastAssignedDate = matrices.LastAssignedAt
-
-                        };
+                          select new GetMatrixDto
+                        (categories.CategoryName,matrices.EmailCategoryId,users.FirstName!,users.LastName!,matrices.UserId,matrices.Id,
+                        matrices.IsAvailable,matrices.LastAssignedAt);
             return await query.ToListAsync();
         }
 

@@ -1,7 +1,6 @@
 ﻿using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Auth;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.UsersManagement.Commands.CreateUser
 {
@@ -12,13 +11,7 @@ namespace EMS.Application.Features.UsersManagement.Commands.CreateUser
         public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
 
-            var createUserDto = new RegisterUserDto
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                Password = request.Password
-            };
+            var createUserDto = new RegisterUserDto(request.FirstName,request.LastName,request.Email,request.Password,request.Role);
 
             if (request.Role != "Admin" && request.Role != "Supervisor" && request.Role != "Member")
             {

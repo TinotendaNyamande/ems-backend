@@ -10,14 +10,13 @@ namespace EMS.Application.Interfaces
     {
         Task<IEnumerable<IncomingEmailDto>> GetUnreadMessagesFromGmailInboxAsync(Guid id,string emailAddress,string password,CancellationToken cancellationToken);
         Task<IEnumerable<IncomingEmailDto>> GetUnreadMessagesFromOffice365InboxAsync(Guid id,string tenantId,string clientId,string clientSecret,string emailAddress,CancellationToken cancellationToken);
-        Task<Email> GetEmailByIdAsync(Guid id);
-        Task<Email> GetEmailByMessageIdAsync(string messageId);
+        Task<Email?> GetEmailByIdAsync(Guid id);
+        Task<Email?> GetEmailByMessageIdAsync(string messageId);
         Task<IEnumerable<Email>> GetEmailsByEmailAccountAsync(Guid emailAccountId);
         Task<IEnumerable<Email>> GetEmailsByCategoryIdAsync(Guid categoryId);
         Task<IEnumerable<Email>> GetEmailsPendingAssignmentAsync(Guid emailAccountId);
         Task DeleteEmailAsync(Guid id);
         Task ChangeEmailCategoryAsync(Guid id, Guid newCategoryId);
-       // Task ChangeCategoryForBulkEmailsAsync(Guid oldCategoryId, Guid newCategoryId);
         Task<Email> CreateEmailAsync(Email email);
         Task<IEnumerable<Email>> GetNewEmailsByEmailAccountAsync(Guid emailAccountId);
         Task ChangeEmailStatusAsync(Guid id,EmailStatus newStatus);

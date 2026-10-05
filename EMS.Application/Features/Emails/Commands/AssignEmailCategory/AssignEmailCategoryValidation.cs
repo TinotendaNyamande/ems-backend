@@ -1,5 +1,4 @@
 using FluentValidation;
-using MediatR;
 
 namespace EMS.Application.Features.Emails.Commands.AssignEmailCategory
 {

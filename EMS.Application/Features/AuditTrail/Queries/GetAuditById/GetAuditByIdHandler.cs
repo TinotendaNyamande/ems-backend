@@ -1,6 +1,7 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.TaskAuditTrail;
 using EMS.Application.Interfaces;
+using EMS.Domain.Exceptions;
 
 namespace EMS.Application.Features.AuditTrail.Queries.GetAuditById
 {
@@ -8,7 +9,8 @@ namespace EMS.Application.Features.AuditTrail.Queries.GetAuditById
     {
         public async Task<GetTaskAuditTrailDto> Handle(GetAuditByIdQuery request, CancellationToken cancellationToken)
         {
-            return await taskAuditRepository.GetAuditTrailEntryById(request.Id);
+            return await taskAuditRepository.GetAuditTrailEntryById(request.Id) ?? throw new ResourceNotFoundException("Audit trail entry", request.Id);
+            
         }
     }
 }

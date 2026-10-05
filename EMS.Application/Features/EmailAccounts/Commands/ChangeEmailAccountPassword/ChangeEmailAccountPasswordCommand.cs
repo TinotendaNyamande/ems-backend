@@ -1,5 +1,4 @@
 ﻿using EMS.Application.Abstractions;
-using MediatR;
 
 namespace EMS.Application.Features.EmailAccounts.Commands.ChangeEmailAccountPassword
 {

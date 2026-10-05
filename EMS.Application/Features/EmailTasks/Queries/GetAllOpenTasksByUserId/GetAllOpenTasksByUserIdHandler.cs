@@ -1,8 +1,6 @@
 using EMS.Application.Abstractions;
 using EMS.Application.Dtos.Tasks;
-using EMS.Application.Features.EmailTasks.Queries.GetAllOpenTasksByUserId;
 using EMS.Application.Interfaces;
-using MediatR;
 
 namespace EMS.Application.Features.EmailTasks.Queries.GetAllOpenTasksByUserId
 {
